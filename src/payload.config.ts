@@ -25,10 +25,19 @@ export default buildConfig({
     components: {
       // The `BeforeLogin` component renders a message that you see while logging into your admin panel.
       // Feel free to delete this at any time. Simply remove the line below and the import `BeforeLogin` statement on line 15.
-      beforeLogin: ['@/components/BeforeLogin'],
+      // beforeLogin: ['@/components/BeforeLogin'],
+
       // The `BeforeDashboard` component renders the 'welcome' block that you see after logging into your admin panel.
       // Feel free to delete this at any time. Simply remove the line below and the import `BeforeDashboard` statement on line 15.
-      beforeDashboard: ['@/components/BeforeDashboard'],
+      // beforeDashboard: ['@/components/BeforeDashboard'],
+      afterLogin: ['@/components/Auth/AuthComponent'],
+      graphics: {
+        /** Replace the icon in the navigation */
+        Icon: '@/components/Auth/Logo',
+        /** Replace the logo on the login page */
+        // Logo: CustomComponent;
+        Logo: '@/components/Auth/Logo',
+      },
     },
     importMap: {
       baseDir: path.resolve(dirname),

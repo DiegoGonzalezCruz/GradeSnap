@@ -317,7 +317,12 @@ export interface Category {
  */
 export interface User {
   id: string;
-  name?: string | null;
+  name: string;
+  bio?: string | null;
+  pictureURL?: string | null;
+  googleSub?: string | null;
+  role?: ('admin' | 'coordinator' | 'instructor' | 'client') | null;
+  status?: ('active' | 'inactive') | null;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -325,6 +330,8 @@ export interface User {
   resetPasswordExpiration?: string | null;
   salt?: string | null;
   hash?: string | null;
+  _verified?: boolean | null;
+  _verificationToken?: string | null;
   loginAttempts?: number | null;
   lockUntil?: string | null;
   password?: string | null;
@@ -1209,6 +1216,11 @@ export interface CategoriesSelect<T extends boolean = true> {
  */
 export interface UsersSelect<T extends boolean = true> {
   name?: T;
+  bio?: T;
+  pictureURL?: T;
+  googleSub?: T;
+  role?: T;
+  status?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;
@@ -1216,6 +1228,8 @@ export interface UsersSelect<T extends boolean = true> {
   resetPasswordExpiration?: T;
   salt?: T;
   hash?: T;
+  _verified?: T;
+  _verificationToken?: T;
   loginAttempts?: T;
   lockUntil?: T;
 }
