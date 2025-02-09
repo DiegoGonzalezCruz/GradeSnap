@@ -69,7 +69,7 @@ const handler = async (request: Request) => {
       { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } },
     )
 
-    const { access_token } = tokenResponse.data
+    const { access_token, expires_in } = tokenResponse.data
 
     // 2. retrieve user info
     const userInfoResponse = await axios.get<GoogleUserInfo>(
@@ -105,6 +105,15 @@ const handler = async (request: Request) => {
     })
     console.log(jwtCookie, 'JWT COOKIE')
 
+    // **Set cookie for Google Access Token**
+    const googleTokenCookie = serialize('google_access_token', access_token, {
+      httpOnly: true,
+      secure: protocol === 'https',
+      maxAge: expires_in, // use token expiry from Google
+      path: '/',
+      sameSite: 'lax',
+    })
+
     // 7. clear the oauth_state cookie
     const clearStateCookie = serialize('oauth_state', '', {
       httpOnly: true,
@@ -136,6 +145,8 @@ const handler = async (request: Request) => {
     const response = NextResponse.redirect(finalRedirectURL)
 
     response.headers.append('Set-Cookie', jwtCookie)
+    response.headers.append('Set-Cookie', googleTokenCookie)
+
     response.headers.append('Set-Cookie', clearStateCookie)
     response.headers.append('Set-Cookie', clearRedirectCookie)
 

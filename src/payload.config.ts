@@ -44,6 +44,7 @@ export default buildConfig({
     },
     user: Users.slug,
     livePreview: {
+      url: 'localhost:3000',
       breakpoints: [
         {
           label: 'Mobile',

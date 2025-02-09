@@ -43,10 +43,21 @@ export const GET = async (request: Request) => {
       'openid',
       'email',
       'profile',
-      'https://www.googleapis.com/auth/classroom.coursework.me',
+      // Courses (create, update, delete, and view)
+      'https://www.googleapis.com/auth/classroom.courses',
+      // Rosters (manage and view students/teachers)
+      'https://www.googleapis.com/auth/classroom.rosters',
+      // Coursework (as teacher and student)
       'https://www.googleapis.com/auth/classroom.coursework.students',
+      'https://www.googleapis.com/auth/classroom.coursework.me',
+      // Coursework materials (manage and view)
+      'https://www.googleapis.com/auth/classroom.courseworkmaterials',
+      // Announcements (manage and view)
       'https://www.googleapis.com/auth/classroom.announcements',
-      'https://www.googleapis.com/auth/drive.readonly', // include if file content access is required
+      // Topics (manage and view)
+      'https://www.googleapis.com/auth/classroom.topics',
+      // Guardian links (manage student guardian associations)
+      'https://www.googleapis.com/auth/classroom.guardianlinks.students',
     ].join(' '),
     state,
     access_type: 'offline',
