@@ -94,9 +94,11 @@ const config = {
         warning: 'hsl(var(--warning))',
       },
       fontFamily: {
+        sans: ['var(--font-figtree)', 'sans-serif'],
+        // (keep mono as-is or adjust if needed)
         mono: ['var(--font-geist-mono)'],
-        sans: ['var(--font-geist-sans)'],
       },
+
       keyframes: {
         'accordion-down': {
           from: { height: '0' },
