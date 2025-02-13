@@ -1,6 +1,6 @@
 // app/api/classroom/summary/route.ts
 import { NextResponse } from 'next/server'
-import { google } from 'googleapis'
+import { google, classroom_v1 } from 'googleapis'
 
 /**
  * Helper to retrieve the access token from cookies.
@@ -18,44 +18,53 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
   }
 
-  // Set up the Google API client
   const auth = new google.auth.OAuth2()
   auth.setCredentials({ access_token: token })
   const classroom = google.classroom({ version: 'v1', auth })
-  //   console.log(classroom, 'classroom ****')
 
   try {
-    // Fetch courses (up to 100 for this example)
-    const coursesResponse = await classroom.courses.list({ pageSize: 100 })
+    // Fetch courses with only the id field
+    const coursesResponse = await classroom.courses.list({
+      pageSize: 100,
+      fields: 'courses(id)',
+    })
     const courses = coursesResponse.data.courses || []
     const totalCourses = courses.length
 
-    let totalAssignments = 0
-    let totalStudents = 0
+    // Use Promise.all to fetch assignments and students concurrently with minimal fields
+    const courseDataPromises = courses.map(async (course) => {
+      if (!course.id) return { assignmentCount: 0, studentCount: 0 }
 
-    // For each course, fetch assignments and students
-    for (const course of courses) {
-      if (course.id) {
-        try {
-          const assignmentsResponse = await classroom.courses.courseWork.list({
+      const [assignmentsResponse, studentsResponse] = await Promise.all([
+        classroom.courses.courseWork
+          .list({
             courseId: course.id,
+            fields: 'courseWork(id)',
           })
-          const assignments = assignmentsResponse.data.courseWork || []
-          totalAssignments += assignments.length
-        } catch (assignmentError) {
-          console.error(`Error fetching assignments for course ${course.id}`, assignmentError)
-        }
-        try {
-          const studentsResponse = await classroom.courses.students.list({
+          .catch((err) => {
+            console.error(`Error fetching assignments for course ${course.id}`, err)
+            return { data: { courseWork: [] } }
+          }),
+        classroom.courses.students
+          .list({
             courseId: course.id,
+            fields: 'students(userId)',
           })
-          const students = studentsResponse.data.students || []
-          totalStudents += students.length
-        } catch (studentError) {
-          console.error(`Error fetching students for course ${course.id}`, studentError)
-        }
-      }
-    }
+          .catch((err) => {
+            console.error(`Error fetching students for course ${course.id}`, err)
+            return { data: { students: [] } }
+          }),
+      ])
+
+      const assignmentCount = (assignmentsResponse.data.courseWork || []).length
+      const studentCount = (studentsResponse.data.students || []).length
+
+      return { assignmentCount, studentCount }
+    })
+
+    const results = await Promise.all(courseDataPromises)
+    const totalAssignments = results.reduce((sum, result) => sum + result.assignmentCount, 0)
+    const totalStudents = results.reduce((sum, result) => sum + result.studentCount, 0)
 
     return NextResponse.json({
       courses: totalCourses,
