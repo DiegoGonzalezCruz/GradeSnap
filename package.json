@@ -19,6 +19,7 @@
     "start": "cross-env NODE_OPTIONS=--no-deprecation next start"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.21.0",
     "@payloadcms/db-mongodb": "latest",
     "@payloadcms/live-preview-react": "latest",
     "@payloadcms/next": "latest",
@@ -35,6 +36,7 @@
     "@radix-ui/react-label": "^2.0.2",
     "@radix-ui/react-select": "^2.0.0",
     "@radix-ui/react-slot": "^1.0.2",
+    "@tanstack/react-query": "^5.66.0",
     "axios": "^1.7.9",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",

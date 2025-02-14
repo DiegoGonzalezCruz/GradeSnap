@@ -52,7 +52,7 @@ export function Sidebar({ className }: React.HTMLAttributes<HTMLDivElement>) {
   ]
 
   return (
-    <div className={cn(' h-[80dvh] min-h-fit  ', className)}>
+    <div className={cn(' h-screen  min-h-fit  ', className)}>
       <div className="h-full w-full">
         <div className="h-full flex flex-col justify-around items-center gap-3   ">
           <div>
@@ -62,15 +62,14 @@ export function Sidebar({ className }: React.HTMLAttributes<HTMLDivElement>) {
             {menu.map((item) => {
               const Icon = item.icon
               return (
-                <div
-                  key={item.name}
-                  className="h-fit px-[25px] py-5 flex flex-col justify-center items-center gap-5  "
-                >
-                  <div data-svg-wrapper className="relative">
-                    <Icon className="w-8 h-8" />
+                <Link href={item.href} key={item.name}>
+                  <div className="h-fit px-[25px] py-5 flex flex-col justify-center items-center gap-5  ">
+                    <div data-svg-wrapper className="relative">
+                      <Icon className="w-8 h-8" />
+                    </div>
+                    <div className=" text-black text-sm font-normal text-center ">{item.name}</div>
                   </div>
-                  <div className=" text-black text-sm font-normal text-center ">{item.name}</div>
-                </div>
+                </Link>
               )
             })}
           </div>

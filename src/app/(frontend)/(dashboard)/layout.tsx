@@ -1,6 +1,8 @@
 import { Sidebar } from '@/components/Dashboard/sidebar'
-import type React from 'react' // Import React
+import type React from 'react'
 import { draftMode } from 'next/headers'
+import HeaderDashboard from '@/components/Dashboard/header'
+import MainDashboard from '@/components/Dashboard/main'
 
 export const metadata = {
   title: 'Classroom AI Dashboard',
@@ -11,15 +13,17 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const { isEnabled } = await draftMode()
 
   return (
-    <>
-      <div className={''}>
-        <div className="flex h-screen overflow-hidden">
-          <aside className="hidden w-64 overflow-y-auto border-r bg-gray-100/40 md:block">
-            <Sidebar />
-          </aside>
-          <main className="flex-1 overflow-y-auto bg-white p-4">{children}</main>
-        </div>
+    <div className="flex flex-row h-screen">
+      {/* Sidebar */}
+      <aside className="w-64 bg-gray-100 p-4 overflow-y-auto ">
+        <Sidebar />
+      </aside>
+      <div className="flex flex-col flex-1 overflow-hidden debug1 h-full">
+        {/* Header */}
+        <HeaderDashboard />
+        {/* Main */}
+        <MainDashboard>{children}</MainDashboard>
       </div>
-    </>
+    </div>
   )
 }

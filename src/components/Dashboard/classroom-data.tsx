@@ -1,31 +1,12 @@
 'use client'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { useEffect, useState } from 'react'
+import { useClassroomSummary } from '@/hooks/classroom/useClassroomSummary'
 
 export function ClassroomData() {
-  const [data, setData] = useState({ courses: 0, students: 0, assignments: 0 })
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState('')
+  const { data, error, isLoading } = useClassroomSummary()
 
-  useEffect(() => {
-    fetch('/api/classroom/summary')
-      .then((res) => {
-        if (!res.ok) throw new Error('Failed to fetch classroom data')
-        return res.json()
-      })
-      .then((data) => {
-        setData(data)
-        setLoading(false)
-      })
-      .catch((err) => {
-        console.error(err)
-        setError('Error loading classroom data')
-        setLoading(false)
-      })
-  }, [])
-
-  if (loading) return <div>Loading...</div>
-  if (error) return <div>{error}</div>
+  if (isLoading) return <div>Loading...</div>
+  if (error) return <div>{error.message}</div>
 
   return (
     <>

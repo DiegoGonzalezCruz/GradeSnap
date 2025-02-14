@@ -103,7 +103,7 @@ const handler = async (request: Request) => {
       path: '/',
       sameSite: 'lax',
     })
-    console.log(jwtCookie, 'JWT COOKIE')
+    // console.log(jwtCookie, 'JWT COOKIE')
 
     // **Set cookie for Google Access Token**
     const googleTokenCookie = serialize('google_access_token', access_token, {
