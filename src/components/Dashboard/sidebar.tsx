@@ -3,11 +3,10 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
-import { Button } from '@/components/ui/button'
 import type React from 'react' // Import React
 import { cn } from '@/utilities/ui'
-import { HomeIcon } from '@radix-ui/react-icons'
-import { Icon } from 'lucide-react'
+import { CrumpledPaperIcon, HomeIcon } from '@radix-ui/react-icons'
+import { BarChart, Cog, Rocket } from 'lucide-react'
 
 interface Menu {
   name: string
@@ -28,25 +27,25 @@ export function Sidebar({ className }: React.HTMLAttributes<HTMLDivElement>) {
     },
     {
       name: 'Courses',
-      icon: HomeIcon,
+      icon: CrumpledPaperIcon,
       href: '/dashboard/courses',
       active: pathname === '/courses',
     },
     {
       name: 'Grading',
-      icon: HomeIcon,
+      icon: Rocket,
       href: '/dashboard/grading',
       active: pathname === '/grading',
     },
     {
       name: 'Summaries',
-      icon: HomeIcon,
+      icon: BarChart,
       href: '/dashboard/summaries',
       active: pathname === '/summaries',
     },
     {
       name: 'Settings',
-      icon: HomeIcon,
+      icon: Cog,
       href: '/dashboard/settings',
       active: pathname === '/settings',
     },
@@ -63,14 +62,15 @@ export function Sidebar({ className }: React.HTMLAttributes<HTMLDivElement>) {
             {menu.map((item) => {
               const Icon = item.icon
               return (
-                <>
-                  <div className="h-fit px-[25px] py-2 flex flex-col justify-center items-center   ">
-                    <div data-svg-wrapper className="relative">
-                      <Icon className="w-8 h-8" />
-                    </div>
-                    <div className=" text-black text-sm font-normal text-center ">{item.name}</div>
+                <div
+                  key={item.name}
+                  className="h-fit px-[25px] py-5 flex flex-col justify-center items-center gap-5  "
+                >
+                  <div data-svg-wrapper className="relative">
+                    <Icon className="w-8 h-8" />
                   </div>
-                </>
+                  <div className=" text-black text-sm font-normal text-center ">{item.name}</div>
+                </div>
               )
             })}
           </div>
