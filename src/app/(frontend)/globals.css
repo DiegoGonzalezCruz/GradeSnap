@@ -112,3 +112,15 @@ html[data-theme='dark'],
 html[data-theme='light'] {
   opacity: initial;
 }
+
+.debug {
+  @apply bg-red-500 border-2 border-red-500;
+}
+
+.debug1 {
+  @apply border-2 border-red-500;
+}
+
+.debug2 {
+  @apply border-2 border-green-500;
+}

@@ -6,80 +6,76 @@ import { usePathname } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import type React from 'react' // Import React
 import { cn } from '@/utilities/ui'
+import { HomeIcon } from '@radix-ui/react-icons'
+import { Icon } from 'lucide-react'
+
+interface Menu {
+  name: string
+  icon: React.ElementType // This accepts a component, like HomeIcon
+  href: string
+  active?: boolean
+}
 
 export function Sidebar({ className }: React.HTMLAttributes<HTMLDivElement>) {
   const pathname = usePathname()
 
+  const menu: Menu[] = [
+    {
+      name: 'Home',
+      icon: HomeIcon,
+      href: '/dashboard',
+      active: pathname === '/',
+    },
+    {
+      name: 'Courses',
+      icon: HomeIcon,
+      href: '/dashboard/courses',
+      active: pathname === '/courses',
+    },
+    {
+      name: 'Grading',
+      icon: HomeIcon,
+      href: '/dashboard/grading',
+      active: pathname === '/grading',
+    },
+    {
+      name: 'Summaries',
+      icon: HomeIcon,
+      href: '/dashboard/summaries',
+      active: pathname === '/summaries',
+    },
+    {
+      name: 'Settings',
+      icon: HomeIcon,
+      href: '/dashboard/settings',
+      active: pathname === '/settings',
+    },
+  ]
+
   return (
-    <div className={cn('pb-12', className)}>
-      <div className="space-y-4 py-4">
-        <div className="px-3 py-2">
-          <h2 className="mb-2 px-4 text-lg font-semibold tracking-tight">Dashboard</h2>
-          <div className="space-y-1">
-            <Button
-              variant={pathname === '/' ? 'secondary' : 'ghost'}
-              className="w-full justify-start"
-              asChild
-            >
-              <Link href="/">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="mr-2 h-4 w-4"
-                >
-                  <circle cx="12" cy="12" r="10" />
-                  <polygon points="10 8 16 12 10 16 10 8" />
-                </svg>
-                Overview
-              </Link>
-            </Button>
-            <Button
-              variant={pathname === '/assessments' ? 'secondary' : 'ghost'}
-              className="w-full justify-start"
-              asChild
-            >
-              <Link href="/assessments">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="mr-2 h-4 w-4"
-                >
-                  <path d="M15 6v12a3 3 0 1 0 3-3H6a3 3 0 1 0 3 3V6a3 3 0 1 0-3 3h12a3 3 0 1 0-3-3" />
-                </svg>
-                Assessments
-              </Link>
-            </Button>
-            <Button
-              variant={pathname === '/announcements' ? 'secondary' : 'ghost'}
-              className="w-full justify-start"
-              asChild
-            >
-              <Link href="/announcements">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="mr-2 h-4 w-4"
-                >
-                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-                </svg>
-                Announcements
-              </Link>
-            </Button>
+    <div className={cn(' h-[80dvh] min-h-fit  ', className)}>
+      <div className="h-full w-full">
+        <div className="h-full flex flex-col justify-around items-center gap-3   ">
+          <div>
+            <h2 className=" text-lg font-semibold tracking-tight">Header Menu</h2>
+          </div>
+          <div className="flex flex-col justify-center items-center gap-10  ">
+            {menu.map((item) => {
+              const Icon = item.icon
+              return (
+                <>
+                  <div className="h-fit px-[25px] py-2 flex flex-col justify-center items-center   ">
+                    <div data-svg-wrapper className="relative">
+                      <Icon className="w-8 h-8" />
+                    </div>
+                    <div className=" text-black text-sm font-normal text-center ">{item.name}</div>
+                  </div>
+                </>
+              )
+            })}
+          </div>
+          <div>
+            <h2 className="text-lg font-semibold tracking-tight">Footer Menu</h2>
           </div>
         </div>
       </div>
