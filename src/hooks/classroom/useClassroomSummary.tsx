@@ -8,14 +8,29 @@ const fetchClassroomSummary = async () => {
   }
   const summary = await res.json()
   // console.log(summary, 'SUMMARY FROM CLIENT')
-  const summaryData = await generateSummary(summary)
+
   // console.log('summaryData', summaryData)
+  return summary
+}
+
+const createSummary = async () => {
+  const summary = await fetchClassroomSummary()
+  console.log(summary, 'SUMMARY FROM CLIENT')
+  const summaryData = await generateSummary(summary)
+  console.log(summaryData, 'SUMMARY FROM CLIENT')
   return summaryData
 }
 
 export function useClassroomSummary() {
   return useQuery({
     queryKey: ['classroomSummary'],
+    queryFn: createSummary,
+  })
+}
+
+export function useClassroomStats() {
+  return useQuery({
+    queryKey: ['classroomStats'],
     queryFn: fetchClassroomSummary,
   })
 }

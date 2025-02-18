@@ -17,11 +17,11 @@ export default function DashboardPage() {
       <DashboardHeader heading="Dashboard" text="Welcome to your Classroom AI Dashboard.">
         <Button>Refresh Data</Button>
       </DashboardHeader>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="flex flex-row items-center justify-center gap-20 w-full h-full ">
         <ClassroomData />
       </div>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-        <div className="col-span-4">
+        <div className="col-span-4 ">
           <AIGradedAssessments />
         </div>
         <div className="col-span-3">

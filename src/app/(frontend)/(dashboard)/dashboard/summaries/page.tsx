@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 export default function DashboardPage() {
   return (
     <DashboardShell>
-      <DashboardHeader heading="Dashboard" text="Welcome to your Classroom AI Dashboard.">
+      <DashboardHeader heading="Summaries" text="Summaries of the classroom data.">
         <Button>Refresh Data</Button>
       </DashboardHeader>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
