@@ -10,7 +10,7 @@ interface CourseDetails {
 
 const fetchCourseDetails = async (courseId: string): Promise<CourseDetails> => {
   const res = await fetch(`/api/classroom/courses?courseId=${courseId}`)
-  console.log(res, '*********** RESPONSE **************')
+  // console.log(res, '*********** RESPONSE **************')
   if (!res.ok) {
     throw new Error('Failed to fetch course details')
   }
@@ -22,29 +22,44 @@ const fetchCourseDetails = async (courseId: string): Promise<CourseDetails> => {
   if (!courseWorkRes.ok) {
     throw new Error('Failed to fetch course work')
   }
-  const courseWork = await courseWorkRes.json()
+  const { courseWork } = await courseWorkRes.json()
   console.log(courseWork, ' *********** COURSE WORK **************')
 
   // Fetch submissions for each assignment
   const assignments = await Promise.all(
-    courseWork.courseWork.map(async (work: any) => {
+    courseWork.map(async (work: any) => {
       const assignmentsRes = await fetch(
         `/api/classroom/submissions?courseId=${courseId}&courseWorkId=${work.id}`,
       )
+      // console.log(assignmentsRes, ' *********** ASSIGNMENTS RES **************')
       if (!assignmentsRes.ok) {
         console.error('Failed to fetch assignments for course work', work.id)
         return []
       }
       const assignments = await assignmentsRes.json()
+      // console.log(assignments, ' *********** ASSIGNMENTS FOR COURSE WORK')
       return assignments.studentSubmissions || []
     }),
-  ).then((submissions) => submissions.flat())
+  )
+  // console.log(assignments, ' *********** ASSIGNMENTS **************')
 
-  const rubricsRes = await fetch(`/api/classroom/rubrics?courseId=${courseId}&courseWorkId=all`)
-  if (!rubricsRes.ok) {
-    throw new Error('Failed to fetch rubrics')
-  }
-  const rubrics = await rubricsRes.json()
+  // Fetch rubrics for each assignment
+  const rubrics = await Promise.all(
+    courseWork.map(async (work: any) => {
+      const rubricsRes = await fetch(
+        `/api/classroom/rubrics?courseId=${courseId}&courseWorkId=${work.id}`,
+      )
+      // console.log(rubricsRes, ' *********** RUBRICS RES **************')
+      if (!rubricsRes.ok) {
+        console.error('Failed to fetch rubrics for course work', work.id)
+        return []
+      }
+      const rubrics = await rubricsRes.json()
+      // console.log(rubrics, ' *********** RUBRICS FOR COURSE WORK **************')
+      return rubrics.rubrics || []
+    }),
+  )
+  // console.log(rubrics, ' *********** RUBRICS **************')
 
   return {
     course,

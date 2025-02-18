@@ -24,15 +24,15 @@ export default function CourseDetail() {
       <h1>{courseDetails.course.name}</h1>
       <p>{courseDetails.course.description}</p>
       <h2>Assignments</h2>
-      <ul>
+      <ul key="assignments">
         {courseDetails.assignments.map((assignment: any) => (
-          <li key={assignment.id}>{assignment.title}</li>
+          <li key={assignment.id}>{assignment.name}</li>
         ))}
       </ul>
       <h2>Rubrics</h2>
-      <ul>
+      <ul key="rubrics">
         {courseDetails.rubrics.map((rubric: any) => (
-          <li key={rubric.id}>{rubric.name}</li>
+          <li key={rubric.id}>{rubric.title}</li>
         ))}
       </ul>
     </div>

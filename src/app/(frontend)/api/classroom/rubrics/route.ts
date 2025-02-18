@@ -1,5 +1,5 @@
 // app/api/classroom/rubrics/route.ts
-import { NextResponse } from 'next/server'
+import { NextResponse, NextRequest } from 'next/server'
 import { google } from 'googleapis'
 
 interface Rubric {
@@ -12,23 +12,23 @@ interface Rubric {
 
 /**
  * Helper to retrieve the access token from cookies.
- * Adjust this implementation as needed.
+ * Adjust this implementation to match how you store the token.
  */
-async function getTokenFromCookies(req: Request): Promise<string | null> {
+async function getTokenFromCookies(req: NextRequest): Promise<string | null> {
   const cookieHeader = req.headers.get('cookie') || ''
   const match = cookieHeader.match(/google_access_token=([^;]+)/)
-  return match ? decodeURIComponent(match[1]) : null
+  return match ? decodeURIComponent(match[1] as string) : null
 }
 
 /**
  * Helper to retrieve a query parameter from the request URL.
  */
-function getQueryParam(req: Request, key: string): string | null {
+function getQueryParam(req: NextRequest, key: string): string | null {
   const url = new URL(req.url)
   return url.searchParams.get(key)
 }
 
-export async function GET(req: Request) {
+export async function GET(req: NextRequest) {
   const token = await getTokenFromCookies(req)
   if (!token) {
     return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
@@ -37,6 +37,8 @@ export async function GET(req: Request) {
   const courseId = getQueryParam(req, 'courseId')
   const courseWorkId = getQueryParam(req, 'courseWorkId')
   const rubricId = getQueryParam(req, 'rubricId') // optional
+
+  console.log(courseId, courseWorkId, rubricId, '******** QUERY PARAMS **********')
 
   if (!courseId || !courseWorkId) {
     return NextResponse.json(
@@ -59,12 +61,18 @@ export async function GET(req: Request) {
       })
       return NextResponse.json(rubricResponse.data)
     } else {
-      const listResponse = await (classroom.courses.courseWork as any).rubrics.list({
-        courseId,
-        courseWorkId,
-        // Optionally, specify fields if you want to limit response size.
-      })
-      return NextResponse.json(listResponse.data)
+      try {
+        const listResponse = await (classroom.courses.courseWork as any).rubrics.list({
+          courseId,
+          courseWorkId,
+          // Optionally, specify fields if you want to limit response size.
+        })
+        return NextResponse.json(listResponse.data)
+      } catch (error: any) {
+        console.error('Error fetching rubrics:', error)
+        // If no rubrics are found, return an empty array
+        return NextResponse.json({ rubrics: [] })
+      }
     }
   } catch (error: any) {
     console.error('Error fetching rubrics:', error)
@@ -82,7 +90,7 @@ export async function GET(req: Request) {
  *   - courseWorkId
  * Request body: a JSON object matching the Rubric interface.
  */
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   const token = await getTokenFromCookies(req)
   if (!token) {
     return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
@@ -138,7 +146,7 @@ export async function POST(req: Request) {
  *   - updateMask (comma-separated list of fields)
  * Request body: JSON object with the fields to update.
  */
-export async function PATCH(req: Request) {
+export async function PATCH(req: NextRequest) {
   const token = await getTokenFromCookies(req)
   if (!token) {
     return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
