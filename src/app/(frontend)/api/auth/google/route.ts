@@ -30,7 +30,7 @@ export const GET = async (request: Request) => {
   const redirectCookie = serialize('oauth_redirect', redirectParam, {
     httpOnly: true,
     secure: protocol === 'https',
-    maxAge: 600,
+    maxAge: 60 * 60 * 24,
     path: '/',
     sameSite: 'lax',
   })

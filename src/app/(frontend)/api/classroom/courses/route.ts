@@ -25,7 +25,7 @@ export async function GET(req: Request) {
       const courseResponse = await classroom.courses.get({
         id: courseId,
         // Optionally, you can limit fields: e.g., 'id,name,section,description,alternateLink'
-        fields: 'id,name,section,description,alternateLink',
+        // fields: 'id,name,section,description,alternateLink',
       })
       return NextResponse.json(courseResponse.data)
     } else {
@@ -33,7 +33,7 @@ export async function GET(req: Request) {
       const coursesResponse = await classroom.courses.list({
         pageSize: 100,
         // Limit the fields to reduce payload if desired.
-        fields: 'courses(id,name,section,description,alternateLink)',
+        // fields: 'courses(id,name,section,description,alternateLink)',
       })
       return NextResponse.json(coursesResponse.data)
     }
