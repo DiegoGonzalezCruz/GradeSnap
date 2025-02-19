@@ -37,9 +37,35 @@ export async function GET(req: NextRequest) {
       courseId: courseId,
       courseWorkId: courseWorkId,
     })
+
+    const submissions = submissionsResponse.data.studentSubmissions || []
+
+    // Fetch user details for each submission
+    const submissionsWithUserDetails = await Promise.all(
+      submissions.map(async (submission: any) => {
+        try {
+          const userResponse = await classroom.userProfiles.get({
+            userId: submission.userId,
+          })
+          return {
+            ...submission,
+            user: userResponse.data,
+            attachments: submission.assignmentSubmission?.attachments || [],
+          }
+        } catch (userError) {
+          console.error('Error fetching user details:', userError)
+          return {
+            ...submission,
+            user: null,
+            attachments: submission.assignmentSubmission?.attachments || [],
+          }
+        }
+      }),
+    )
+
     // The response includes an array of submissions.
     // Each submission may contain attachments (files) under the "assignmentSubmission" object.
-    return NextResponse.json(submissionsResponse.data, { status: 200 })
+    return NextResponse.json({ studentSubmissions: submissionsWithUserDetails }, { status: 200 })
   } catch (error) {
     console.error('Error fetching student submissions:', error)
     return NextResponse.json({ error: 'Failed to fetch student submissions.' }, { status: 500 })

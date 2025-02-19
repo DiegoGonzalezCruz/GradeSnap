@@ -36,12 +36,12 @@ const fetchCourseDetails = async (courseId: string): Promise<CourseDetails> => {
         console.error('Failed to fetch assignments for course work', work.id)
         return []
       }
-      const assignments = await assignmentsRes.json()
+      const { studentSubmissions } = await assignmentsRes.json()
       // console.log(assignments, ' *********** ASSIGNMENTS FOR COURSE WORK')
-      return assignments.studentSubmissions || []
+      return studentSubmissions || [] //TODO: Review this [0]
     }),
   )
-  // console.log(assignments, ' *********** ASSIGNMENTS **************')
+  //console.log(assignments, ' *********** ASSIGNMENTS **************')
 
   // Fetch rubrics for each assignment
   const rubrics = await Promise.all(
@@ -52,14 +52,14 @@ const fetchCourseDetails = async (courseId: string): Promise<CourseDetails> => {
       // console.log(rubricsRes, ' *********** RUBRICS RES **************')
       if (!rubricsRes.ok) {
         console.error('Failed to fetch rubrics for course work', work.id)
-        return []
+        return { rubrics: [] }
       }
       const rubrics = await rubricsRes.json()
       // console.log(rubrics, ' *********** RUBRICS FOR COURSE WORK **************')
       return rubrics.rubrics || []
     }),
   )
-  // console.log(rubrics, ' *********** RUBRICS **************')
+  //console.log(rubrics, ' *********** RUBRICS **************')
 
   return {
     course,
