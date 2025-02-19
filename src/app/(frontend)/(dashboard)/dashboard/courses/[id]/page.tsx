@@ -53,7 +53,7 @@ export default function CourseDetail() {
         })}
       </div>
       <h2 className="text-2xl font-black">Rubrics</h2>
-      <CreateCriterionDialog rubricId={id as string} />
+      <CreateCriterionDialog courseId={id as string} courseWorkId="748987146785" />
       <div>
         {rubrics &&
           rubrics[0]?.map((rubricList: any, idx: number) => (

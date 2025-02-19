@@ -12,7 +12,7 @@ export async function GET(
   req: NextRequest,
   { params }: { params: { rubricId: string; criterionId: string } },
 ) {
-  const { rubricId, criterionId } = params
+  const { rubricId, criterionId } = await params
 
   if (!rubricId || !criterionId) {
     return NextResponse.json(
@@ -46,7 +46,7 @@ export async function PATCH(
   req: NextRequest,
   { params }: { params: { rubricId: string; criterionId: string } },
 ) {
-  const { rubricId, criterionId } = params
+  const { rubricId, criterionId } = await params
 
   if (!rubricId || !criterionId) {
     return NextResponse.json(
@@ -80,7 +80,7 @@ export async function DELETE(
   req: NextRequest,
   { params }: { params: { rubricId: string; criterionId: string } },
 ) {
-  const { rubricId, criterionId } = params
+  const { rubricId, criterionId } = await params
 
   if (!rubricId || !criterionId) {
     return NextResponse.json(

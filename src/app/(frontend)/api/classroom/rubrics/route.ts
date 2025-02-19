@@ -83,7 +83,58 @@ export async function GET(req: NextRequest) {
  * Request body: a JSON object matching the Rubric interface.
  */
 export async function POST(req: NextRequest) {
-  return NextResponse.json({ error: 'Method not implemented' }, { status: 501 })
+  const { searchParams } = new URL(req.url)
+  const courseId = searchParams.get('courseId')
+  const courseWorkId = searchParams.get('courseWorkId')
+
+  if (!courseId || !courseWorkId) {
+    return NextResponse.json(
+      { error: 'Missing courseId or courseWorkId query parameters.' },
+      { status: 400 },
+    )
+  }
+
+  const token = await getTokenFromCookies(req)
+  if (!token) {
+    return NextResponse.json({ error: 'Unauthorized. No access token available.' }, { status: 401 })
+  }
+
+  const auth = new google.auth.OAuth2()
+  auth.setCredentials({ access_token: token })
+
+  try {
+    const rubricData = await req.json()
+
+    const auth = new google.auth.OAuth2()
+    auth.setCredentials({ access_token: token as string })
+    const classroom = google.classroom({ version: 'v1', auth })
+
+    // Check user capability before creating the rubric
+    const checkCapabilityResponse = await (classroom.userProfiles as any).checkUserCapability({
+      userId: 'me', // Use 'me' to check the current user's capability
+      capability: 'CREATE_RUBRIC',
+    })
+
+    if (!checkCapabilityResponse.data.allowed) {
+      return NextResponse.json(
+        { error: 'User does not have permission to create rubrics.' },
+        { status: 403 },
+      )
+    }
+
+    const createResponse = await (classroom.courses.courseWork as any).rubrics.create({
+      courseId: courseId,
+      courseWorkId: courseWorkId,
+      requestBody: rubricData,
+    })
+    return NextResponse.json(createResponse.data, { status: 201 })
+  } catch (error: any) {
+    console.error('Error creating rubric:', error)
+    return NextResponse.json(
+      { error: 'Failed to create rubric', details: error.message },
+      { status: 500 },
+    )
+  }
 }
 
 /**

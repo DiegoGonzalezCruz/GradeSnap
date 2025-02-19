@@ -13,10 +13,11 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { useForm } from 'react-hook-form'
-import { createCriterion } from '@/lib/classroom/rubrics'
+import { useRouter } from 'next/navigation'
 
 interface CreateCriterionDialogProps {
-  rubricId: string
+  courseId: string
+  courseWorkId: string
 }
 
 type FormData = {
@@ -24,13 +25,28 @@ type FormData = {
   description: string
 }
 
-export function CreateCriterionDialog({ rubricId }: CreateCriterionDialogProps) {
+export function CreateCriterionDialog({ courseId, courseWorkId }: CreateCriterionDialogProps) {
   const { register, handleSubmit, reset } = useForm<FormData>()
+  const router = useRouter()
 
   const onSubmit = async (data: FormData) => {
     try {
-      await createCriterion(rubricId, data)
+      const response = await fetch(
+        `/api/classroom/rubrics?courseId=${courseId}&courseWorkId=${courseWorkId}`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data),
+        },
+      )
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
       reset()
+      router.refresh()
       // TODO: Show success message
     } catch (error) {
       console.error('Failed to create criterion:', error)
@@ -41,23 +57,23 @@ export function CreateCriterionDialog({ rubricId }: CreateCriterionDialogProps) 
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button>Create Criterion</Button>
+        <Button>Create Rubric</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Create New Criterion</DialogTitle>
-          <DialogDescription>Add a new criterion to the rubric.</DialogDescription>
+          <DialogTitle>Create New Rubric</DialogTitle>
+          <DialogDescription>Add a new rubric to the course work.</DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4 py-4">
           <div className="grid gap-2">
             <Label htmlFor="title">Title</Label>
-            <Input id="title" placeholder="Criterion Title" {...register('title')} required />
+            <Input id="title" placeholder="Rubric Title" {...register('title')} required />
           </div>
           <div className="grid gap-2">
             <Label htmlFor="description">Description</Label>
             <Textarea
               id="description"
-              placeholder="Criterion Description"
+              placeholder="Rubric Description"
               {...register('description')}
               required
             />
