@@ -9,7 +9,7 @@ async function getUserAccessToken(req: NextRequest): Promise<string | null> {
 }
 
 export async function GET(req: NextRequest, { params }: { params: { rubricId: string } }) {
-  const { rubricId } = params
+  const { rubricId } = await params
 
   if (!rubricId) {
     return NextResponse.json({ error: 'Missing rubricId parameter.' }, { status: 400 })
@@ -37,7 +37,7 @@ export async function GET(req: NextRequest, { params }: { params: { rubricId: st
 }
 
 export async function POST(req: NextRequest, { params }: { params: { rubricId: string } }) {
-  const { rubricId } = params
+  const { rubricId } = await params
 
   if (!rubricId) {
     return NextResponse.json({ error: 'Missing rubricId parameter.' }, { status: 400 })

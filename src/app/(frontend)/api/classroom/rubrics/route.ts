@@ -110,12 +110,27 @@ export async function POST(req: NextRequest) {
     const classroom = google.classroom({ version: 'v1', auth })
 
     // Check user capability before creating the rubric
-    const checkCapabilityResponse = await (classroom.userProfiles as any).checkUserCapability({
-      userId: 'me', // Use 'me' to check the current user's capability
-      capability: 'CREATE_RUBRIC',
-    })
+    const checkCapabilityResponse = await fetch(
+      `https://classroom.googleapis.com/v1/userProfiles/me:checkUserCapability?capability=CREATE_RUBRIC`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    )
+    console.log('Check capability response:', checkCapabilityResponse)
+    if (!checkCapabilityResponse.ok) {
+      console.error(
+        'Error checking user capability:',
+        checkCapabilityResponse.status,
+        checkCapabilityResponse.statusText,
+      )
+      return NextResponse.json({ error: 'Failed to check user capability.' }, { status: 500 })
+    }
 
-    if (!checkCapabilityResponse.data.allowed) {
+    const checkCapabilityData = await checkCapabilityResponse.json()
+
+    if (!checkCapabilityData.allowed) {
       return NextResponse.json(
         { error: 'User does not have permission to create rubrics.' },
         { status: 403 },

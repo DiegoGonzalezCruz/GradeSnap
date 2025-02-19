@@ -93,14 +93,14 @@ const handler = async (request: Request) => {
 
     // 5. sign the JWT with your same PAYLOAD_SECRET that Payload uses
     const token = jwt.sign(tokenPayload, process.env.PAYLOAD_SECRET, {
-      expiresIn: '1h',
+      expiresIn: '7d',
     })
 
     // 6. set the cookie. By default, the admin UI looks for 'payload-token'
     const jwtCookie = serialize('payload-token', token, {
       httpOnly: true,
       secure: protocol === 'https',
-      maxAge: 60 * 60, // 1 hour
+      maxAge: 60 * 60 * 24 * 7, // 1 hour
       path: '/',
       sameSite: 'lax',
     })

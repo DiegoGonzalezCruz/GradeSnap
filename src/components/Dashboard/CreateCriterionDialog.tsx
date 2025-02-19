@@ -14,6 +14,7 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { useForm } from 'react-hook-form'
 import { useRouter } from 'next/navigation'
+import { useState } from 'react'
 
 interface CreateCriterionDialogProps {
   courseId: string
@@ -26,6 +27,7 @@ type FormData = {
 }
 
 export function CreateCriterionDialog({ courseId, courseWorkId }: CreateCriterionDialogProps) {
+  const [hasPermission, setHasPermission] = useState(true)
   const { register, handleSubmit, reset } = useForm<FormData>()
   const router = useRouter()
 
@@ -43,6 +45,9 @@ export function CreateCriterionDialog({ courseId, courseWorkId }: CreateCriterio
       )
 
       if (!response.ok) {
+        if (response.status === 403) {
+          setHasPermission(false)
+        }
         throw new Error(`HTTP error! status: ${response.status}`)
       }
       reset()
@@ -64,22 +69,29 @@ export function CreateCriterionDialog({ courseId, courseWorkId }: CreateCriterio
           <DialogTitle>Create New Rubric</DialogTitle>
           <DialogDescription>Add a new rubric to the course work.</DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4 py-4">
-          <div className="grid gap-2">
-            <Label htmlFor="title">Title</Label>
-            <Input id="title" placeholder="Rubric Title" {...register('title')} required />
+        {!hasPermission ? (
+          <div>
+            You do not have permission to create rubrics. You need a Google Workspace for Education
+            Plus license.
           </div>
-          <div className="grid gap-2">
-            <Label htmlFor="description">Description</Label>
-            <Textarea
-              id="description"
-              placeholder="Rubric Description"
-              {...register('description')}
-              required
-            />
-          </div>
-          <Button type="submit">Create</Button>
-        </form>
+        ) : (
+          <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4 py-4">
+            <div className="grid gap-2">
+              <Label htmlFor="title">Title</Label>
+              <Input id="title" placeholder="Rubric Title" {...register('title')} required />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="description">Description</Label>
+              <Textarea
+                id="description"
+                placeholder="Rubric Description"
+                {...register('description')}
+                required
+              />
+            </div>
+            <Button type="submit">Create</Button>
+          </form>
+        )}
       </DialogContent>
     </Dialog>
   )

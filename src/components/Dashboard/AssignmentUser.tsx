@@ -47,11 +47,11 @@ export function AssignmentUser({ userId, assignmentId, idx, attachments }: Assig
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>User Details</DialogTitle>
-            <DialogDescription>
+            <DialogDescription asChild>
               {attachments.length > 0 ? (
-                <ul>
+                <div>
                   {attachments.map((attachment: any, index: number) => (
-                    <li key={index}>
+                    <div key={index}>
                       <a
                         href={attachment.driveFile.alternateLink}
                         target="_blank"
@@ -59,9 +59,9 @@ export function AssignmentUser({ userId, assignmentId, idx, attachments }: Assig
                       >
                         {attachment.driveFile.title}
                       </a>
-                    </li>
+                    </div>
                   ))}
-                </ul>
+                </div>
               ) : (
                 <div>No attachments found.</div>
               )}
