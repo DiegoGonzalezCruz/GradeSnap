@@ -3,6 +3,8 @@
 import { useCourseDetails } from '@/hooks/classroom/useCourseDetails'
 import { useParams } from 'next/navigation'
 import { AssignmentUser } from '@/components/Dashboard/AssignmentUser'
+import { CreateCriterionDialog } from '@/components/Dashboard/CreateCriterionDialog'
+import { EditCriterionDialog } from '@/components/Dashboard/EditCriterionDialog'
 
 export default function CourseDetail() {
   const { id } = useParams<{ id: string }>()
@@ -51,7 +53,8 @@ export default function CourseDetail() {
         })}
       </div>
       <h2 className="text-2xl font-black">Rubrics</h2>
-      <ul>
+      <CreateCriterionDialog rubricId={id as string} />
+      <div>
         {rubrics &&
           rubrics[0]?.map((rubricList: any, idx: number) => (
             <div key={idx}>
@@ -59,6 +62,7 @@ export default function CourseDetail() {
               {rubricList?.criteria?.map((criterion: any) => (
                 <div key={criterion.id}>
                   <h4>{criterion.title}</h4>
+                  <EditCriterionDialog rubricId={id as string} criterionId={criterion.id} />
                   <ul>
                     {criterion.levels.map((level: any) => (
                       <li key={level.id}>
@@ -70,7 +74,7 @@ export default function CourseDetail() {
               ))}
             </div>
           ))}
-      </ul>
+      </div>
     </div>
   )
 }
