@@ -48,30 +48,28 @@ export const Users: CollectionConfig = {
       {
         name: 'google', // the strategy name we'll use in the login URL
         authenticate: async ({ payload, headers }) => {
-          // console.log('***** CUSTOM STRATEGY *****')
-          // console.log('--- about to print cookieHeader ---')
-
           // Retrieve the JWT from cookies
           const cookieHeader = headers.get('cookie')
-          // console.log(cookieHeader, 'Cookie Header')
           if (!cookieHeader) return { user: null }
+
           const cookies = Object.fromEntries(
             cookieHeader.split('; ').map((cookie) => {
               const [key, ...v] = cookie.split('=')
               return [key, decodeURIComponent(v.join('='))]
             }),
           )
+
           const token = cookies[`payload-token`]
           if (!token) return { user: null }
+
           try {
             // Verify the JWT
             const decoded = jwt.verify(token, process.env.PAYLOAD_SECRET) as JWTDecoded
-            // Ensure the JWT is intended for the DeniceUser collection
+
+            // Ensure the JWT is intended for the users collection
             if (decoded.collection !== 'users') {
               return { user: null }
             }
-            // console.log('Decoded JWT:', decoded)
-            // console.log(`User ID: ${decoded.id}`)
 
             // Retrieve the user from Payload CMS
             const users = await payload.find({
@@ -81,19 +79,29 @@ export const Users: CollectionConfig = {
               },
               limit: 1,
             })
+
             if (users.docs.length === 0) {
               console.error('User not found in Payload CMS')
               return { user: null }
             }
-            // console.log('User found:', users.docs[0])
-            const returnValue = {
+
+            const userDoc = users.docs[0]
+            if (!userDoc) return { user: null }
+
+            // Check if the user has an id
+            if (!userDoc.id) {
+              console.error('User document does not have an id')
+              return { user: null }
+            }
+
+            // Return the user with a guaranteed id
+            return {
               user: {
-                ...users.docs[0],
+                ...userDoc,
                 collection: 'users',
+                id: userDoc.id, // Now guaranteed to be a string or number
               },
             }
-            // console.log('Return Value:', returnValue)
-            return returnValue
           } catch (error) {
             console.log('JWT Verification Error:', error)
             return { user: null }
@@ -141,7 +149,7 @@ export const Users: CollectionConfig = {
       type: 'select',
       saveToJWT: true,
       access: {
-        update: admin,
+        // update: admin,
       },
       admin: { position: 'sidebar' },
       defaultValue: 'client',
@@ -158,7 +166,7 @@ export const Users: CollectionConfig = {
       label: 'Status',
       type: 'select',
       access: {
-        update: admin,
+        // update: admin,
       },
       options: [
         { value: 'active', label: 'Active' },

@@ -37,6 +37,7 @@ const handler = async (request: Request) => {
   const cookieHeader = request.headers.get('cookie') || ''
   const cookies = cookieHeader.split('; ').reduce((acc: Record<string, string>, cookie: string) => {
     const [key, value] = cookie.split('=')
+    //@ts-ignore
     acc[key] = value
     return acc
   }, {})
@@ -85,8 +86,8 @@ const handler = async (request: Request) => {
     // IMPORTANT: 'id' needs to be the actual Payload user id, not the Google sub
     // 'collection' must match the slug of the auth collection
     const tokenPayload = {
-      id: user.id, // <-- CRITICAL: user.id or user._id from your newly created doc
-      email: user.email,
+      id: user && user.id, // <-- CRITICAL: user.id or user._id from your newly created doc
+      email: user && user.email,
       collection: 'users',
     }
 
@@ -181,7 +182,7 @@ const findOrCreateUser = async (userInfo: GoogleUserInfo) => {
     const userToUpdate = existingByEmail.docs[0]
     return await payload.update({
       collection: 'users',
-      id: userToUpdate.id,
+      id: (userToUpdate && userToUpdate.id) ?? '',
       data: {
         googleSub: userInfo.sub,
         // Optionally update name, pictureURL, etc.

@@ -1,9 +1,13 @@
-import type { AccessArgs } from 'payload'
+import type { Access } from 'payload'
 
-import type { User } from '@/payload-types'
+export const admin: Access = ({ req: { user } }) => {
+  // Allow users with a role of 'admin'
+  if (user) {
+    if (user.role === 'admin') {
+      return true
+    }
+  }
 
-type isAdmin = (args: AccessArgs<User>) => boolean
-
-export const admin: isAdmin = ({ req: { user } }) => {
-  return Boolean(user?.role === 'admin')
+  // allow any other users to update only oneself
+  return false
 }
