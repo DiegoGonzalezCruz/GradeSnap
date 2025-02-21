@@ -3,7 +3,35 @@ import { NextRequest, NextResponse } from 'next/server'
 
 const API_BASE = 'https://classroom.googleapis.com/v1'
 
-async function fetchGoogleClassroomAPI(url, token) {
+// Define Types for Responses
+interface GoogleCourse {
+  id: string
+  name: string
+}
+
+interface GoogleStudentList {
+  students?: { userId: string }[]
+}
+
+interface GoogleAssignment {
+  id: string
+  dueDate?: { year: number; month: number; day: number }
+}
+
+interface GoogleAssignmentsList {
+  courseWork?: GoogleAssignment[]
+}
+
+interface GoogleSubmission {
+  state: 'TURNED_IN' | 'CREATED' | 'NEW' | 'RETURNED' | 'RECLAIMED_BY_STUDENT' | 'DRAFT'
+}
+
+interface GoogleSubmissionsList {
+  studentSubmissions?: GoogleSubmission[]
+}
+
+// Function to fetch Google Classroom API with type safety
+async function fetchGoogleClassroomAPI(url: string, token: string): Promise<any> {
   const res = await fetch(url, {
     headers: { Authorization: `Bearer ${token}` },
   })
@@ -16,15 +44,16 @@ async function fetchGoogleClassroomAPI(url, token) {
   return res.json()
 }
 
-async function getCourseSummary(course, token) {
+// Function to get course summary
+async function getCourseSummary(course: GoogleCourse, token: string) {
   try {
-    const studentsData = await fetchGoogleClassroomAPI(
+    const studentsData: GoogleStudentList = await fetchGoogleClassroomAPI(
       `${API_BASE}/courses/${course.id}/students`,
       token,
     )
     const studentCount = studentsData.students?.length || 0
 
-    const assignmentsData = await fetchGoogleClassroomAPI(
+    const assignmentsData: GoogleAssignmentsList = await fetchGoogleClassroomAPI(
       `${API_BASE}/courses/${course.id}/courseWork`,
       token,
     )
@@ -46,25 +75,30 @@ async function getCourseSummary(course, token) {
   }
 }
 
-function getNextDeadline(assignments) {
+// Function to get next deadline
+function getNextDeadline(assignments: GoogleAssignment[]) {
   const sortedAssignments = assignments
     .filter((a) => a.dueDate)
-    .sort(
-      (a, b) =>
-        new Date(`${a.dueDate.year}-${a.dueDate.month}-${a.dueDate.day}`) -
-        new Date(`${b.dueDate.year}-${b.dueDate.month}-${b.dueDate.day}`),
-    )
+    .sort((a, b) => {
+      const dateA = new Date(`${a.dueDate!.year}-${a.dueDate!.month}-${a.dueDate!.day}`).getTime()
+      const dateB = new Date(`${b.dueDate!.year}-${b.dueDate!.month}-${b.dueDate!.day}`).getTime()
+      return dateA - dateB
+    })
 
-  return sortedAssignments.length ? sortedAssignments[0].dueDate : 'No upcoming deadlines'
+  return sortedAssignments.length ? sortedAssignments?.[0]?.dueDate : 'No upcoming deadlines'
 }
 
-async function getCourseDetails(courseId, token) {
-  const courseData = await fetchGoogleClassroomAPI(`${API_BASE}/courses/${courseId}`, token)
-  const studentsData = await fetchGoogleClassroomAPI(
+// Function to get detailed course data
+async function getCourseDetails(courseId: string, token: string) {
+  const courseData: GoogleCourse = await fetchGoogleClassroomAPI(
+    `${API_BASE}/courses/${courseId}`,
+    token,
+  )
+  const studentsData: GoogleStudentList = await fetchGoogleClassroomAPI(
     `${API_BASE}/courses/${courseId}/students`,
     token,
   )
-  const assignmentsData = await fetchGoogleClassroomAPI(
+  const assignmentsData: GoogleAssignmentsList = await fetchGoogleClassroomAPI(
     `${API_BASE}/courses/${courseId}/courseWork`,
     token,
   )
@@ -85,7 +119,12 @@ async function getCourseDetails(courseId, token) {
   }
 }
 
-async function getSubmissionStats(courseId, assignments, token) {
+// Function to get submission stats
+async function getSubmissionStats(
+  courseId: string,
+  assignments: GoogleAssignment[],
+  token: string,
+) {
   let turnedIn = 0,
     assigned = 0,
     graded = 0,
@@ -93,7 +132,7 @@ async function getSubmissionStats(courseId, assignments, token) {
 
   await Promise.all(
     assignments.map(async (assignment) => {
-      const submissionsData = await fetchGoogleClassroomAPI(
+      const submissionsData: GoogleSubmissionsList = await fetchGoogleClassroomAPI(
         `${API_BASE}/courses/${courseId}/courseWork/${assignment.id}/studentSubmissions`,
         token,
       )
@@ -110,6 +149,7 @@ async function getSubmissionStats(courseId, assignments, token) {
   return { turnedIn, assigned, graded, reviewed }
 }
 
+// GET API Route
 export async function GET(req: NextRequest) {
   console.log('GET request received')
 
@@ -117,8 +157,11 @@ export async function GET(req: NextRequest) {
     const token = await getTokenFromCookies(req)
     if (!token) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
 
-    console.log('before')
-    const coursesResponse = await fetchGoogleClassroomAPI(`${API_BASE}/courses`, token)
+    console.log('before fetching courses')
+    const coursesResponse: { courses: GoogleCourse[] } = await fetchGoogleClassroomAPI(
+      `${API_BASE}/courses`,
+      token,
+    )
     const { courses } = coursesResponse
     console.log(courses, 'courses response****')
 
@@ -131,10 +174,11 @@ export async function GET(req: NextRequest) {
 
     const courseDetails = await getCourseDetails(courseId, token)
     return NextResponse.json(courseDetails)
-  } catch (error) {
-    console.error('Error retrieving course summary:', error)
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+    console.error('Error retrieving course summary:', errorMessage)
     return NextResponse.json(
-      { error: 'Failed to retrieve course summary', details: error.message },
+      { error: 'Failed to retrieve course summary', details: errorMessage },
       { status: 500 },
     )
   }

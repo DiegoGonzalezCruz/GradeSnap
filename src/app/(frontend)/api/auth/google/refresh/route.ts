@@ -41,7 +41,7 @@ export const GET = async (request: Request) => {
   const userDoc = users.docs[0]
 
   // Check if the user has a stored refresh token.
-  const googleRefreshToken = userDoc.googleRefreshToken
+  const googleRefreshToken = userDoc && userDoc.googleRefreshToken
   if (!googleRefreshToken) {
     return NextResponse.json({ error: 'No refresh token available' }, { status: 400 })
   }

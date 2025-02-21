@@ -35,8 +35,15 @@ const handler = async (request: Request) => {
   // Get stored state and redirect URL from cookies
   const cookieHeader = request.headers.get('cookie') || ''
   const cookies = cookieHeader.split('; ').reduce((acc: Record<string, string>, cookie: string) => {
-    const [key, value] = cookie.split('=')
-    acc[key] = value
+    const parts = cookie.split('=')
+    if (parts.length === 2) {
+      // Ensure both key and value exist
+      const [key, value] = parts.map((part) => part.trim()) // Trim whitespace
+      if (key && value) {
+        // Ensure key and value are not empty
+        acc[key] = value
+      }
+    }
     return acc
   }, {})
 
@@ -173,16 +180,18 @@ const findOrCreateUser = async (userInfo: GoogleUserInfo, refreshToken?: string)
   })
   if (existingByEmail.docs.length > 0) {
     const userToUpdate = existingByEmail.docs[0]
-    return await payload.update({
-      collection: 'users',
-      id: userToUpdate.id,
-      data: {
-        googleSub: userInfo.sub,
-        googleRefreshToken: refreshToken,
-        pictureURL: userInfo.picture,
-      },
-      showHiddenFields: true,
-    })
+    if (userToUpdate) {
+      return await payload.update({
+        collection: 'users',
+        id: userToUpdate.id,
+        data: {
+          googleSub: userInfo.sub,
+          googleRefreshToken: refreshToken,
+          pictureURL: userInfo.picture,
+        },
+        showHiddenFields: true,
+      })
+    }
   }
 
   // 3. Otherwise, create a new user.
