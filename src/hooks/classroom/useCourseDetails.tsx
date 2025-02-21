@@ -2,20 +2,21 @@
 
 import { useQuery } from '@tanstack/react-query'
 
-interface CourseDetails {
+export interface CourseDetails {
   course: any
-  assignments: any[]
-  rubrics: any[]
+  assignments: Record<string, any[]>
+  rubrics: Record<string, any>
+  courseWork: any[]
 }
 
-const fetchCourseDetails = async (courseId: string): Promise<CourseDetails> => {
+export const fetchCourseDetails = async (courseId: string): Promise<CourseDetails> => {
   const res = await fetch(`/api/classroom/courses?courseId=${courseId}`)
   // console.log(res, '*********** RESPONSE **************')
   if (!res.ok) {
     throw new Error('Failed to fetch course details')
   }
   const course = await res.json()
-  console.log(course, ' *********** COURSE **************')
+  // console.log(course, ' *********** COURSE **************')
 
   // Fetch course work (assignments)
   const courseWorkRes = await fetch(`/api/classroom/coursework?courseId=${courseId}`)
@@ -23,7 +24,7 @@ const fetchCourseDetails = async (courseId: string): Promise<CourseDetails> => {
     throw new Error('Failed to fetch course work')
   }
   const { courseWork } = await courseWorkRes.json()
-  console.log(courseWork, ' *********** COURSE WORK **************')
+  // console.log(courseWork, ' *********** COURSE WORK **************')
 
   // Fetch submissions for each assignment
   const assignments = await Promise.all(
@@ -43,8 +44,13 @@ const fetchCourseDetails = async (courseId: string): Promise<CourseDetails> => {
   )
   //console.log(assignments, ' *********** ASSIGNMENTS **************')
 
+  const assignmentsRecord: Record<string, any[]> = {}
+  courseWork.forEach((work: any, index: number) => {
+    assignmentsRecord[work.id] = assignments[index] || []
+  })
+
   // Fetch rubrics for each assignment
-  const rubrics = await Promise.all(
+  const rubricsList = await Promise.all(
     courseWork.map(async (work: any) => {
       const rubricsRes = await fetch(
         `/api/classroom/rubrics?courseId=${courseId}&courseWorkId=${work.id}`,
@@ -61,10 +67,20 @@ const fetchCourseDetails = async (courseId: string): Promise<CourseDetails> => {
   )
   //console.log(rubrics, ' *********** RUBRICS **************')
 
+  const rubricsRecord: Record<string, any> = {}
+  courseWork.forEach((work: any, index: number) => {
+    if (rubricsList[index] && rubricsList[index].length > 0) {
+      rubricsRecord[work.id] = rubricsList[index][0] || {}
+    } else {
+      rubricsRecord[work.id] = {}
+    }
+  })
+
   return {
     course,
-    assignments,
-    rubrics,
+    assignments: assignmentsRecord,
+    rubrics: rubricsRecord,
+    courseWork,
   }
 }
 

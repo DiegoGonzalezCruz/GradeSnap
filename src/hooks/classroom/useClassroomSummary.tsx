@@ -1,34 +1,42 @@
 import { generateSummary } from '@/utilities/gemini'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 
+// Fetch Classroom Summary (API Call)
 const fetchClassroomSummary = async () => {
   const res = await fetch('/api/classroom/summary')
+  const response = await res.json()
+
   if (!res.ok) {
-    throw new Error('Failed to fetch classroom data')
+    throw new Error(response.error)
   }
-  const summary = await res.json()
-  // console.log(summary, 'SUMMARY FROM CLIENT')
 
-  // console.log('summaryData', summaryData)
-  return summary
+  return response
 }
 
-const createSummary = async () => {
-  const summary = await fetchClassroomSummary()
-  console.log(summary, 'SUMMARY FROM CLIENT')
-  const summaryData = await generateSummary(summary)
-  console.log(summaryData, 'SUMMARY FROM CLIENT')
-  return summaryData
-}
+export function useClassroomAISummary() {
+  const queryClient = useQueryClient()
 
-export function useClassroomSummary() {
   return useQuery({
     queryKey: ['classroomSummary'],
-    queryFn: createSummary,
+    queryFn: async () => {
+      // Get cached classroom summary data
+      const summary = queryClient.getQueryData(['classroomStats'])
+
+      // If there's no cached data, fetch it
+      if (!summary) {
+        const freshSummary = await fetchClassroomSummary()
+        queryClient.setQueryData(['classroomStats'], freshSummary)
+        return generateSummary(freshSummary)
+      }
+
+      // If cached, use it
+      return generateSummary(summary)
+    },
+    enabled: !!queryClient.getQueryData(['classroomStats']), // Only runs if data exists
   })
 }
 
-export function useClassroomStats() {
+export function useClassroomSummary() {
   return useQuery({
     queryKey: ['classroomStats'],
     queryFn: fetchClassroomSummary,

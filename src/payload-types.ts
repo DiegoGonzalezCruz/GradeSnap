@@ -321,6 +321,7 @@ export interface User {
   bio?: string | null;
   pictureURL?: string | null;
   googleSub?: string | null;
+  googleRefreshToken?: string | null;
   role?: ('admin' | 'coordinator' | 'instructor' | 'client') | null;
   status?: ('active' | 'inactive') | null;
   updatedAt: string;
@@ -1219,6 +1220,7 @@ export interface UsersSelect<T extends boolean = true> {
   bio?: T;
   pictureURL?: T;
   googleSub?: T;
+  googleRefreshToken?: T;
   role?: T;
   status?: T;
   updatedAt?: T;

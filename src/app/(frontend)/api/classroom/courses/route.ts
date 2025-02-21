@@ -27,6 +27,7 @@ export async function GET(req: Request) {
         // Optionally, you can limit fields: e.g., 'id,name,section,description,alternateLink'
         // fields: 'id,name,section,description,alternateLink',
       })
+
       return NextResponse.json(courseResponse.data)
     } else {
       // List all courses
@@ -35,6 +36,7 @@ export async function GET(req: Request) {
         // Limit the fields to reduce payload if desired.
         // fields: 'courses(id,name,section,description,alternateLink)',
       })
+      console.log(coursesResponse.data, '****** COURSE DATA **********')
       return NextResponse.json(coursesResponse.data)
     }
   } catch (error: any) {

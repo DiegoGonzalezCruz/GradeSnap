@@ -16,7 +16,7 @@ interface Course {
 }
 
 export default function Courses() {
-  const { data, isLoading, isError } = useClassroomCourses()
+  const { data, isLoading, isError, error } = useClassroomCourses()
 
   if (isLoading) {
     return (
@@ -41,7 +41,9 @@ export default function Courses() {
       <Alert variant="destructive">
         <AlertCircle className="h-4 w-4" />
         <AlertTitle>Error</AlertTitle>
-        <AlertDescription>Failed to fetch courses. Please try again later.</AlertDescription>
+        <AlertDescription>
+          Failed to fetch courses. Please try again later. {error.message}
+        </AlertDescription>
       </Alert>
     )
   }

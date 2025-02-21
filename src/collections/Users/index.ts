@@ -143,6 +143,13 @@ export const Users: CollectionConfig = {
       saveToJWT: true,
       admin: { readOnly: true },
     },
+    // In your Payload Users collection configuration (e.g., in collections/Users.ts)
+    {
+      name: 'googleRefreshToken',
+      label: 'Google Refresh Token',
+      type: 'text',
+      admin: { readOnly: true },
+    },
     {
       name: 'role',
       label: 'Role',

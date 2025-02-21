@@ -2,6 +2,7 @@
 import { NextResponse, NextRequest } from 'next/server'
 import { google } from 'googleapis'
 import { JWT } from 'google-auth-library'
+import { getTokenFromCookies } from '@/utilities/classroom'
 
 interface Rubric {
   id?: string
@@ -9,11 +10,6 @@ interface Rubric {
   creationTime?: string
   updateTime?: string
   // add additional fields if necessary
-}
-
-async function getTokenFromCookies(req: NextRequest): Promise<string | null> {
-  const token = req.cookies.get('google_access_token')?.value
-  return token || null
 }
 
 /**

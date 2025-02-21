@@ -1,5 +1,4 @@
 // app/api/auth/google/callback/route.ts
-
 import { NextResponse } from 'next/server'
 import axios from 'axios'
 import jwt from 'jsonwebtoken'
@@ -33,17 +32,16 @@ const handler = async (request: Request) => {
   const code = url.searchParams.get('code')
   const state = url.searchParams.get('state')
 
-  // get stored state
+  // Get stored state and redirect URL from cookies
   const cookieHeader = request.headers.get('cookie') || ''
   const cookies = cookieHeader.split('; ').reduce((acc: Record<string, string>, cookie: string) => {
     const [key, value] = cookie.split('=')
-    //@ts-ignore
     acc[key] = value
     return acc
   }, {})
 
   const storedState = cookies['oauth_state'] || null
-  const redirectURL = cookies['oauth_redirect'] || '/' // Default to home if no redirect is stored
+  const redirectURL = cookies['oauth_redirect'] || '/'
 
   if (!state || !storedState || state !== storedState) {
     return NextResponse.json({ error: 'Invalid state parameter' }, { status: 400 })
@@ -57,11 +55,11 @@ const handler = async (request: Request) => {
   const baseUrl = `${protocol}://${request.headers.get('host')}`
 
   try {
-    // 1. exchange code for tokens
+    // 1. Exchange code for tokens
     const tokenResponse = await axios.post<GoogleTokenResponse>(
       'https://oauth2.googleapis.com/token',
       new URLSearchParams({
-        code: code,
+        code,
         client_id: process.env.GOOGLE_CLIENT_ID!,
         client_secret: process.env.GOOGLE_CLIENT_SECRET!,
         redirect_uri: `${baseUrl}/api/auth/google/callback`,
@@ -69,62 +67,54 @@ const handler = async (request: Request) => {
       }),
       { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } },
     )
+    const { access_token, expires_in, refresh_token } = tokenResponse.data
 
-    const { access_token, expires_in } = tokenResponse.data
-
-    // 2. retrieve user info
+    // 2. Retrieve user info
     const userInfoResponse = await axios.get<GoogleUserInfo>(
       'https://www.googleapis.com/oauth2/v3/userinfo',
       { headers: { Authorization: `Bearer ${access_token}` } },
     )
     const userInfo = userInfoResponse.data
 
-    // 3. find or create user in Payload
-    const user = await findOrCreateUser(userInfo)
+    // 3. Find or create the user in Payload.
+    // (This function can also update the user to store the refresh token.)
+    const user = await findOrCreateUser(userInfo, refresh_token)
 
-    // 4. shape the token payload so that Payload's admin recognizes it
-    // IMPORTANT: 'id' needs to be the actual Payload user id, not the Google sub
-    // 'collection' must match the slug of the auth collection
+    // 4. Shape and sign the JWT token for Payload authentication.
     const tokenPayload = {
-      id: user && user.id, // <-- CRITICAL: user.id or user._id from your newly created doc
-      email: user && user.email,
+      id: user?.id, // critical: use the Payload user id
+      email: user?.email,
       collection: 'users',
     }
-
-    // 5. sign the JWT with your same PAYLOAD_SECRET that Payload uses
     const token = jwt.sign(tokenPayload, process.env.PAYLOAD_SECRET, {
       expiresIn: '7d',
     })
 
-    // 6. set the cookie. By default, the admin UI looks for 'payload-token'
+    // 5. Set the cookies
     const jwtCookie = serialize('payload-token', token, {
       httpOnly: true,
       secure: protocol === 'https',
-      maxAge: 60 * 60 * 24 * 7, // 1 hour
+      maxAge: 60 * 60 * 24 * 7,
       path: '/',
       sameSite: 'lax',
     })
-    // console.log(jwtCookie, 'JWT COOKIE')
-
-    // **Set cookie for Google Access Token**
+    // Store the Google access token using its expiry time.
     const googleTokenCookie = serialize('google_access_token', access_token, {
       httpOnly: true,
       secure: protocol === 'https',
-      maxAge: expires_in, // use token expiry from Google
+      maxAge: expires_in,
       path: '/',
       sameSite: 'lax',
     })
 
-    // 7. clear the oauth_state cookie
+    // Clear the state and redirect cookies.
     const clearStateCookie = serialize('oauth_state', '', {
       httpOnly: true,
       secure: protocol === 'https',
       expires: new Date(0),
-      // path: '/api/auth/google/callback',
       path: '/',
       sameSite: 'lax',
     })
-
     const clearRedirectCookie = serialize('oauth_redirect', '', {
       httpOnly: true,
       secure: protocol === 'https',
@@ -133,21 +123,15 @@ const handler = async (request: Request) => {
       sameSite: 'lax',
     })
 
-    // 8. Redirect user to stored URL
-
-    // Decode the redirect URL to remove double encoding
+    // 6. Redirect to the stored URL
     const decodedRedirectURL = decodeURIComponent(redirectURL)
-
-    // Ensure it is an absolute URL
     const finalRedirectURL = decodedRedirectURL.startsWith('http')
       ? decodedRedirectURL
       : `${baseUrl}${decodedRedirectURL}`
 
     const response = NextResponse.redirect(finalRedirectURL)
-
     response.headers.append('Set-Cookie', jwtCookie)
     response.headers.append('Set-Cookie', googleTokenCookie)
-
     response.headers.append('Set-Cookie', clearStateCookie)
     response.headers.append('Set-Cookie', clearRedirectCookie)
 
@@ -158,48 +142,57 @@ const handler = async (request: Request) => {
   }
 }
 
-const findOrCreateUser = async (userInfo: GoogleUserInfo) => {
+const findOrCreateUser = async (userInfo: GoogleUserInfo, refreshToken?: string) => {
   const payload = await getPayload({ config })
 
-  // 1. If there's already a user with the given googleSub, return it
+  // 1. Try to find an existing user by googleSub.
   const existingBySub = await payload.find({
     collection: 'users',
     where: { googleSub: { equals: userInfo.sub } },
     limit: 1,
   })
   if (existingBySub.docs.length > 0) {
-    return existingBySub.docs[0]
+    const userDoc = existingBySub.docs[0]
+    // Optionally update the refresh token if available.
+    if (refreshToken) {
+      return await payload.update({
+        collection: 'users',
+        id: userDoc?.id ?? '',
+        data: { googleRefreshToken: refreshToken, pictureURL: userInfo.picture },
+        showHiddenFields: true,
+      })
+    }
+    return userDoc
   }
 
-  // 2. If not found by googleSub, see if there's a user with the same email
+  // 2. Try to find an existing user by email.
   const existingByEmail = await payload.find({
     collection: 'users',
     where: { email: { equals: userInfo.email } },
     limit: 1,
   })
   if (existingByEmail.docs.length > 0) {
-    // 2a. If so, update that existing doc to connect the googleSub
     const userToUpdate = existingByEmail.docs[0]
     return await payload.update({
       collection: 'users',
-      id: (userToUpdate && userToUpdate.id) ?? '',
+      id: userToUpdate.id,
       data: {
         googleSub: userInfo.sub,
-        // Optionally update name, pictureURL, etc.
-        // name: userInfo.name,
+        googleRefreshToken: refreshToken,
         pictureURL: userInfo.picture,
       },
       showHiddenFields: true,
     })
   }
 
-  // 3. Otherwise, no user with that googleSub or email => create new
+  // 3. Otherwise, create a new user.
   const randomPassword = crypto.randomBytes(20).toString('hex')
   return await payload.create({
     collection: 'users',
     data: {
       email: userInfo.email,
       googleSub: userInfo.sub,
+      googleRefreshToken: refreshToken,
       name: userInfo.name,
       pictureURL: userInfo.picture,
       password: randomPassword,

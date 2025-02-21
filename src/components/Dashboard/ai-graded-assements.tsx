@@ -10,7 +10,7 @@ export function AIGradedAssessments() {
         <CardTitle>What is the deal?</CardTitle>
       </CardHeader>
       <CardContent>
-        <GetAISummary />
+        {/* <GetAISummary /> */}
         {/* <GetStats /> */}
       </CardContent>
     </Card>

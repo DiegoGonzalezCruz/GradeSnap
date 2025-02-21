@@ -1,10 +1,11 @@
 'use client'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { useClassroomStats } from '@/hooks/classroom/useClassroomSummary'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
+import { useClassroomSummary } from '@/hooks/classroom/useClassroomSummary'
 import { Skeleton } from '../ui/skeleton'
+import CourseCards from '../Courses/CourseCard'
 
 export function ClassroomData() {
-  const { data: stats, error, isLoading, isSuccess } = useClassroomStats()
+  const { data, error, isLoading, isSuccess } = useClassroomSummary()
 
   if (isLoading) {
     return (
@@ -25,33 +26,14 @@ export function ClassroomData() {
 
   if (error) return <div>{error.message}</div>
 
-  if (isSuccess)
+  if (isSuccess) {
+    const { courses } = data
+    console.log(courses, 'courses')
+
     return (
       <div className="flex flex-row items-center justify-between gap-20 w-full h-full ">
-        <Card className="flex flex-col w-1/3">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Courses</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.courses}</div>
-          </CardContent>
-        </Card>
-        <Card className="flex flex-col w-1/3">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Students</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.students}</div>
-          </CardContent>
-        </Card>
-        <Card className="flex flex-col w-1/3">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Assignments</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.assignments}</div>
-          </CardContent>
-        </Card>
+        <CourseCards courses={courses} />
       </div>
     )
+  }
 }
