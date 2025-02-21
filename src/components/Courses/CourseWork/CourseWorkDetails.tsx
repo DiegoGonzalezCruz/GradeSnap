@@ -60,100 +60,10 @@ export default function CourseWorkDetails({ courseWorks, assignments, rubrics }:
         <div className="space-y-1">
           <div className="flex items-center justify-between">
             <h1 className="text-3xl font-bold tracking-tight">Course Dashboard</h1>
-            <Button onClick={() => setOpen(true)}>Create Rubric</Button>
           </div>
           <p className="text-muted-foreground">Manage your course assignments and submissions.</p>
         </div>
       </header>
-
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Create Rubric</DialogTitle>
-            <DialogDescription>Create a new rubric for this course.</DialogDescription>
-          </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <label htmlFor="courseId" className="text-right">
-                Course ID
-              </label>
-              <Input
-                id="courseId"
-                className="col-span-3"
-                value={courseId}
-                onChange={(e) => setCourseId(e.target.value)}
-              />
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <label htmlFor="courseWorkId" className="text-right">
-                Course Work ID
-              </label>
-              <Input
-                id="courseWorkId"
-                className="col-span-3"
-                value={courseWorkId}
-                onChange={(e) => setCourseWorkId(e.target.value)}
-              />
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <label htmlFor="title" className="text-right">
-                Title
-              </label>
-              <Input
-                id="title"
-                className="col-span-3"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-              />
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <label htmlFor="description" className="text-right">
-                Description
-              </label>
-              <textarea
-                id="description"
-                className="col-span-3 rounded-md border px-3 py-2 shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-              />
-            </div>
-          </div>
-          <div className="flex justify-end space-x-2">
-            <Button variant="ghost" onClick={() => setOpen(false)}>
-              Cancel
-            </Button>
-            <Button
-              type="submit"
-              onClick={async () => {
-                try {
-                  const res = await fetch('/api/classroom/rubrics', {
-                    method: 'POST',
-                    headers: {
-                      'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                      courseId,
-                      courseWorkId,
-                      title,
-                      description,
-                    }),
-                  })
-                  if (res.ok) {
-                    setOpen(false)
-                    window.location.reload()
-                  } else {
-                    alert('Failed to create rubric')
-                  }
-                } catch (error) {
-                  alert('Failed to create rubric')
-                }
-              }}
-            >
-              Create
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
 
       <Tabs defaultValue="overview" className="space-y-4">
         <TabsList>
@@ -169,9 +79,9 @@ export default function CourseWorkDetails({ courseWorks, assignments, rubrics }:
             <GraduationCap className="h-4 w-4" />
             Rubrics
           </TabsTrigger>
-          <TabsTrigger value="grading" className="flex items-center gap-2">
+          {/* <TabsTrigger value="grading" className="flex items-center gap-2">
             Grading
-          </TabsTrigger>
+          </TabsTrigger> */}
         </TabsList>
 
         <TabsContent value="overview" className="space-y-4">
@@ -221,47 +131,6 @@ export default function CourseWorkDetails({ courseWorks, assignments, rubrics }:
 
         <TabsContent value="rubrics">
           <RubricView rubrics={rubrics} courseWorks={courseWorks} />
-        </TabsContent>
-
-        <TabsContent value="grading">
-          <div className="flex items-center justify-between">
-            <label htmlFor="assignment">Select Assignment</label>
-            <select id="assignment" onChange={(e) => setSelectedAssignment(e.target.value)}>
-              {assignments &&
-                Object.entries(assignments).map(([key, value]) => (
-                  <option key={key} value={key}>
-                    {key}
-                  </option>
-                ))}
-            </select>
-          </div>
-          {selectedAssignment && (
-            <div>
-              {assignments[selectedAssignment][0]?.attachments[0]?.driveFile?.alternateLink ||
-                'No attachment'}
-              <Button
-                onClick={async () => {
-                  const alternateLink =
-                    assignments[selectedAssignment][0]?.attachments[0]?.driveFile?.alternateLink
-                  if (alternateLink) {
-                    const res = await fetch(alternateLink)
-                    const fileContent = await res.text()
-                    const rubric = rubrics[selectedAssignment]
-                    if (rubric) {
-                      await gradeAssignment(fileContent, rubric)
-                    } else {
-                      alert('Rubric not found for this assignment')
-                    }
-                  }
-                }}
-              >
-                Grade
-              </Button>
-              {loading && <div>Loading...</div>}
-              {grade && <div>Grade: {grade}</div>}
-              {feedback && <div>Feedback: {feedback}</div>}
-            </div>
-          )}
         </TabsContent>
       </Tabs>
     </div>

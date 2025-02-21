@@ -206,15 +206,23 @@ export default function SubmissionsTable({ assignments, courseWorks }: Submissio
                             </a>
                           </Button>
                         )}
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          onClick={(e) => {
-                            setOpen(true)
-                          }}
-                        >
-                          Grade
-                        </Button>
+
+                        <Dialog>
+                          <DialogTrigger asChild>
+                            <Button variant="outline" size="icon">
+                              Grade
+                            </Button>
+                          </DialogTrigger>
+                          <DialogContent>
+                            <DialogHeader>
+                              <DialogTitle>Select Rubric</DialogTitle>
+                              <DialogDescription>
+                                Select a rubric to grade this submission.
+                              </DialogDescription>
+                            </DialogHeader>
+                            {/* Rubric Selection */}
+                          </DialogContent>
+                        </Dialog>
                       </div>
                     </TableCell>
                   </TableRow>
@@ -224,15 +232,6 @@ export default function SubmissionsTable({ assignments, courseWorks }: Submissio
           </TableBody>
         </Table>
       </div>
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Select Rubric</DialogTitle>
-            <DialogDescription>Select a rubric to grade this submission.</DialogDescription>
-          </DialogHeader>
-          {/* Rubric Selection */}
-        </DialogContent>
-      </Dialog>
     </div>
   )
 }
