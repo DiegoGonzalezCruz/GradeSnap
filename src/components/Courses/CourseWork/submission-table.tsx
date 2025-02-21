@@ -20,6 +20,14 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
 import { useState } from 'react'
 
 interface SubmissionsTableProps {
@@ -30,6 +38,7 @@ interface SubmissionsTableProps {
 export default function SubmissionsTable({ assignments, courseWorks }: SubmissionsTableProps) {
   const [status, setStatus] = useState('all')
   const [searchQuery, setSearchQuery] = useState('')
+  const [open, setOpen] = useState(false)
 
   // Flatten all assignments into a single array
   const allAssignments = Object.values(assignments)
@@ -197,6 +206,15 @@ export default function SubmissionsTable({ assignments, courseWorks }: Submissio
                             </a>
                           </Button>
                         )}
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          onClick={(e) => {
+                            setOpen(true)
+                          }}
+                        >
+                          Grade
+                        </Button>
                       </div>
                     </TableCell>
                   </TableRow>
@@ -206,6 +224,15 @@ export default function SubmissionsTable({ assignments, courseWorks }: Submissio
           </TableBody>
         </Table>
       </div>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Select Rubric</DialogTitle>
+            <DialogDescription>Select a rubric to grade this submission.</DialogDescription>
+          </DialogHeader>
+          {/* Rubric Selection */}
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
