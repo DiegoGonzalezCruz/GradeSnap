@@ -1,89 +1,96 @@
-// app/api/auth/google/refresh/route.ts
 import { NextResponse } from 'next/server'
 import axios from 'axios'
-import jwt from 'jsonwebtoken'
 import { serialize } from 'cookie'
 import { getPayload } from 'payload'
 import config from '@payload-config'
 
+interface GoogleTokenResponse {
+  access_token: string
+  expires_in: number
+  refresh_token: string
+  scope: string
+  token_type: string
+}
+
 export const GET = async (request: Request) => {
-  const cookieHeader = request.headers.get('cookie') || ''
-  const cookies = Object.fromEntries(
-    cookieHeader.split('; ').map((cookie) => {
-      const [key, ...v] = cookie.split('=')
-      return [key, decodeURIComponent(v.join('='))]
-    }),
-  )
-
-  const token = cookies['payload-token']
-  if (!token) {
-    return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
-  }
-
-  let userId: string
   try {
-    const decoded = jwt.verify(token, process.env.PAYLOAD_SECRET) as { id: string }
-    userId = decoded.id
-  } catch (e) {
-    return NextResponse.json({ error: 'Invalid token' }, { status: 401 })
-  }
+    const payload = await getPayload({ config })
 
-  // Retrieve the user from Payload.
-  const payload = await getPayload({ config })
-  const users = await payload.find({
-    collection: 'users',
-    where: { id: { equals: userId } },
-    limit: 1,
-  })
-  if (users.docs.length === 0) {
-    return NextResponse.json({ error: 'User not found' }, { status: 404 })
-  }
-  const userDoc = users.docs[0]
+    // Get the user's ID from the payload-token cookie
+    const cookieHeader = request.headers.get('cookie') || ''
+    const cookies = cookieHeader
+      .split('; ')
+      .reduce((acc: Record<string, string>, cookie: string) => {
+        const parts = cookie.split('=')
+        if (parts.length === 2) {
+          const [key, value] = parts.map((part) => part.trim())
+          if (key && value) {
+            acc[key] = value
+          }
+        }
+        return acc
+      }, {})
 
-  // Check if the user has a stored refresh token.
-  const googleRefreshToken = userDoc && userDoc.googleRefreshToken
-  if (!googleRefreshToken) {
-    return NextResponse.json({ error: 'No refresh token available' }, { status: 400 })
-  }
+    const payloadToken = cookies['payload-token']
 
-  try {
-    // Request a new access token from Google.
-    const response = await axios.post(
+    if (!payloadToken) {
+      return NextResponse.json({ error: 'No payload-token cookie provided' }, { status: 401 })
+    }
+
+    // Verify the JWT token
+    const decoded = jwt.verify(payloadToken, process.env.PAYLOAD_SECRET) as { id: string }
+    const userId = decoded.id
+
+    // Get the user from Payload
+    const user = await payload.findByID({
+      collection: 'users',
+      id: userId,
+    })
+
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 })
+    }
+
+    const refreshToken = user.googleRefreshToken
+
+    if (!refreshToken) {
+      return NextResponse.json({ error: 'No refresh token found for user' }, { status: 400 })
+    }
+
+    const protocol = request.headers.get('host')?.startsWith('localhost') ? 'http' : 'https'
+    const baseUrl = `${protocol}://${request.headers.get('host')}`
+
+    // 1. Exchange refresh token for tokens
+    const tokenResponse = await axios.post<GoogleTokenResponse>(
       'https://oauth2.googleapis.com/token',
       new URLSearchParams({
         client_id: process.env.GOOGLE_CLIENT_ID!,
         client_secret: process.env.GOOGLE_CLIENT_SECRET!,
+        redirect_uri: `${baseUrl}/api/auth/google/callback`,
         grant_type: 'refresh_token',
-        refresh_token: googleRefreshToken,
+        refresh_token: refreshToken,
       }),
       { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } },
     )
-    const { access_token, expires_in, refresh_token: newRefreshToken } = response.data
 
-    // Optionally update the stored refresh token if Google returns a new one.
-    if (newRefreshToken) {
-      await payload.update({
-        collection: 'users',
-        id: userId,
-        data: { googleRefreshToken: newRefreshToken },
-        showHiddenFields: true,
-      })
-    }
+    const { access_token, expires_in } = tokenResponse.data
 
-    // Set the new access token in the cookie.
+    // 2. Set the new google_access_token cookie
     const googleTokenCookie = serialize('google_access_token', access_token, {
       httpOnly: true,
-      secure: process.env.PAYLOAD_ENV !== 'development',
+      secure: protocol === 'https',
       maxAge: expires_in,
       path: '/',
       sameSite: 'lax',
     })
 
-    const res = NextResponse.json({ success: true, access_token })
-    res.headers.append('Set-Cookie', googleTokenCookie)
-    return res
-  } catch (error) {
-    console.error('Error refreshing Google access token:', error)
-    return NextResponse.json({ error: 'Failed to refresh token' }, { status: 500 })
+    const response = NextResponse.json({ message: 'Token refreshed successfully' })
+    response.headers.append('Set-Cookie', googleTokenCookie)
+
+    return response
+  } catch (error: any) {
+    console.error('Token Refresh Error:', error)
+    return NextResponse.json({ error: 'Token refresh failed' }, { status: 500 })
   }
 }
+import jwt from 'jsonwebtoken'

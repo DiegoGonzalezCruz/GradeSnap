@@ -114,6 +114,20 @@ const handler = async (request: Request) => {
       sameSite: 'lax',
     })
 
+    // Set the google_access_token_expiration cookie
+    const expirationDate = new Date(Date.now() + expires_in * 1000)
+    const googleTokenExpirationCookie = serialize(
+      'google_access_token_expiration',
+      expirationDate.getTime().toString(),
+      {
+        httpOnly: true,
+        secure: protocol === 'https',
+        maxAge: expires_in,
+        path: '/',
+        sameSite: 'lax',
+      },
+    )
+
     // Clear the state and redirect cookies.
     const clearStateCookie = serialize('oauth_state', '', {
       httpOnly: true,
