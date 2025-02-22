@@ -1,7 +1,7 @@
 import { format } from 'date-fns'
 import { FileText, Search, Eye, Download } from 'lucide-react'
 
-import { Assignment, CourseWork } from './types'
+import { CourseWork } from './types'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -20,15 +20,9 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog'
+
 import { useState } from 'react'
+import GradingButton from './GradingButton'
 
 interface SubmissionsTableProps {
   assignments: Record<string, any[]>
@@ -206,23 +200,7 @@ export default function SubmissionsTable({ assignments, courseWorks }: Submissio
                             </a>
                           </Button>
                         )}
-
-                        <Dialog>
-                          <DialogTrigger asChild>
-                            <Button variant="outline" size="icon">
-                              Grade
-                            </Button>
-                          </DialogTrigger>
-                          <DialogContent>
-                            <DialogHeader>
-                              <DialogTitle>Select Rubric</DialogTitle>
-                              <DialogDescription>
-                                Select a rubric to grade this submission.
-                              </DialogDescription>
-                            </DialogHeader>
-                            {/* Rubric Selection */}
-                          </DialogContent>
-                        </Dialog>
+                        <GradingButton />
                       </div>
                     </TableCell>
                   </TableRow>
