@@ -30,11 +30,10 @@ interface UseSubmissionsProps {
   searchQuery: string
 }
 
-export const useSubmissions = ({
+export const useAllSubmissions = ({
   submissions,
   courseWorks,
   status,
-
   searchQuery,
 }: UseSubmissionsProps) => {
   const allSubmissions = useMemo(() => {

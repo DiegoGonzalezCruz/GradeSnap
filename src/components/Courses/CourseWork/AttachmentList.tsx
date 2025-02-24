@@ -7,6 +7,7 @@ interface AttachmentListProps {
 }
 
 export const AttachmentList = ({ attachments }: AttachmentListProps) => {
+  // console.log(attachments, 'attachments')
   return (
     <div className="flex gap-2">
       {attachments.length > 0 ? (

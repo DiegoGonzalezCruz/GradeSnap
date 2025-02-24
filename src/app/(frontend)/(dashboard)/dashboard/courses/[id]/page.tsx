@@ -7,10 +7,10 @@ import CourseWorkDetails from '@/components/Courses/CourseWork/CourseWorkDetails
 export default function CourseDetail() {
   const { id } = useParams<{ id: string }>()
   const { course, courseWork, submissions, rubrics } = useCourseDetails(id as string)
-  console.log(course, ' course ***** ')
-  console.log(courseWork, ' courseWork ***** ')
-  console.log(submissions, ' submissions ***** ')
-  console.log(rubrics, ' rubrics ***** ')
+  // console.log(course, ' course ***** ')
+  // console.log(courseWork, ' courseWork ***** ')
+  // console.log(submissions, ' submissions ***** ')
+  // console.log(rubrics, ' rubrics ***** ')
   if (!course || !courseWork || !submissions || !rubrics) {
     return <div>Loading course details...</div>
   }

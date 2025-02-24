@@ -31,9 +31,9 @@ interface DashboardProps {
 function CourseWorkDetails({ courseWorks, submissions, rubrics }: DashboardProps) {
   const [searchQuery, setSearchQuery] = useState('')
 
-  console.log(rubrics, 'rubrics ¨¨****')
-  console.log(courseWorks, 'courseWorks ¨¨****')
-  console.log(submissions, 'submissions ¨¨****')
+  // console.log(rubrics, 'rubrics ¨¨****')
+  // console.log(courseWorks, 'courseWorks ¨¨****')
+  // console.log(submissions, 'submissions ¨¨****')
 
   const filteredCourseWorks = courseWorks.filter((work) =>
     work.title.toLowerCase().includes(searchQuery.toLowerCase()),

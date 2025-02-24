@@ -2,8 +2,9 @@
 
 import { useCourseInfo } from './useCourseInfo'
 import { useCourseWork } from './useCourseWork'
-import { useSubmissions } from './useSubmissions'
+
 import { useRubrics } from './useRubrics'
+import { useSubmissions } from './useSubmissions'
 
 export function useCourseDetails(courseId: string) {
   const { data: course } = useCourseInfo(courseId)

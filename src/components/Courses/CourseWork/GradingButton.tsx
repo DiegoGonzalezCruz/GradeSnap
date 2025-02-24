@@ -14,24 +14,24 @@ import { Label } from '@/components/ui/label'
 import { CourseWork, Rubric, Rubrics } from './types'
 
 const GradingButton = ({
-  assignmentId,
+  submissionId,
   courseWorks,
   rubrics,
 }: {
-  assignmentId: string
+  submissionId: string
   courseWorks: CourseWork[]
   rubrics: Rubrics
 }) => {
-  console.log(assignmentId, 'assignment Id FROM DIALOG')
-  console.log(courseWorks, 'course works FROM DIALOG')
-  console.log(rubrics, ' rubrics FROM DIALOG')
+  // console.log(submissionId, 'submission Id FROM DIALOG')
+  // console.log(courseWorks, 'course works FROM DIALOG')
+  // console.log(rubrics, ' rubrics FROM DIALOG')
   const params = useParams<{ id: string }>()
   const { id } = params
 
   const [selectedKey, setSelectedKey] = useState<string | null>(null)
 
   const rubricsKeys = Object.keys(rubrics)
-  console.log(rubricsKeys, 'rubric keys')
+  // console.log(rubricsKeys, 'rubric keys')
 
   // console.log(id, '**** search ****')
 
@@ -56,7 +56,7 @@ const GradingButton = ({
             onChange={(e) => setSelectedKey(e.target.value)}
           >
             <option value="" disabled>
-              Select an assignment
+              Select an submission
             </option>
             {courseWorks.map((courseWork) => (
               <option key={courseWork.id} value={courseWork.id}>

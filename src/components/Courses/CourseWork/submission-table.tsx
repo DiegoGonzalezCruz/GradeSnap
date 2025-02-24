@@ -21,7 +21,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 
-import { useSubmissions } from '@/hooks/classroom/useSubmissions'
+import { useAllSubmissions } from '@/hooks/classroom/useAllSubmissions'
 import { StatusIndicator } from './StatusIndicator'
 import { AttachmentList } from './AttachmentList'
 import GradingButton from './GradingButton'
@@ -40,13 +40,16 @@ export default function SubmissionsTable({
   const [status, setStatus] = useState('all')
   const [searchQuery, setSearchQuery] = useState('')
 
-  const allSubmissions = useSubmissions({
+  const allSubmissions = useAllSubmissions({
     submissions,
     courseWorks,
     status,
     searchQuery,
   })
 
+  console.log(allSubmissions, '****** ALL SUBMISSIONS')
+  console.log(submissions, 'SUBMISSIONS')
+  console.log(rubrics, 'RUBRICS')
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -102,27 +105,27 @@ export default function SubmissionsTable({
                 </TableCell>
               </TableRow>
             ) : (
-              allSubmissions.map((assignment: any) => {
-                const courseWork = courseWorks.find((cw) => cw.id === assignment.courseWorkId)
-                const attachments = assignment.submissionsubmission?.attachments || []
+              allSubmissions.map((submission: any) => {
+                const courseWork = courseWorks.find((cw) => cw.id === submission.courseWorkId)
+                const attachments = submission.assignmentSubmission?.attachments || []
 
                 return (
-                  <TableRow key={assignment.id}>
-                    <TableCell className="font-medium">{assignment.user.name.fullName}</TableCell>
+                  <TableRow key={submission.id}>
+                    <TableCell className="font-medium">{submission.user.name.fullName}</TableCell>
                     <TableCell>{courseWork?.title || 'Unknown Assignment'}</TableCell>
                     <TableCell>
-                      <StatusIndicator state={assignment.state} />
+                      <StatusIndicator state={submission.state} />
                     </TableCell>
                     <TableCell>
-                      {assignment.assignedGrade !== undefined ? (
+                      {submission.assignedGrade !== undefined ? (
                         <span className="font-medium">
-                          {assignment.assignedGrade}/{courseWork?.maxPoints || 100}
+                          {submission.assignedGrade}/{courseWork?.maxPoints || 100}
                         </span>
                       ) : (
                         <span className="text-muted-foreground">Not graded</span>
                       )}
                     </TableCell>
-                    <TableCell>{format(new Date(assignment.updateTime), 'PP p')}</TableCell>
+                    <TableCell>{format(new Date(submission.updateTime), 'PP p')}</TableCell>
                     <TableCell>
                       <AttachmentList attachments={attachments} />
                     </TableCell>
@@ -130,7 +133,7 @@ export default function SubmissionsTable({
                       <div className="flex justify-end gap-2">
                         <Button variant="outline" size="icon" asChild>
                           <a
-                            href={assignment.alternateLink}
+                            href={submission.alternateLink}
                             target="_blank"
                             rel="noopener noreferrer"
                           >
@@ -138,7 +141,7 @@ export default function SubmissionsTable({
                           </a>
                         </Button>
                         <GradingButton
-                          assignmentId={assignment.id}
+                          submissionId={submission.id}
                           courseWorks={courseWorks}
                           rubrics={rubrics}
                         />
