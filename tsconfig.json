@@ -49,7 +49,7 @@
     "redirects.js",
     "next.config.js",
     "next-sitemap.config.cjs"
-  ],
+, "src/middleware.bak"  ],
   "exclude": [
     "node_modules"
   ]

@@ -9,7 +9,7 @@ const useGradeAssignment = () => {
   const gradeAssignment = async (fileContent: string, rubric: any) => {
     setLoading(true)
     try {
-      const prompt = `You are a teacher grading student assignments. Grade the following assignment based on the rubric provided.
+      const prompt = `You are a teacher grading student submissions. Grade the following assignment based on the rubric provided.
         Assignment: ${fileContent}
         Rubric: ${JSON.stringify(rubric)}
         Provide a grade and feedback.`

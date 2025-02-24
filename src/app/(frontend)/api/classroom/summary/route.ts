@@ -18,7 +18,7 @@ interface GoogleAssignment {
   dueDate?: { year: number; month: number; day: number }
 }
 
-interface GoogleAssignmentsList {
+interface GooglesubmissionsList {
   courseWork?: GoogleAssignment[]
 }
 
@@ -53,20 +53,20 @@ async function getCourseSummary(course: GoogleCourse, token: string) {
     )
     const studentCount = studentsData.students?.length || 0
 
-    const assignmentsData: GoogleAssignmentsList = await fetchGoogleClassroomAPI(
+    const submissionsData: GooglesubmissionsList = await fetchGoogleClassroomAPI(
       `${API_BASE}/courses/${course.id}/courseWork`,
       token,
     )
-    const assignments = assignmentsData.courseWork || []
-    const numAssignments = assignments.length
+    const submissions = submissionsData.courseWork || []
+    const numsubmissions = submissions.length
 
-    const nextDeadline = getNextDeadline(assignments)
+    const nextDeadline = getNextDeadline(submissions)
 
     return {
       courseId: course.id,
       courseName: course.name,
       studentCount,
-      numAssignments,
+      numsubmissions,
       nextDeadline,
     }
   } catch (error) {
@@ -76,8 +76,8 @@ async function getCourseSummary(course: GoogleCourse, token: string) {
 }
 
 // Function to get next deadline
-function getNextDeadline(assignments: GoogleAssignment[]) {
-  const sortedAssignments = assignments
+function getNextDeadline(submissions: GoogleAssignment[]) {
+  const sortedsubmissions = submissions
     .filter((a) => a.dueDate)
     .sort((a, b) => {
       const dateA = new Date(`${a.dueDate!.year}-${a.dueDate!.month}-${a.dueDate!.day}`).getTime()
@@ -85,7 +85,7 @@ function getNextDeadline(assignments: GoogleAssignment[]) {
       return dateA - dateB
     })
 
-  return sortedAssignments.length ? sortedAssignments?.[0]?.dueDate : 'No upcoming deadlines'
+  return sortedsubmissions.length ? sortedsubmissions?.[0]?.dueDate : 'No upcoming deadlines'
 }
 
 // Function to get detailed course data
@@ -98,22 +98,22 @@ async function getCourseDetails(courseId: string, token: string) {
     `${API_BASE}/courses/${courseId}/students`,
     token,
   )
-  const assignmentsData: GoogleAssignmentsList = await fetchGoogleClassroomAPI(
+  const submissionsData: GooglesubmissionsList = await fetchGoogleClassroomAPI(
     `${API_BASE}/courses/${courseId}/courseWork`,
     token,
   )
 
   const studentCount = studentsData.students?.length || 0
-  const assignments = assignmentsData.courseWork || []
-  const numAssignments = assignments.length
-  const nextDeadline = getNextDeadline(assignments)
+  const submissions = submissionsData.courseWork || []
+  const numsubmissions = submissions.length
+  const nextDeadline = getNextDeadline(submissions)
 
-  const submissionStats = await getSubmissionStats(courseId, assignments, token)
+  const submissionStats = await getSubmissionStats(courseId, submissions, token)
 
   return {
     courseName: courseData.name,
     studentCount,
-    numAssignments,
+    numsubmissions,
     nextDeadline,
     ...submissionStats,
   }
@@ -122,7 +122,7 @@ async function getCourseDetails(courseId: string, token: string) {
 // Function to get submission stats
 async function getSubmissionStats(
   courseId: string,
-  assignments: GoogleAssignment[],
+  submissions: GoogleAssignment[],
   token: string,
 ) {
   let turnedIn = 0,
@@ -131,7 +131,7 @@ async function getSubmissionStats(
     reviewed = 0
 
   await Promise.all(
-    assignments.map(async (assignment) => {
+    submissions.map(async (assignment) => {
       const submissionsData: GoogleSubmissionsList = await fetchGoogleClassroomAPI(
         `${API_BASE}/courses/${courseId}/courseWork/${assignment.id}/studentSubmissions`,
         token,

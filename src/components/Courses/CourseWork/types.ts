@@ -41,7 +41,7 @@ export interface Assignment {
   state: string
   alternateLink: string
   courseWorkType: string
-  assignmentSubmission: Record<string, any>
+  submissionsubmission: Record<string, any>
   user: {
     id: string
     name: {
@@ -53,19 +53,30 @@ export interface Assignment {
   attachments: any[]
 }
 
+interface Level {
+  id: string
+  title: string
+  description?: string
+  points: number
+}
+
+interface Criterion {
+  id: string
+  title: string
+  description?: string
+  levels: Level[]
+}
+
 export interface Rubric {
   courseId: string
   courseWorkId: string
+  creationTime: string
+  updateTime: string
   id: string
-  criteria: {
-    id: string
-    title: string
-    description: string
-    levels: {
-      id: string
-      title: string
-      description: string
-      points: number
-    }[]
-  }[]
+  criteria: Criterion[]
+}
+
+// The overall data structure is an object with keys mapping to Rubric objects.
+export interface Rubrics {
+  [key: string]: Rubric
 }

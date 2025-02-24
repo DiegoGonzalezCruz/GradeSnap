@@ -50,8 +50,8 @@ export default function CourseCards({ courses }: { courses: Course[] }) {
                         <p className="font-medium">{course.studentCount}</p>
                       </div>
                       <div className="space-y-1">
-                        <p className="text-muted-foreground">Assignments</p>
-                        <p className="font-medium">{course.numAssignments}</p>
+                        <p className="text-muted-foreground">submissions</p>
+                        <p className="font-medium">{course.numsubmissions}</p>
                       </div>
                       <div className="space-y-1">
                         <p className="text-muted-foreground">Next Deadline</p>

@@ -8,6 +8,6 @@ export interface Course {
   courseId: string
   courseName: string
   studentCount: number
-  numAssignments: number
+  numsubmissions: number
   nextDeadline: Deadline | string
 }

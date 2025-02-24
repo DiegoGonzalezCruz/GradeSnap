@@ -19,7 +19,7 @@ export function useRubrics(courseId: string) {
   const { data: courseWork } = useCourseWork(courseId)
 
   return useQuery({
-    queryKey: ['rubrics', courseId, courseWork],
+    queryKey: ['rubrics', courseId],
     queryFn: async () => {
       if (!courseWork) return {}
       const rubricsList = await Promise.all(

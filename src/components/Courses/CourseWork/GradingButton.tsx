@@ -9,45 +9,47 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
-import { useRubrics } from '@/hooks/classroom/useRubrics'
 import { useParams } from 'next/navigation'
+import { Label } from '@/components/ui/label'
+import { CourseWork, Rubric, Rubrics } from './types'
 
-const GradingButton = () => {
+const GradingButton = ({
+  assignmentId,
+  courseWorks,
+  rubrics,
+}: {
+  assignmentId: string
+  courseWorks: CourseWork[]
+  rubrics: Rubrics
+}) => {
+  console.log(assignmentId, 'assignment Id FROM DIALOG')
+  console.log(courseWorks, 'course works FROM DIALOG')
+  console.log(rubrics, ' rubrics FROM DIALOG')
   const params = useParams<{ id: string }>()
   const { id } = params
 
-  console.log(id, '**** search ****')
-
-  const { data, isLoading, isSuccess } = useRubrics(id)
-
-  console.log(data, '**** data ****')
-
-  // State for selected assignment key
   const [selectedKey, setSelectedKey] = useState<string | null>(null)
 
-  // If data is not available yet, show a loading state
-  if (isLoading) return <p>Loading rubrics...</p>
-  if (!isSuccess || !data) return <p>No rubrics found.</p>
+  const rubricsKeys = Object.keys(rubrics)
+  console.log(rubricsKeys, 'rubric keys')
 
-  // Get all object keys (IDs of rubrics)
-  const rubricKeys = Object.keys(data)
+  // console.log(id, '**** search ****')
 
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline" size="icon">
+        <Button variant="outline" size="icon" type="button">
           Grade
         </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Select Rubric</DialogTitle>
-          <DialogDescription>Select a rubric to grade this submission.</DialogDescription>
+          <DialogTitle>Select a Rubric</DialogTitle>
+          <DialogDescription>Select a rubric to grade against.</DialogDescription>
         </DialogHeader>
-
         {/* Dropdown or Buttons to Select Assignment Key */}
         <div className="flex flex-col gap-2">
-          <label>Select an Assignment:</label>
+          <Label>Select a CourseWork:</Label>
           <select
             className="p-2 border rounded-md"
             value={selectedKey || ''}
@@ -56,29 +58,17 @@ const GradingButton = () => {
             <option value="" disabled>
               Select an assignment
             </option>
-            {rubricKeys.map((key) => (
-              <option key={key} value={key}>
-                {key}
+            {courseWorks.map((courseWork) => (
+              <option key={courseWork.id} value={courseWork.id}>
+                {courseWork.title}
               </option>
             ))}
           </select>
         </div>
-
-        {/* Display rubrics for the selected assignment */}
-        {selectedKey && data[selectedKey] && (
-          <div className="flex flex-col gap-4 mt-4">
-            <h3 className="font-bold text-lg">Rubrics for Assignment {selectedKey}</h3>
-            {data[selectedKey].criteria.map((rubric) => (
-              <button
-                key={rubric.id}
-                className="p-2 border rounded-md bg-gray-200 hover:bg-gray-300"
-                onClick={() => console.log(rubric)}
-              >
-                {rubric.title}
-              </button>
-            ))}
-          </div>
-        )}
+        {/* Select file to grade against */}
+        <div className="flex flex-col gap-2">
+          <Label>Select an Assignment to grade:</Label>
+        </div>
       </DialogContent>
     </Dialog>
   )

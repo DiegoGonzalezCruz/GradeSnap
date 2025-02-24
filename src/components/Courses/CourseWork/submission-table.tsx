@@ -1,7 +1,8 @@
 import { format } from 'date-fns'
 import { FileText, Search, Eye, Download } from 'lucide-react'
+import { useState } from 'react'
 
-import { CourseWork } from './types'
+import { CourseWork, Rubrics } from './types'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -19,41 +20,32 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 
-import { useState } from 'react'
+import { useSubmissions } from '@/hooks/classroom/useSubmissions'
+import { StatusIndicator } from './StatusIndicator'
+import { AttachmentList } from './AttachmentList'
 import GradingButton from './GradingButton'
 
 interface SubmissionsTableProps {
-  assignments: Record<string, any[]>
+  submissions: Record<string, any[]>
   courseWorks: CourseWork[]
+  rubrics: Rubrics
 }
 
-export default function SubmissionsTable({ assignments, courseWorks }: SubmissionsTableProps) {
+export default function SubmissionsTable({
+  submissions,
+  courseWorks,
+  rubrics,
+}: SubmissionsTableProps) {
   const [status, setStatus] = useState('all')
   const [searchQuery, setSearchQuery] = useState('')
-  const [open, setOpen] = useState(false)
 
-  // Flatten all assignments into a single array
-  const allAssignments = Object.values(assignments)
-    .flat()
-    .filter((assignment: any) => {
-      if (status === 'all') return true
-      if (status === 'turned-in' && assignment.state === 'TURNED_IN') return true
-      if (status === 'returned' && assignment.state === 'RETURNED') return true
-      if (
-        status === 'created' &&
-        assignment.state !== 'TURNED_IN' &&
-        assignment.state !== 'RETURNED'
-      )
-        return true
-      return false
-    })
-    .filter((assignment: any) => {
-      const courseWork = courseWorks.find((cw) => cw.id === assignment.courseWorkId)
-      if (!courseWork) return false
-      return courseWork.title.toLowerCase().includes(searchQuery.toLowerCase())
-    })
+  const allSubmissions = useSubmissions({
+    submissions,
+    courseWorks,
+    status,
+    searchQuery,
+  })
 
   return (
     <div className="space-y-6">
@@ -100,7 +92,7 @@ export default function SubmissionsTable({ assignments, courseWorks }: Submissio
             </TableRow>
           </TableHeader>
           <TableBody>
-            {allAssignments.length === 0 ? (
+            {allSubmissions.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={7} className="text-center py-8">
                   <div className="flex flex-col items-center gap-2">
@@ -110,27 +102,16 @@ export default function SubmissionsTable({ assignments, courseWorks }: Submissio
                 </TableCell>
               </TableRow>
             ) : (
-              allAssignments.map((assignment) => {
+              allSubmissions.map((assignment: any) => {
                 const courseWork = courseWorks.find((cw) => cw.id === assignment.courseWorkId)
-                const attachments = assignment.assignmentSubmission?.attachments || []
+                const attachments = assignment.submissionsubmission?.attachments || []
 
                 return (
                   <TableRow key={assignment.id}>
                     <TableCell className="font-medium">{assignment.user.name.fullName}</TableCell>
                     <TableCell>{courseWork?.title || 'Unknown Assignment'}</TableCell>
                     <TableCell>
-                      <div className="flex items-center gap-2">
-                        <div
-                          className={`h-2 w-2 rounded-full ${
-                            assignment.state === 'RETURNED'
-                              ? 'bg-green-500'
-                              : assignment.state === 'TURNED_IN'
-                                ? 'bg-blue-500'
-                                : 'bg-yellow-500'
-                          }`}
-                        />
-                        {assignment.state}
-                      </div>
+                      <StatusIndicator state={assignment.state} />
                     </TableCell>
                     <TableCell>
                       {assignment.assignedGrade !== undefined ? (
@@ -143,40 +124,7 @@ export default function SubmissionsTable({ assignments, courseWorks }: Submissio
                     </TableCell>
                     <TableCell>{format(new Date(assignment.updateTime), 'PP p')}</TableCell>
                     <TableCell>
-                      {attachments.length > 0 ? (
-                        <div className="flex gap-2">
-                          {attachments.map(
-                            (attachment: any, index: any) =>
-                              attachment.driveFile && (
-                                <TooltipProvider key={attachment.driveFile.id}>
-                                  <Tooltip>
-                                    <TooltipTrigger asChild>
-                                      <a
-                                        href={attachment.driveFile.alternateLink}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="inline-block"
-                                      >
-                                        <img
-                                          src={
-                                            attachment.driveFile.thumbnailUrl || '/placeholder.svg'
-                                          }
-                                          alt={attachment.driveFile.title}
-                                          className="h-8 w-8 rounded object-cover"
-                                        />
-                                      </a>
-                                    </TooltipTrigger>
-                                    <TooltipContent>
-                                      <p>{attachment.driveFile.title}</p>
-                                    </TooltipContent>
-                                  </Tooltip>
-                                </TooltipProvider>
-                              ),
-                          )}
-                        </div>
-                      ) : (
-                        <span className="text-muted-foreground">No attachments</span>
-                      )}
+                      <AttachmentList attachments={attachments} />
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">
@@ -189,18 +137,11 @@ export default function SubmissionsTable({ assignments, courseWorks }: Submissio
                             <Eye className="h-4 w-4" />
                           </a>
                         </Button>
-                        {attachments.length > 0 && (
-                          <Button variant="outline" size="icon" asChild>
-                            <a
-                              href={attachments[0].driveFile?.alternateLink}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                            >
-                              <Download className="h-4 w-4" />
-                            </a>
-                          </Button>
-                        )}
-                        <GradingButton />
+                        <GradingButton
+                          assignmentId={assignment.id}
+                          courseWorks={courseWorks}
+                          rubrics={rubrics}
+                        />
                       </div>
                     </TableCell>
                   </TableRow>

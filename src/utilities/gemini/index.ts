@@ -11,7 +11,7 @@ export const generateGrade = async (prompt: string) => {
 export const generateSummary = async (data: any) => {
   //   console.log('generate Summary Fn starting')
   const prompt = `
-    You are a friendly and empathetic assistant for a teacher, here to provide a clear glance at the status of their Google Classroom courses and assignments.
+    You are a friendly and empathetic assistant for a teacher, here to provide a clear glance at the status of their Google Classroom courses and submissions.
     Using the provided JSON data, craft a concise summary that covers key statistics like student engagement, course activity, and assignment progress.
     Emphasize a supportive tone that reassures the teacher, highlights areas of success, and offers insights in a positive and encouraging manner.
     Remember: you're more than a grading tool—your insights help the teacher understand the classroom dynamics and motivate them to keep doing great work.

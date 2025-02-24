@@ -50,21 +50,21 @@ export async function GET(req: NextRequest) {
           return {
             ...submission,
             user: userResponse.data,
-            attachments: submission.assignmentSubmission?.attachments || [],
+            attachments: submission.submissionsubmission?.attachments || [],
           }
         } catch (userError) {
           console.error('Error fetching user details:', userError)
           return {
             ...submission,
             user: null,
-            attachments: submission.assignmentSubmission?.attachments || [],
+            attachments: submission.submissionsubmission?.attachments || [],
           }
         }
       }),
     )
 
     // The response includes an array of submissions.
-    // Each submission may contain attachments (files) under the "assignmentSubmission" object.
+    // Each submission may contain attachments (files) under the "submissionsubmission" object.
     return NextResponse.json({ studentSubmissions: submissionsWithUserDetails }, { status: 200 })
   } catch (error) {
     console.error('Error fetching student submissions:', error)

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { format } from 'date-fns'
 import { Calendar, FileText, GraduationCap, LayoutDashboard, Search, Users } from 'lucide-react'
 
@@ -9,7 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
-import { Assignment, CourseWork, Rubric } from './types'
+import { Assignment, CourseWork, Rubrics } from './types'
 import SubmissionsTable from './submission-table'
 import RubricView from './rubric.view'
 import useGradeAssignment from '@/hooks/gemini/useGradeAssignment'
@@ -24,19 +24,16 @@ import {
 
 interface DashboardProps {
   courseWorks: CourseWork[]
-  assignments: Record<string, Assignment[]>
-  rubrics: Record<string, Rubric>
+  submissions: Record<string, Assignment[]>
+  rubrics: Rubrics
 }
 
-export default function CourseWorkDetails({ courseWorks, assignments, rubrics }: DashboardProps) {
+function CourseWorkDetails({ courseWorks, submissions, rubrics }: DashboardProps) {
   const [searchQuery, setSearchQuery] = useState('')
-  const [open, setOpen] = useState(false)
-  const [courseId, setCourseId] = useState('')
-  const [courseWorkId, setCourseWorkId] = useState('')
-  const [title, setTitle] = useState('')
-  const [description, setDescription] = useState('')
-  const [selectedAssignment, setSelectedAssignment] = useState<string | null>(null)
-  const { grade, feedback, loading, gradeAssignment } = useGradeAssignment()
+
+  console.log(rubrics, 'rubrics ¨¨****')
+  console.log(courseWorks, 'courseWorks ¨¨****')
+  console.log(submissions, 'submissions ¨¨****')
 
   const filteredCourseWorks = courseWorks.filter((work) =>
     work.title.toLowerCase().includes(searchQuery.toLowerCase()),
@@ -61,7 +58,7 @@ export default function CourseWorkDetails({ courseWorks, assignments, rubrics }:
           <div className="flex items-center justify-between">
             <h1 className="text-3xl font-bold tracking-tight">Course Dashboard</h1>
           </div>
-          <p className="text-muted-foreground">Manage your course assignments and submissions.</p>
+          <p className="text-muted-foreground">Manage your course submissions and submissions.</p>
         </div>
       </header>
 
@@ -89,7 +86,7 @@ export default function CourseWorkDetails({ courseWorks, assignments, rubrics }:
             <div className="relative w-[300px]">
               <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search assignments..."
+                placeholder="Search submissions..."
                 className="pl-8"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -115,7 +112,7 @@ export default function CourseWorkDetails({ courseWorks, assignments, rubrics }:
                   <p className="line-clamp-2 text-sm text-muted-foreground">{work.description}</p>
                   <div className="mt-4 flex items-center justify-between">
                     <div className="text-sm text-muted-foreground">
-                      {assignments[work.id]?.length || 0} submissions
+                      {submissions[work.id]?.length || 0} submissions
                     </div>
                     <div className="text-sm font-medium">{work.maxPoints} points</div>
                   </div>
@@ -126,7 +123,7 @@ export default function CourseWorkDetails({ courseWorks, assignments, rubrics }:
         </TabsContent>
 
         <TabsContent value="submissions">
-          <SubmissionsTable assignments={assignments} courseWorks={courseWorks} />
+          <SubmissionsTable submissions={submissions} courseWorks={courseWorks} rubrics={rubrics} />
         </TabsContent>
 
         <TabsContent value="rubrics">
@@ -136,3 +133,5 @@ export default function CourseWorkDetails({ courseWorks, assignments, rubrics }:
     </div>
   )
 }
+
+export default React.memo(CourseWorkDetails)

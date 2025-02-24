@@ -2,16 +2,16 @@
 
 import { useCourseDetails } from '@/hooks/classroom/useCourseDetails'
 import { useParams } from 'next/navigation'
-import { AssignmentUser } from '@/components/Dashboard/AssignmentUser'
-import { CreateCriterionDialog } from '@/components/Dashboard/CreateCriterionDialog'
-import { EditCriterionDialog } from '@/components/Dashboard/EditCriterionDialog'
 import CourseWorkDetails from '@/components/Courses/CourseWork/CourseWorkDetails'
 
 export default function CourseDetail() {
   const { id } = useParams<{ id: string }>()
-  const { course, courseWork, assignments, rubrics } = useCourseDetails(id as string)
-
-  if (!course || !courseWork || !assignments || !rubrics) {
+  const { course, courseWork, submissions, rubrics } = useCourseDetails(id as string)
+  console.log(course, ' course ***** ')
+  console.log(courseWork, ' courseWork ***** ')
+  console.log(submissions, ' submissions ***** ')
+  console.log(rubrics, ' rubrics ***** ')
+  if (!course || !courseWork || !submissions || !rubrics) {
     return <div>Loading course details...</div>
   }
 
@@ -23,7 +23,7 @@ export default function CourseDetail() {
       <p>Section: {course?.section}</p>
       <p>Last Updated: {course?.updateTime}</p>
 
-      <CourseWorkDetails courseWorks={courseWork} assignments={assignments} rubrics={rubrics} />
+      <CourseWorkDetails courseWorks={courseWork} submissions={submissions} rubrics={rubrics} />
     </div>
   )
 }
