@@ -1,18 +1,21 @@
 // import { featuredImage } from '@/fields/featuredImage'
-import type { CollectionConfig, Payload, Where } from 'payload'
-import { OAuth2Client } from 'google-auth-library'
+import type {
+  CollectionConfig,
+  // Payload, Where
+} from 'payload'
+// import { OAuth2Client } from 'google-auth-library'
 import jwt from 'jsonwebtoken'
-import { anyone } from '@/access/anyone'
+// import { anyone } from '@/access/anyone'
 import { admin } from '@/access/admin'
 import { adminOrSelf } from '@/access/adminOrSelf'
-import { readOnlyUnlessAdmin } from '@/access/readOnlyUnlessAdmin'
+// import { readOnlyUnlessAdmin } from '@/access/readOnlyUnlessAdmin'
 
-const googleAuthClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID)
+// const googleAuthClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID)
 
-interface GoogleStrategyParams {
-  headers: Headers
-  payload: Payload
-}
+// interface GoogleStrategyParams {
+//   headers: Headers
+//   payload: Payload
+// }
 
 interface JWTDecoded {
   email: string
@@ -20,10 +23,10 @@ interface JWTDecoded {
   collection: string
 }
 
-interface StrategyResult {
-  user: any | null
-  responseHeaders?: Headers
-}
+// interface StrategyResult {
+//   user: any | null
+//   responseHeaders?: Headers
+// }
 
 export const Users: CollectionConfig = {
   slug: 'users',

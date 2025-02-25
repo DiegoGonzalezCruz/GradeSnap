@@ -1,4 +1,3 @@
-import { Sidebar } from '@/components/Dashboard/sidebar'
 import { Footer } from '@/Footer/Component'
 import { Header } from '@/Header/Component'
 import { AdminBar } from '@/components/AdminBar'

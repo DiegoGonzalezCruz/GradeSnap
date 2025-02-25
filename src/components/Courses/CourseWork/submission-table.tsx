@@ -1,5 +1,5 @@
 import { format } from 'date-fns'
-import { FileText, Search, Eye, Download } from 'lucide-react'
+import { FileText, Search, Eye } from 'lucide-react'
 import { useState } from 'react'
 
 import { CourseWork, Rubrics } from './types'
@@ -142,7 +142,6 @@ export default function SubmissionsTable({
                           </a>
                         </Button>
                         <GradingButton
-                          submissionId={submission.id}
                           attachments={attachments}
                           courseWorks={submission.courseWorkId}
                           rubrics={rubrics}

@@ -1,9 +1,10 @@
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { Download } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { Attachments } from './types'
 
 interface AttachmentListProps {
-  attachments: any[]
+  attachments: Attachments
 }
 
 export const AttachmentList = ({ attachments }: AttachmentListProps) => {
@@ -12,7 +13,7 @@ export const AttachmentList = ({ attachments }: AttachmentListProps) => {
     <div className="flex flex-col">
       {attachments.length > 0 ? (
         attachments.map(
-          (attachment: any, index: any) =>
+          (attachment) =>
             attachment.driveFile && (
               <div
                 key={attachment.driveFile.id}

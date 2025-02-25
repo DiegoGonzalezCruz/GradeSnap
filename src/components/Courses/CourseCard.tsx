@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { Card, CardContent } from '../ui/card'
-import Image from 'next/image'
+// import Image from 'next/image'
 import { Button } from '../ui/button'
 import { Course, Deadline } from '@/types/courses'
 

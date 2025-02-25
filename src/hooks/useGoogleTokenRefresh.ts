@@ -40,7 +40,7 @@ const useGoogleTokenRefresh = () => {
     const intervalId = setInterval(refreshGoogleToken, 10 * 60 * 1000)
 
     return () => clearInterval(intervalId)
-  }, [])
+  }, [isRefreshing])
 
   return isRefreshing
 }

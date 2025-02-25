@@ -17,12 +17,12 @@ import { getClientSideURL } from '@/utilities/getURL'
 import { toast } from 'sonner'
 
 const GradingButton = ({
-  submissionId,
+  // submissionId,
   attachments,
   courseWorks,
   rubrics,
 }: {
-  submissionId: string
+  // submissionId: string
   attachments: Attachments
   courseWorks: string
   rubrics: Rubrics

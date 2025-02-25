@@ -1,16 +1,16 @@
 // app/api/classroom/rubrics/route.ts
 import { NextResponse, NextRequest } from 'next/server'
 import { google } from 'googleapis'
-import { JWT } from 'google-auth-library'
+// import { JWT } from 'google-auth-library'
 import { getTokenFromCookies } from '@/utilities/classroom'
 
-interface Rubric {
-  id?: string
-  criteria?: any[] // Customize as needed
-  creationTime?: string
-  updateTime?: string
-  // add additional fields if necessary
-}
+// interface Rubric {
+//   id?: string
+//   criteria?: any[] // Customize as needed
+//   creationTime?: string
+//   updateTime?: string
+//   // add additional fields if necessary
+// }
 
 /**
  * Helper to retrieve a query parameter from the request URL.

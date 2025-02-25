@@ -1,6 +1,6 @@
 import type { Access } from 'payload'
 
-export const published: Access = ({ req: { user } }) => {
+export const published: Access = ({}) => {
   return {
     _status: {
       equals: 'published',

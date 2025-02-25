@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
   try {
     body = await req.json()
   } catch (err) {
-    return NextResponse.json({ error: 'Invalid JSON body.' }, { status: 400 })
+    return NextResponse.json({ error: `Invalid JSON body. ${err}` }, { status: 400 })
   }
   const { courseId, text, materials } = body
   if (!courseId || !text) {

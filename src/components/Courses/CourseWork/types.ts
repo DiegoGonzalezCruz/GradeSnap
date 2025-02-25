@@ -41,7 +41,7 @@ export interface Assignment {
   state: string
   alternateLink: string
   courseWorkType: string
-  submissionsubmission: Record<string, any>
+  attachmentSubmission: Record<string, any>
   user: {
     id: string
     name: {

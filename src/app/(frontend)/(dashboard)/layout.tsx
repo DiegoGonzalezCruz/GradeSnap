@@ -1,6 +1,6 @@
 import { Sidebar } from '@/components/Dashboard/sidebar'
 import type React from 'react'
-import { draftMode } from 'next/headers'
+// import { draftMode } from 'next/headers'
 import HeaderDashboard from '@/components/Dashboard/header'
 import MainDashboard from '@/components/Dashboard/main'
 
@@ -10,7 +10,7 @@ export const metadata = {
 }
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const { isEnabled } = await draftMode()
+  // const { isEnabled } = await draftMode()
 
   return (
     <div className="flex flex-row h-screen">

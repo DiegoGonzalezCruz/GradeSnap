@@ -4,18 +4,18 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
+// import {
+//   Table,
+//   TableBody,
+//   TableCell,
+//   TableHead,
+//   TableHeader,
+//   TableRow,
+// } from '@/components/ui/table'
 import { CourseWork, Rubric } from './types'
 import RubricTableView from './RubricTableView'
 
-interface RubricViewProps {
+export interface RubricViewProps {
   rubrics: Record<string, Rubric>
   courseWorks: CourseWork[]
 }
