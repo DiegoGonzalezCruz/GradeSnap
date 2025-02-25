@@ -58,6 +58,7 @@ export const GET = async (request: Request) => {
       'https://www.googleapis.com/auth/classroom.topics',
       // Guardian links (manage student guardian associations)
       'https://www.googleapis.com/auth/classroom.guardianlinks.students',
+      'https://www.googleapis.com/auth/drive.readonly',
     ].join(' '),
     state,
     access_type: 'offline',

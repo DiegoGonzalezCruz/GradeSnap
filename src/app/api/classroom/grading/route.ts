@@ -3,136 +3,192 @@ export const runtime = 'nodejs'
 import { getTokenFromCookies } from '@/utilities/classroom'
 import { NextRequest, NextResponse } from 'next/server'
 import { google } from 'googleapis'
+import { GoogleGenerativeAI, SchemaType } from '@google/generative-ai'
+import { OAuth2Client } from 'google-auth-library'
 
-import pdfParse from 'pdf-parse'
-import { generateGrade } from '@/utilities/gemini'
-// Import or implement your OCR/vision utility if needed
-// import { runOCR } from '@/utilities/ocr'
-
+/**
+ * Extracts the file ID from a typical Google URL.
+ */
 function extractFileId(url: string): string | null {
   const match = url.match(/\/d\/([^\/]+)/)
   return match?.[1] ?? null
 }
 
-// Detect file type based on URL or file metadata.
-// For simplicity, this example checks for known URL patterns or extensions.
+/**
+ * Detects the file type based on the URL.
+ */
 function detectFileType(url: string): 'gdoc' | 'pdf' | 'slides' {
   if (url.includes('docs.google.com/document')) return 'gdoc'
   if (url.includes('docs.google.com/presentation')) return 'slides'
+  if (url.includes('drive.google.com/file')) return 'pdf' // Treat generic drive file URLs as PDFs.
   if (url.endsWith('.pdf')) return 'pdf'
-  // Fallback to plain text extraction
   return 'gdoc'
 }
 
-async function extractContentFromGoogleDoc(fileId: string, token: string): Promise<string> {
-  const drive = google.drive({ version: 'v3', auth: token })
-  const res = await drive.files.export(
-    { fileId, mimeType: 'text/plain' },
-    { responseType: 'stream' },
-  )
-  const chunks: Uint8Array[] = []
-  for await (const chunk of res.data) {
-    chunks.push(chunk)
+/**
+ * Returns an authenticated OAuth2 client.
+ */
+function getOAuthClient(token: string): OAuth2Client {
+  const clientId = process.env.GOOGLE_CLIENT_ID!
+  const clientSecret = process.env.GOOGLE_CLIENT_SECRET!
+  const redirectUri = 'postmessage' // or your actual redirect URI
+
+  const oauth2Client = new OAuth2Client(clientId, clientSecret, redirectUri)
+  oauth2Client.setCredentials({ access_token: token })
+  return oauth2Client
+}
+
+/**
+ * Downloads the file from Drive.
+ * If the file is not a PDF (gdoc or slides), export it as PDF.
+ */
+async function getPdfBuffer(
+  fileId: string,
+  token: string,
+  fileType: 'gdoc' | 'pdf' | 'slides',
+): Promise<Buffer> {
+  const authClient = getOAuthClient(token)
+  const drive = google.drive({ version: 'v3', auth: authClient })
+
+  if (fileType === 'pdf') {
+    // Directly download the PDF.
+    const res = await drive.files.get({ fileId, alt: 'media' }, { responseType: 'arraybuffer' })
+    return Buffer.from(res.data as ArrayBuffer)
+  } else {
+    // Export Google Docs or Slides as PDF.
+    const res = await drive.files.export(
+      { fileId, mimeType: 'application/pdf' },
+      { responseType: 'arraybuffer' },
+    )
+    return Buffer.from(res.data as ArrayBuffer)
   }
-  return Buffer.concat(chunks).toString('utf8')
 }
 
-async function extractContentFromPDF(fileId: string, token: string): Promise<string> {
-  const drive = google.drive({ version: 'v3', auth: token })
-  // Download the PDF file
-  const res = await drive.files.get({ fileId, alt: 'media' }, { responseType: 'arraybuffer' })
-  const buffer = Buffer.from(res.data as ArrayBuffer)
-  const data = await pdfParse(buffer) //TODO: THIS IS CREATING PROBLEMS AGAIN!!!
-  let content = 'data.text'
-
-  // Optional: Process images if needed (e.g., OCR)
-  // const imagesData = await extractImagesFromPDF(buffer)
-  // for (const image of imagesData) {
-  //   const caption = await runOCR(image)
-  //   content += `\n[Image Caption: ${caption}]`
-  // }
-
-  return content
-}
-
-async function extractContentFromGoogleSlides(fileId: string, token: string): Promise<string> {
-  // Option 1: Use Google Slides API to extract text from each slide.
-  const slides = google.slides({ version: 'v1', auth: token })
-  const presentation = await slides.presentations.get({ presentationId: fileId })
-  const slidesContent =
-    presentation.data.slides
-      ?.map((slide, index) => {
-        const texts =
-          slide.pageElements
-            ?.map((pe) => {
-              if (pe.shape && pe.shape.text) {
-                // Concatenate all text elements
-                return pe.shape.text.textElements?.map((te) => te.textRun?.content || '').join('')
-              }
-              return ''
-            })
-            .join(' ') || ''
-        return `Slide ${index + 1}: ${texts.trim()}`
-      })
-      .join('\n\n') || ''
-  return slidesContent
+// Define a JSON schema for the grading result.
+const gradingSchema = {
+  description: "Grading result for a student's submission",
+  type: SchemaType.OBJECT,
+  properties: {
+    criteria: {
+      type: SchemaType.ARRAY,
+      items: {
+        type: SchemaType.OBJECT,
+        properties: {
+          criterionId: {
+            type: SchemaType.STRING,
+            description: 'ID of the criterion',
+            nullable: false,
+          },
+          criterionTitle: {
+            type: SchemaType.STRING,
+            description: 'Title of the criterion',
+            nullable: false,
+          },
+          score: {
+            type: SchemaType.NUMBER,
+            description: 'Score assigned for this criterion',
+            nullable: false,
+          },
+          justification: {
+            type: SchemaType.STRING,
+            description: 'Justification for the assigned score',
+            nullable: false,
+          },
+        },
+        required: ['criterionId', 'criterionTitle', 'score', 'justification'],
+      },
+    },
+    overallFeedback: {
+      type: SchemaType.STRING,
+      description: 'Overall feedback for the submission',
+      nullable: false,
+    },
+    overallGrade: {
+      type: SchemaType.NUMBER,
+      description: "Overall grade (sum of each criterion's score)",
+      nullable: false,
+    },
+  },
+  required: ['criteria', 'overallFeedback', 'overallGrade'],
 }
 
 export async function POST(req: NextRequest) {
-  console.log('POST REACHED ')
+  console.log('POST request received')
   try {
-    //     const body = await req.json()
-    //     console.log(body, 'BODY')
-    //     const token = await getTokenFromCookies(req)
-    //     if (!token) {
-    //       return NextResponse.json(
-    //         { error: 'Unauthorized. No access token available.' },
-    //         { status: 401 },
-    //       )
-    //     }
+    const body = await req.json()
+    console.log(body, 'BODY')
+    const token = await getTokenFromCookies(req)
+    if (!token) {
+      return NextResponse.json(
+        { error: 'Unauthorized. No access token available.' },
+        { status: 401 },
+      )
+    }
 
-    //     const { rubric, url } = body
-    //     if (!rubric || !url) {
-    //       return NextResponse.json({ error: 'Both rubric and URL are required.' }, { status: 400 })
-    //     }
+    const { rubric, url } = body
+    if (!rubric || !url) {
+      return NextResponse.json({ error: 'Both rubric and URL are required.' }, { status: 400 })
+    }
 
-    //     const fileId = extractFileId(url)
-    //     if (!fileId) {
-    //       return NextResponse.json(
-    //         { error: 'Invalid file URL. Unable to extract file ID.' },
-    //         { status: 400 },
-    //       )
-    //     }
+    const fileId = extractFileId(url)
+    if (!fileId) {
+      return NextResponse.json(
+        { error: 'Invalid file URL. Unable to extract file ID.' },
+        { status: 400 },
+      )
+    }
 
-    //     const fileType = detectFileType(url)
-    //     let fileContent = ''
+    const fileType = detectFileType(url)
+    // Download the file (or export it as a PDF) from Google Drive.
+    const pdfBuffer = await getPdfBuffer(fileId, token, fileType)
+    // Convert PDF binary data to a base64-encoded string.
+    const base64Pdf = pdfBuffer.toString('base64')
 
-    //     if (fileType === 'gdoc') {
-    //       fileContent = await extractContentFromGoogleDoc(fileId, token)
-    //     } else if (fileType === 'pdf') {
-    //       fileContent = await extractContentFromPDF(fileId, token)
-    //     } else if (fileType === 'slides') {
-    //       fileContent = await extractContentFromGoogleSlides(fileId, token)
-    //     } else {
-    //       return NextResponse.json({ error: 'Unsupported file format.' }, { status: 400 })
-    //     }
+    // Set up Gemini API.
+    const geminiAPIKey = process.env.NEXT_PUBLIC_GOOGLE_GEMINI_APIKEY
+    if (!geminiAPIKey) {
+      return NextResponse.json({ error: 'Gemini API key not set' }, { status: 500 })
+    }
+    const genAI = new GoogleGenerativeAI(geminiAPIKey)
+    // Provide the JSON schema and force a JSON response.
+    const model = genAI.getGenerativeModel({
+      model: 'gemini-2.0-flash',
+      generationConfig: {
+        temperature: 0,
+        topP: 1,
+        responseMimeType: 'application/json',
+        responseSchema: gradingSchema,
+      },
+    })
 
-    //     // Build the grading prompt.
-    //     const prompt = `
-    // You are an expert grading assistant. Your task is to evaluate a student's submission against the provided rubric. Use the content below (which may include extracted text from a document, captions for images, or slide notes) to determine the quality of the submission.
+    // Build the request parts.
+    const pdfPart = {
+      inlineData: {
+        data: base64Pdf,
+        mimeType: 'application/pdf',
+      },
+    }
 
-    // === Rubric ===
-    // ${JSON.stringify(rubric, null, 2)}
+    const textPrompt = `
+You are an expert grading assistant. Evaluate the student's submission using the provided rubric. For each rubric criterion, compare the submission to the rubric levels and determine the most appropriate level. Provide the following for each criterion:
+- The criterion ID and title.
+- The selected level's score.
+- A brief justification for your decision.
 
-    // === Student Submission ===
-    // ${fileContent}
+After evaluating all criteria, provide overall feedback summarizing the submission’s strengths, weaknesses, and suggestions for improvement, and calculate the overall grade as the sum of the criterion scores.
 
-    // Provide a detailed evaluation including scores for each criterion, justifications, and overall feedback.
-    //     `
+=== Rubric ===
+${JSON.stringify(rubric, null, 2)}
 
-    // const gradeResult = await generateGrade(prompt)
+=== Student Submission ===
+[PDF content from the document]
+`
 
-    return NextResponse.json({ grade: 'gradeResult' })
+    // Call Gemini API with both the text prompt and the PDF content.
+    const result = await model.generateContent([textPrompt, pdfPart])
+    const gradeResult = result.response.text()
+
+    return NextResponse.json({ grade: gradeResult })
   } catch (error) {
     console.error('Error processing the grading request:', error)
     return NextResponse.json(
