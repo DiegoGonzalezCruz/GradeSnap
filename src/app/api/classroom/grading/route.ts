@@ -145,7 +145,7 @@ export async function POST(req: NextRequest) {
     const base64Pdf = pdfBuffer.toString('base64')
 
     // Set up Gemini API.
-    const geminiAPIKey = process.env.NEXT_PUBLIC_GOOGLE_GEMINI_APIKEY
+    const geminiAPIKey = process.env.GOOGLE_GEMINI_APIKEY
     if (!geminiAPIKey) {
       return NextResponse.json({ error: 'Gemini API key not set' }, { status: 500 })
     }
