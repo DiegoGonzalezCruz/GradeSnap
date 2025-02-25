@@ -106,7 +106,7 @@ export default function SubmissionsTable({
               </TableRow>
             ) : (
               allSubmissions.map((submission: any) => {
-                console.log(submission, 'submission ***** MAP')
+                // console.log(submission, 'submission ***** MAP')
                 const courseWork = courseWorks.find((cw) => cw.id === submission.courseWorkId)
                 const attachments = submission.assignmentSubmission?.attachments || []
 

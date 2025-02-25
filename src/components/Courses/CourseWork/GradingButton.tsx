@@ -13,6 +13,7 @@ import { useParams } from 'next/navigation'
 import { Label } from '@/components/ui/label'
 import { Attachments, CourseWork, Rubric, Rubrics } from './types'
 import RubricTableView from './RubricTableView'
+import { getClientSideURL } from '@/utilities/getURL'
 
 const GradingButton = ({
   submissionId,
@@ -25,14 +26,14 @@ const GradingButton = ({
   courseWorks: string
   rubrics: Rubrics
 }) => {
-  console.log(submissionId, 'submission Id FROM DIALOG')
-  console.log(courseWorks, 'course works FROM DIALOG')
-  console.log(rubrics, ' rubrics FROM DIALOG')
-  console.log(attachments, 'attachemnts FROM DIALOG')
+  // console.log(submissionId, 'submission Id FROM DIALOG')
+  // console.log(courseWorks, 'course works FROM DIALOG')
+  // console.log(rubrics, ' rubrics FROM DIALOG')
+  // console.log(attachments, 'attachemnts FROM DIALOG')
   const params = useParams<{ id: string }>()
   const { id } = params
   const rubric = rubrics[courseWorks]
-  console.log(rubric, 'rubric id FROM DIALOG')
+  // console.log(rubric, 'rubric id FROM DIALOG')
 
   const [selectedKey, setSelectedKey] = useState<string | null>(null)
 
@@ -40,9 +41,14 @@ const GradingButton = ({
 
   // console.log(id, '**** search ****')
 
-  const handleGradeClick = (rubric: Rubric, selectedKey: string) => {
-    console.log(rubric, 'rubric id FROM DIALOG')
-    console.log(selectedKey, 'selected key FROM DIALOG')
+  const handleGradeClick = async (rubric: Rubric, selectedKey: string) => {
+    // console.log(rubric, 'rubric id FROM DIALOG')
+    // console.log(selectedKey, 'selected key FROM DIALOG')
+    const res = await fetch(`${getClientSideURL()}/api/classroom/grading`, {
+      method: 'POST',
+      body: JSON.stringify({ rubric, url: selectedKey }),
+    })
+    console.log(await res.json(), 'RESPONSE GRADING 🚨 ')
   }
 
   return (
