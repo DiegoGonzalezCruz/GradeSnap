@@ -80,3 +80,16 @@ export interface Rubric {
 export interface Rubrics {
   [key: string]: Rubric
 }
+
+interface DriveFile {
+  id: string
+  title: string
+  alternateLink: string
+  thumbnailUrl: string
+}
+
+interface Attachment {
+  driveFile: DriveFile
+}
+
+export type Attachments = Attachment[]

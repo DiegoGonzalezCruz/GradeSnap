@@ -47,9 +47,9 @@ export default function SubmissionsTable({
     searchQuery,
   })
 
-  console.log(allSubmissions, '****** ALL SUBMISSIONS')
-  console.log(submissions, 'SUBMISSIONS')
-  console.log(rubrics, 'RUBRICS')
+  // console.log(allSubmissions, '****** ALL SUBMISSIONS')
+  // console.log(submissions, 'SUBMISSIONS')
+  // console.log(rubrics, 'RUBRICS')
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -106,6 +106,7 @@ export default function SubmissionsTable({
               </TableRow>
             ) : (
               allSubmissions.map((submission: any) => {
+                console.log(submission, 'submission ***** MAP')
                 const courseWork = courseWorks.find((cw) => cw.id === submission.courseWorkId)
                 const attachments = submission.assignmentSubmission?.attachments || []
 
@@ -142,7 +143,8 @@ export default function SubmissionsTable({
                         </Button>
                         <GradingButton
                           submissionId={submission.id}
-                          courseWorks={courseWorks}
+                          attachments={attachments}
+                          courseWorks={submission.courseWorkId}
                           rubrics={rubrics}
                         />
                       </div>

@@ -12,15 +12,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Assignment, CourseWork, Rubrics } from './types'
 import SubmissionsTable from './submission-table'
 import RubricView from './rubric.view'
-import useGradeAssignment from '@/hooks/gemini/useGradeAssignment'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog'
 
 interface DashboardProps {
   courseWorks: CourseWork[]

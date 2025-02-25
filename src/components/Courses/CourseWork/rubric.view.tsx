@@ -13,6 +13,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { CourseWork, Rubric } from './types'
+import RubricTableView from './RubricTableView'
 
 interface RubricViewProps {
   rubrics: Record<string, Rubric>
@@ -79,32 +80,7 @@ export default function RubricView({ rubrics, courseWorks }: RubricViewProps) {
             <h3 className="text-xl font-bold">Rubric Details</h3>
             <p className="text-sm text-muted-foreground">View and edit rubric criteria</p>
           </div>
-          {selectedRubric.criteria.map((criterion) => (
-            <div key={criterion.id} className="space-y-4">
-              <div>
-                <h4 className="text-lg font-semibold">{criterion.title}</h4>
-                <p className="text-sm text-muted-foreground">{criterion.description}</p>
-              </div>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Level</TableHead>
-                    <TableHead>Description</TableHead>
-                    <TableHead className="w-24">Points</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {criterion.levels.map((level) => (
-                    <TableRow key={level.id}>
-                      <TableCell className="font-medium">{level.title}</TableCell>
-                      <TableCell>{level.description}</TableCell>
-                      <TableCell>{level.points}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          ))}
+          <RubricTableView rubric={selectedRubric} />
         </div>
       )}
     </div>
