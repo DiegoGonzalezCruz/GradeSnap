@@ -36,10 +36,14 @@ const GradingButton = ({
 
   const [selectedKey, setSelectedKey] = useState<string | null>(null)
 
-  const rubricsKeys = Object.keys(rubrics)
   // console.log(rubricsKeys, 'rubric keys')
 
   // console.log(id, '**** search ****')
+
+  const handleGradeClick = (rubric: Rubric, selectedKey: string) => {
+    console.log(rubric, 'rubric id FROM DIALOG')
+    console.log(selectedKey, 'selected key FROM DIALOG')
+  }
 
   return (
     <Dialog>
@@ -78,6 +82,11 @@ const GradingButton = ({
         <div className="flex flex-col gap-2 overflow-scroll">
           <Label>Select an Assignment to grade:</Label>
           {rubric && <RubricTableView rubric={rubric} />}
+        </div>
+        <div className="w-full flex flex-row items-center justify-center">
+          {rubric && selectedKey && (
+            <Button onClick={() => handleGradeClick(rubric, selectedKey)}>Grade</Button>
+          )}
         </div>
       </DialogContent>
     </Dialog>
