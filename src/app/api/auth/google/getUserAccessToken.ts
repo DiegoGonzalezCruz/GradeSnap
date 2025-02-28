@@ -6,7 +6,10 @@ import { NextRequest } from 'next/server'
 // It calls the refresh endpoint, which in turn sets updated cookies.
 export async function getUserAccessToken(req: NextRequest): Promise<string | null> {
   let token = req.cookies.get('google_access_token')?.value
+  console.log(token, 'Access Token')
   const expiration = req.cookies.get('google_access_token_expiration')?.value
+
+  console.log(expiration, 'Expiration Time')
 
   if (!token || !expiration) {
     return null

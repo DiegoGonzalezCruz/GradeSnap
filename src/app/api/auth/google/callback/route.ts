@@ -155,6 +155,7 @@ const handler = async (request: Request) => {
     response.headers.append('Set-Cookie', googleTokenCookie)
     response.headers.append('Set-Cookie', clearStateCookie)
     response.headers.append('Set-Cookie', clearRedirectCookie)
+    response.headers.append('Set-Cookie', googleTokenExpirationCookie)
 
     return response
   } catch (error) {
