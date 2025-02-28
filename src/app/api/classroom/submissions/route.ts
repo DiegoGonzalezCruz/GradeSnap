@@ -1,13 +1,7 @@
 // app/api/classroom/submissions/route.ts
 import { NextRequest, NextResponse } from 'next/server'
 import { google } from 'googleapis'
-
-// Dummy helper to retrieve the stored access token (modify this to fit your auth flow)
-async function getUserAccessToken(req: NextRequest): Promise<string | null> {
-  // For instance, if you stored it in cookies:
-  const token = req.cookies.get('google_access_token')?.value
-  return token || null
-}
+import { getUserAccessToken } from '../../auth/google/getUserAccessToken'
 
 export async function GET(req: NextRequest) {
   // This endpoint lists student submissions.

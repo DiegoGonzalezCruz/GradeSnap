@@ -15,18 +15,14 @@ export default function DashboardPage() {
   return (
     <DashboardShell>
       <DashboardHeader heading="Dashboard" text="Welcome to your Classroom AI Dashboard.">
-        <Button>Refresh Data</Button>
+        {/* <Button>Refresh Data</Button> */}
       </DashboardHeader>
       <div className="flex flex-row items-center justify-center gap-20 w-full h-full ">
         <ClassroomData />
       </div>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-        <div className="col-span-4 ">
-          <AIGradedAssessments />
-        </div>
-        <div className="col-span-3">
-          <SendAnnouncement />
-        </div>
+        <div className="col-span-4 ">{/* <AIGradedAssessments /> */}</div>
+        <div className="col-span-3">{/* <SendAnnouncement /> */}</div>
       </div>
     </DashboardShell>
   )

@@ -1,12 +1,7 @@
 // app/api/classroom/announcement/route.ts
 import { NextRequest, NextResponse } from 'next/server'
 import { google } from 'googleapis'
-
-// Dummy helper to retrieve the stored access token (modify this to fit your auth flow)
-async function getUserAccessToken(req: NextRequest): Promise<string | null> {
-  const token = req.cookies.get('google_access_token')?.value
-  return token || null
-}
+import { getUserAccessToken } from '../../auth/google/getUserAccessToken'
 
 export async function POST(req: NextRequest) {
   // This endpoint sends an announcement.
