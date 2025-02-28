@@ -8,7 +8,7 @@ export const fetchCourseWork = async (courseId: string): Promise<any[]> => {
   if (!courseWorkRes.ok) {
     throw new Error('Failed to fetch course work')
   }
-  const { courseWork } = await courseWorkRes.json()
+  const courseWork = await courseWorkRes.json()
   return courseWork
 }
 

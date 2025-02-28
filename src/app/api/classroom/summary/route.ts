@@ -1,5 +1,6 @@
-import { getQueryParam, getTokenFromCookies } from '@/utilities/classroom'
+import { getQueryParam } from '@/utilities/classroom'
 import { NextRequest, NextResponse } from 'next/server'
+import { getUserAccessToken } from '../../auth/google/getUserAccessToken'
 
 const API_BASE = 'https://classroom.googleapis.com/v1'
 
@@ -154,7 +155,7 @@ export async function GET(req: NextRequest) {
   console.log('GET request received')
 
   try {
-    const token = await getTokenFromCookies(req)
+    const token = await getUserAccessToken(req)
     if (!token) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
 
     console.log('before fetching courses')

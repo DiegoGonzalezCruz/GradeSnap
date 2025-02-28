@@ -1,9 +1,9 @@
-import { AIGradedAssessments } from '@/components/Dashboard/ai-graded-assements'
+// import { AIGradedAssessments } from '@/components/Dashboard/ai-graded-assements'
 import { ClassroomData } from '@/components/Dashboard/classroom-data'
 import { DashboardHeader } from '@/components/Dashboard/dashboard-header'
 import { DashboardShell } from '@/components/Dashboard/dashboard-shell'
-import { SendAnnouncement } from '@/components/Dashboard/send-announcement'
-import { Button } from '@/components/ui/button'
+// import { SendAnnouncement } from '@/components/Dashboard/send-announcement'
+// import { Button } from '@/components/ui/button'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {

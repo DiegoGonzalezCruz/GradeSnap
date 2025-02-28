@@ -1,14 +1,15 @@
-import { getQueryParam, getTokenFromCookies } from '@/utilities/classroom'
+import { getQueryParam } from '@/utilities/classroom'
 import { google } from 'googleapis'
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
+import { getUserAccessToken } from '../../auth/google/getUserAccessToken'
 
 /**
  * GET endpoint to list courses or retrieve a specific course.
  * Query Parameters:
  *   - courseId (optional): If provided, fetch a single course; otherwise, list all courses.
  */
-export async function GET(req: Request) {
-  const token = await getTokenFromCookies(req)
+export async function GET(req: NextRequest) {
+  const token = await getUserAccessToken(req)
   if (!token) {
     return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
   }

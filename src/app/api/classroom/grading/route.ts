@@ -1,10 +1,10 @@
 export const runtime = 'nodejs'
 
-import { getTokenFromCookies } from '@/utilities/classroom'
 import { NextRequest, NextResponse } from 'next/server'
 import { google } from 'googleapis'
 import { GoogleGenerativeAI, SchemaType } from '@google/generative-ai'
 import { OAuth2Client } from 'google-auth-library'
+import { getUserAccessToken } from '../../auth/google/getUserAccessToken'
 
 /**
  * Extracts the file ID from a typical Google URL.
@@ -117,7 +117,7 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json()
     console.log(body, 'BODY')
-    const token = await getTokenFromCookies(req)
+    const token = await getUserAccessToken(req)
     if (!token) {
       return NextResponse.json(
         { error: 'Unauthorized. No access token available.' },

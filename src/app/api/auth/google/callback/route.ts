@@ -1,8 +1,6 @@
-// app/api/auth/google/callback/route.ts
 import { NextResponse } from 'next/server'
 import axios from 'axios'
 import jwt from 'jsonwebtoken'
-import { serialize } from 'cookie'
 import crypto from 'crypto'
 import { getPayload } from 'payload'
 import config from '@payload-config'
@@ -32,17 +30,13 @@ const handler = async (request: Request) => {
   const code = url.searchParams.get('code')
   const state = url.searchParams.get('state')
 
-  // Get stored state and redirect URL from cookies
+  // Use NextResponse's cookie handling if available,
+  // but here we manually parse the incoming cookie header.
   const cookieHeader = request.headers.get('cookie') || ''
   const cookies = cookieHeader.split('; ').reduce((acc: Record<string, string>, cookie: string) => {
-    const parts = cookie.split('=')
-    if (parts.length === 2) {
-      // Ensure both key and value exist
-      const [key, value] = parts.map((part) => part.trim()) // Trim whitespace
-      if (key && value) {
-        // Ensure key and value are not empty
-        acc[key] = value
-      }
+    const [key, value] = cookie.split('=').map((part) => part.trim())
+    if (key && value) {
+      acc[key] = value
     }
     return acc
   }, {})
@@ -58,8 +52,9 @@ const handler = async (request: Request) => {
     return NextResponse.json({ error: 'No authorization code provided' }, { status: 400 })
   }
 
-  const protocol = request.headers.get('host')?.startsWith('localhost') ? 'http' : 'https'
-  const baseUrl = `${protocol}://${request.headers.get('host')}`
+  const host = request.headers.get('host')
+  const protocol = host?.startsWith('localhost') ? 'http' : 'https'
+  const baseUrl = `${protocol}://${host}`
 
   try {
     // 1. Exchange code for tokens
@@ -84,7 +79,6 @@ const handler = async (request: Request) => {
     const userInfo = userInfoResponse.data
 
     // 3. Find or create the user in Payload.
-    // (This function can also update the user to store the refresh token.)
     const user = await findOrCreateUser(userInfo, refresh_token)
 
     // 4. Shape and sign the JWT token for Payload authentication.
@@ -97,65 +91,45 @@ const handler = async (request: Request) => {
       expiresIn: '7d',
     })
 
-    // 5. Set the cookies
-    const jwtCookie = serialize('payload-token', token, {
+    // Prepare cookie options
+    const cookieOptions = {
       httpOnly: true,
       secure: protocol === 'https',
-      maxAge: 60 * 60 * 24 * 7,
       path: '/',
-      sameSite: 'lax',
-    })
-    // Store the Google access token using its expiry time.
-    const googleTokenCookie = serialize('google_access_token', access_token, {
-      httpOnly: true,
-      secure: protocol === 'https',
-      maxAge: expires_in,
-      path: '/',
-      sameSite: 'lax',
-    })
+      sameSite: 'lax' as const,
+    }
 
-    // Set the google_access_token_expiration cookie
-    const expirationDate = new Date(Date.now() + expires_in * 1000)
-    const googleTokenExpirationCookie = serialize(
-      'google_access_token_expiration',
-      expirationDate.getTime().toString(),
-      {
-        httpOnly: true,
-        secure: protocol === 'https',
-        maxAge: expires_in,
-        path: '/',
-        sameSite: 'lax',
-      },
+    // 5. Create a NextResponse and set cookies using the cookie API.
+    const response = NextResponse.redirect(
+      // Decode and adjust the redirect URL.
+      redirectURL.startsWith('http')
+        ? decodeURIComponent(redirectURL)
+        : `${baseUrl}${decodeURIComponent(redirectURL)}`,
     )
 
-    // Clear the state and redirect cookies.
-    const clearStateCookie = serialize('oauth_state', '', {
-      httpOnly: true,
-      secure: protocol === 'https',
-      expires: new Date(0),
-      path: '/',
-      sameSite: 'lax',
+    response.cookies.set('payload-token', token, {
+      ...cookieOptions,
+      maxAge: 60 * 60 * 24 * 7, // 7 days
     })
-    const clearRedirectCookie = serialize('oauth_redirect', '', {
-      httpOnly: true,
-      secure: protocol === 'https',
-      expires: new Date(0),
-      path: '/',
-      sameSite: 'lax',
+    response.cookies.set('google_access_token', access_token, {
+      ...cookieOptions,
+      maxAge: expires_in,
+    })
+    const expirationDate = new Date(Date.now() + expires_in * 1000)
+    response.cookies.set('google_access_token_expiration', expirationDate.getTime().toString(), {
+      ...cookieOptions,
+      maxAge: expires_in,
     })
 
-    // 6. Redirect to the stored URL
-    const decodedRedirectURL = decodeURIComponent(redirectURL)
-    const finalRedirectURL = decodedRedirectURL.startsWith('http')
-      ? decodedRedirectURL
-      : `${baseUrl}${decodedRedirectURL}`
-
-    const response = NextResponse.redirect(finalRedirectURL)
-    response.headers.append('Set-Cookie', jwtCookie)
-    response.headers.append('Set-Cookie', googleTokenCookie)
-    response.headers.append('Set-Cookie', clearStateCookie)
-    response.headers.append('Set-Cookie', clearRedirectCookie)
-    response.headers.append('Set-Cookie', googleTokenExpirationCookie)
+    // Clear state and redirect cookies.
+    response.cookies.set('oauth_state', '', {
+      ...cookieOptions,
+      expires: new Date(0),
+    })
+    response.cookies.set('oauth_redirect', '', {
+      ...cookieOptions,
+      expires: new Date(0),
+    })
 
     return response
   } catch (error) {
@@ -175,7 +149,6 @@ const findOrCreateUser = async (userInfo: GoogleUserInfo, refreshToken?: string)
   })
   if (existingBySub.docs.length > 0) {
     const userDoc = existingBySub.docs[0]
-    // Optionally update the refresh token if available.
     if (refreshToken) {
       return await payload.update({
         collection: 'users',
@@ -194,19 +167,17 @@ const findOrCreateUser = async (userInfo: GoogleUserInfo, refreshToken?: string)
     limit: 1,
   })
   if (existingByEmail.docs.length > 0) {
-    const userToUpdate = existingByEmail.docs[0]
-    if (userToUpdate) {
-      return await payload.update({
-        collection: 'users',
-        id: userToUpdate.id,
-        data: {
-          googleSub: userInfo.sub,
-          googleRefreshToken: refreshToken,
-          pictureURL: userInfo.picture,
-        },
-        showHiddenFields: true,
-      })
-    }
+    const userToUpdate = existingByEmail.docs[0]!
+    return await payload.update({
+      collection: 'users',
+      id: userToUpdate.id,
+      data: {
+        googleSub: userInfo.sub,
+        googleRefreshToken: refreshToken,
+        pictureURL: userInfo.picture,
+      },
+      showHiddenFields: true,
+    })
   }
 
   // 3. Otherwise, create a new user.

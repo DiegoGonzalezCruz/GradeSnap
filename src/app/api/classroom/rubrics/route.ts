@@ -1,8 +1,8 @@
 // app/api/classroom/rubrics/route.ts
 import { NextResponse, NextRequest } from 'next/server'
 import { google } from 'googleapis'
+import { getUserAccessToken } from '../../auth/google/getUserAccessToken'
 // import { JWT } from 'google-auth-library'
-import { getTokenFromCookies } from '@/utilities/classroom'
 
 // interface Rubric {
 //   id?: string
@@ -45,7 +45,7 @@ async function fetchRubrics(courseId: string, courseWorkId: string, token: strin
 }
 
 export async function GET(req: NextRequest) {
-  const token = await getTokenFromCookies(req)
+  const token = await getUserAccessToken(req)
   if (!token) {
     return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
   }
