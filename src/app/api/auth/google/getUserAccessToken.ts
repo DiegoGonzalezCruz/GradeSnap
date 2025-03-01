@@ -4,14 +4,14 @@ import { NextRequest } from 'next/server'
 // This helper assumes that your refresh endpoint is hosted on the same domain.
 export async function getUserAccessToken(req: NextRequest): Promise<string | null> {
   const token = req.cookies.get('google_access_token')?.value as string
-  // console.log(token, 'Access Token') // TODO: Fix this
+  console.log(token, 'Access Token') // TODO: Fix this
   const expiration = req.cookies.get('google_access_token_expiration')?.value as string
-  // console.log(expiration, 'Expiration Time') // TODO: Fix this
+  console.log(expiration, 'Expiration Time') // TODO: Fix this
 
   // If token or expiration is missing, consider it unauthenticated.
-  if (!token || !expiration) {
-    return null
-  }
+  // if (!token || !expiration) {
+  //   return null
+  // }
 
   const expirationTime = parseInt(expiration, 10)
   const now = Date.now()

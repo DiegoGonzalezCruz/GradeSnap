@@ -37,7 +37,7 @@ export async function GET(req: NextRequest) {
         // Limit the fields to reduce payload if desired.
         // fields: 'courses(id,name,section,description,alternateLink)',
       })
-      console.log(coursesResponse.data, '****** COURSE DATA **********')
+      // console.log(coursesResponse.data, '****** COURSE DATA **********')
       return NextResponse.json(coursesResponse.data)
     }
   } catch (error: any) {

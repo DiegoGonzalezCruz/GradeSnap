@@ -94,7 +94,7 @@ export async function POST(req: NextRequest) {
     )
   }
 
-  const token = await getTokenFromCookies(req)
+  const token = await getUserAccessToken(req)
   if (!token) {
     return NextResponse.json({ error: 'Unauthorized. No access token available.' }, { status: 401 })
   }

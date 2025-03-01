@@ -70,14 +70,14 @@ function getNextDeadline(
   submissions: GoogleAssignment[],
 ): string | { year: number; month: number; day: number } {
   const sortedSubmissions = submissions
-    .filter((a) => a.dueDate)
+    .filter((a) => a.dueDate !== undefined)
     .map((a) => ({
       date: new Date(`${a.dueDate!.year}-${a.dueDate!.month}-${a.dueDate!.day}`),
-      ...a,
+      dueDate: a.dueDate!,
     }))
     .sort((a, b) => a.date.getTime() - b.date.getTime())
 
-  return sortedSubmissions.length ? sortedSubmissions[0]?.dueDate! : 'No upcoming deadlines'
+  return sortedSubmissions[0]?.dueDate ?? 'No upcoming deadlines'
 }
 
 async function getCourseDetails(courseId: string, token: string) {
