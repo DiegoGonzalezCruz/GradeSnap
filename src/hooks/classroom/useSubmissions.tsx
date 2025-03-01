@@ -37,3 +37,14 @@ export function useSubmissions(courseId: string) {
     enabled: !!courseWork,
   })
 }
+
+export function useGetSubmissionsFromCourseWork(courseId: string, courseWorkId: string) {
+  return useQuery({
+    queryKey: ['submissionsInCourseWork', courseId, courseWorkId],
+    queryFn: async () => {
+      const submissionsList = await fetchSubmissions(courseId, courseWorkId)
+      return submissionsList || []
+    },
+    enabled: !!courseWorkId,
+  })
+}

@@ -4,7 +4,6 @@ import { getUserAccessToken } from '../../auth/google/getUserAccessToken'
 
 const API_BASE = 'https://classroom.googleapis.com/v1'
 
-// Define Types for Responses
 interface GoogleCourse {
   id: string
   name: string
@@ -19,55 +18,46 @@ interface GoogleAssignment {
   dueDate?: { year: number; month: number; day: number }
 }
 
-interface GooglesubmissionsList {
-  courseWork?: GoogleAssignment[]
-}
-
-interface GoogleSubmission {
-  state: 'TURNED_IN' | 'CREATED' | 'NEW' | 'RETURNED' | 'RECLAIMED_BY_STUDENT' | 'DRAFT'
-}
-
 interface GoogleSubmissionsList {
-  studentSubmissions?: GoogleSubmission[]
+  studentSubmissions?: { state: string }[]
 }
 
-// Function to fetch Google Classroom API with type safety
-async function fetchGoogleClassroomAPI(url: string, token: string): Promise<any> {
-  const res = await fetch(url, {
-    headers: { Authorization: `Bearer ${token}` },
-  })
-
-  if (!res.ok) {
-    console.error(`Error fetching ${url}:`, await res.text())
-    throw new Error(`Failed to fetch: ${url}`)
+async function fetchGoogleClassroomAPI<T>(url: string, token: string): Promise<T | null> {
+  try {
+    const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } })
+    if (!res.ok) throw new Error(`Failed to fetch ${url}: ${await res.text()}`)
+    return res.json() as Promise<T>
+  } catch (error) {
+    console.error(`Error fetching ${url}:`, error)
+    return null
   }
-
-  return res.json()
 }
 
-// Function to get course summary
 async function getCourseSummary(course: GoogleCourse, token: string) {
   try {
-    const studentsData: GoogleStudentList = await fetchGoogleClassroomAPI(
-      `${API_BASE}/courses/${course.id}/students`,
-      token,
-    )
-    const studentCount = studentsData.students?.length || 0
+    const [studentsData, courseWorkData] = await Promise.allSettled([
+      fetchGoogleClassroomAPI<GoogleStudentList>(
+        `${API_BASE}/courses/${course.id}/students`,
+        token,
+      ),
+      fetchGoogleClassroomAPI<{ courseWork?: GoogleAssignment[] }>(
+        `${API_BASE}/courses/${course.id}/courseWork`,
+        token,
+      ),
+    ])
 
-    const submissionsData: GooglesubmissionsList = await fetchGoogleClassroomAPI(
-      `${API_BASE}/courses/${course.id}/courseWork`,
-      token,
-    )
-    const submissions = submissionsData.courseWork || []
-    const numsubmissions = submissions.length
-
+    const studentCount =
+      (studentsData.status === 'fulfilled' && studentsData.value?.students?.length) || 0
+    const submissions =
+      (courseWorkData.status === 'fulfilled' && courseWorkData.value?.courseWork) || []
+    const numSubmissions = submissions.length
     const nextDeadline = getNextDeadline(submissions)
 
     return {
       courseId: course.id,
       courseName: course.name,
       studentCount,
-      numsubmissions,
+      numSubmissions,
       nextDeadline,
     }
   } catch (error) {
@@ -76,51 +66,53 @@ async function getCourseSummary(course: GoogleCourse, token: string) {
   }
 }
 
-// Function to get next deadline
-function getNextDeadline(submissions: GoogleAssignment[]) {
-  const sortedsubmissions = submissions
+function getNextDeadline(
+  submissions: GoogleAssignment[],
+): string | { year: number; month: number; day: number } {
+  const sortedSubmissions = submissions
     .filter((a) => a.dueDate)
-    .sort((a, b) => {
-      const dateA = new Date(`${a.dueDate!.year}-${a.dueDate!.month}-${a.dueDate!.day}`).getTime()
-      const dateB = new Date(`${b.dueDate!.year}-${b.dueDate!.month}-${b.dueDate!.day}`).getTime()
-      return dateA - dateB
-    })
+    .map((a) => ({
+      date: new Date(`${a.dueDate!.year}-${a.dueDate!.month}-${a.dueDate!.day}`),
+      ...a,
+    }))
+    .sort((a, b) => a.date.getTime() - b.date.getTime())
 
-  return sortedsubmissions.length ? sortedsubmissions?.[0]?.dueDate : 'No upcoming deadlines'
+  return sortedSubmissions.length ? sortedSubmissions[0]?.dueDate! : 'No upcoming deadlines'
 }
 
-// Function to get detailed course data
 async function getCourseDetails(courseId: string, token: string) {
-  const courseData: GoogleCourse = await fetchGoogleClassroomAPI(
-    `${API_BASE}/courses/${courseId}`,
-    token,
-  )
-  const studentsData: GoogleStudentList = await fetchGoogleClassroomAPI(
-    `${API_BASE}/courses/${courseId}/students`,
-    token,
-  )
-  const submissionsData: GooglesubmissionsList = await fetchGoogleClassroomAPI(
-    `${API_BASE}/courses/${courseId}/courseWork`,
-    token,
-  )
+  try {
+    const [courseData, studentsData, courseWorkData] = await Promise.allSettled([
+      fetchGoogleClassroomAPI<GoogleCourse>(`${API_BASE}/courses/${courseId}`, token),
+      fetchGoogleClassroomAPI<GoogleStudentList>(`${API_BASE}/courses/${courseId}/students`, token),
+      fetchGoogleClassroomAPI<{ courseWork?: GoogleAssignment[] }>(
+        `${API_BASE}/courses/${courseId}/courseWork`,
+        token,
+      ),
+    ])
 
-  const studentCount = studentsData.students?.length || 0
-  const submissions = submissionsData.courseWork || []
-  const numsubmissions = submissions.length
-  const nextDeadline = getNextDeadline(submissions)
+    const studentCount =
+      (studentsData.status === 'fulfilled' && studentsData.value?.students?.length) || 0
+    const submissions =
+      (courseWorkData.status === 'fulfilled' && courseWorkData.value?.courseWork) || []
+    const numSubmissions = submissions.length
+    const nextDeadline = getNextDeadline(submissions)
+    const submissionStats = await getSubmissionStats(courseId, submissions, token)
 
-  const submissionStats = await getSubmissionStats(courseId, submissions, token)
-
-  return {
-    courseName: courseData.name,
-    studentCount,
-    numsubmissions,
-    nextDeadline,
-    ...submissionStats,
+    return {
+      courseName:
+        courseData.status === 'fulfilled' && courseData.value ? courseData.value.name : 'Unknown',
+      studentCount,
+      numSubmissions,
+      nextDeadline,
+      ...submissionStats,
+    }
+  } catch (error) {
+    console.error(`Error fetching details for course ${courseId}:`, error)
+    return { error: 'Failed to fetch course details' }
   }
 }
 
-// Function to get submission stats
 async function getSubmissionStats(
   courseId: string,
   submissions: GoogleAssignment[],
@@ -131,14 +123,14 @@ async function getSubmissionStats(
     graded = 0,
     reviewed = 0
 
-  await Promise.all(
+  await Promise.allSettled(
     submissions.map(async (assignment) => {
-      const submissionsData: GoogleSubmissionsList = await fetchGoogleClassroomAPI(
+      const submissionsData = await fetchGoogleClassroomAPI<GoogleSubmissionsList>(
         `${API_BASE}/courses/${courseId}/courseWork/${assignment.id}/studentSubmissions`,
         token,
       )
 
-      submissionsData.studentSubmissions?.forEach((submission) => {
+      submissionsData?.studentSubmissions?.forEach((submission) => {
         if (submission.state === 'TURNED_IN') turnedIn++
         if (submission.state === 'CREATED' || submission.state === 'NEW') assigned++
         if (submission.state === 'RETURNED') graded++
@@ -150,37 +142,35 @@ async function getSubmissionStats(
   return { turnedIn, assigned, graded, reviewed }
 }
 
-// GET API Route
 export async function GET(req: NextRequest) {
-  console.log('GET request received')
-
   try {
     const token = await getUserAccessToken(req)
     if (!token) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
 
-    console.log('before fetching courses')
-    const coursesResponse: { courses: GoogleCourse[] } = await fetchGoogleClassroomAPI(
+    const coursesResponse = await fetchGoogleClassroomAPI<{ courses: GoogleCourse[] }>(
       `${API_BASE}/courses`,
       token,
     )
-    const { courses } = coursesResponse
-    console.log(courses, 'courses response****')
+    if (!coursesResponse || !coursesResponse.courses) {
+      return NextResponse.json({ error: 'Failed to fetch courses' }, { status: 500 })
+    }
 
+    const courses = coursesResponse.courses
     const courseId = getQueryParam(req, 'courseId')
 
     if (!courseId) {
-      const summaries = await Promise.all(courses.map((course) => getCourseSummary(course, token)))
-      return NextResponse.json({ courses: summaries })
+      const summaries = await Promise.allSettled(
+        courses.map((course) => getCourseSummary(course, token)),
+      )
+      return NextResponse.json({
+        courses: summaries.map((result) => (result.status === 'fulfilled' ? result.value : null)),
+      })
     }
 
     const courseDetails = await getCourseDetails(courseId, token)
     return NextResponse.json(courseDetails)
-  } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
-    console.error('Error retrieving course summary:', errorMessage)
-    return NextResponse.json(
-      { error: 'Failed to retrieve course summary', details: errorMessage },
-      { status: 500 },
-    )
+  } catch (error) {
+    console.error('Error retrieving course summary:', error)
+    return NextResponse.json({ error: 'Failed to retrieve course summary' }, { status: 500 })
   }
 }

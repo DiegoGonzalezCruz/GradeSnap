@@ -57,7 +57,7 @@ export default function Courses() {
       </Alert>
     )
   }
-  console.log(data.courses, 'courses')
+  // console.log(data.courses, 'courses')
 
   return (
     <div>

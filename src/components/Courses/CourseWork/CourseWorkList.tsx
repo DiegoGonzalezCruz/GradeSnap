@@ -80,7 +80,6 @@ export default function CourseWorkList({ id }: { id: string }) {
   const [dateFilter, setDateFilter] = useState<Date | undefined>(undefined)
   const [statusFilter, setStatusFilter] = useState('all')
 
-  // In a real app, this would be fetched from an API
   const { data, isLoading, isError } = useCourseWork(id)
   // console.log(data, 'course work list')
   // Calculate days remaining until due date
@@ -145,6 +144,7 @@ export default function CourseWorkList({ id }: { id: string }) {
   if (isError) {
     return <div>Error loading course work</div>
   }
+  console.log(data, 'Data ***')
 
   return (
     <div className="space-y-6">

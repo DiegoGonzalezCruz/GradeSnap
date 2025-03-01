@@ -28,7 +28,7 @@ export function ClassroomData() {
 
   if (isSuccess) {
     const { courses } = data
-    console.log(courses, 'courses')
+    // console.log(courses, 'courses')
 
     return (
       <div className="flex flex-row items-center justify-between gap-20 w-full h-full ">

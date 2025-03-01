@@ -3,7 +3,6 @@ import { google } from 'googleapis'
 import { getUserAccessToken } from '../../auth/google/getUserAccessToken'
 
 export async function GET(req: NextRequest) {
-  // Expect query params: courseId
   const { searchParams } = new URL(req.url)
   const courseId = searchParams.get('courseId')
   if (!courseId) {
@@ -17,43 +16,68 @@ export async function GET(req: NextRequest) {
 
   const auth = new google.auth.OAuth2()
   auth.setCredentials({ access_token: token })
-
   const classroom = google.classroom({ version: 'v1', auth })
 
   try {
-    // First, fetch the list of coursework items
-    const courseWorkResponse = await classroom.courses.courseWork.list({
-      courseId,
-    })
-    const courseWorkItems = courseWorkResponse.data.courseWork || []
+    // Fetch coursework and student submissions in parallel
+    const [courseWorkResponse, studentsResponse] = await Promise.allSettled([
+      classroom.courses.courseWork.list({ courseId }),
+      classroom.courses.students.list({ courseId }), // Fetch students for potential future use
+    ])
 
-    // For each coursework item, fetch student submissions and count them
-    const enrichedCourseWork = await Promise.all(
+    if (courseWorkResponse.status !== 'fulfilled' || !courseWorkResponse.value.data.courseWork) {
+      return NextResponse.json({ error: 'Failed to fetch coursework' }, { status: 500 })
+    }
+
+    const courseWorkItems = courseWorkResponse.value.data.courseWork || []
+
+    // Fetch student submissions for all coursework items in parallel
+    const submissionData = await Promise.allSettled(
       courseWorkItems.map(async (courseWork) => {
-        // Fetch student submissions for this coursework
-        const submissionsResponse = await classroom.courses.courseWork.studentSubmissions.list({
-          courseId,
-          courseWorkId: courseWork.id as string,
-        })
-        const submissions = submissionsResponse.data.studentSubmissions || []
-
-        // Count graded submissions (assuming graded if assignedGrade is present)
-        const gradedCount = submissions.filter(
-          (submission) =>
-            submission.assignedGrade !== undefined && submission.assignedGrade !== null,
-        ).length
-        const totalSubmissions = submissions.length
-        const ungradedCount = totalSubmissions - gradedCount
-
-        // Return the coursework enriched with submission counts
-        return {
-          ...courseWork,
-          totalSubmissions,
-          gradedSubmissions: gradedCount,
-          ungradedSubmissions: ungradedCount,
+        try {
+          const submissionsResponse = await classroom.courses.courseWork.studentSubmissions.list({
+            courseId,
+            courseWorkId: courseWork.id as string,
+          })
+          return {
+            courseWorkId: courseWork.id,
+            submissions: submissionsResponse.data.studentSubmissions || [],
+          }
+        } catch (error) {
+          console.error(`Error fetching submissions for coursework ${courseWork.id}:`, error)
+          return { courseWorkId: courseWork.id, submissions: [] }
         }
       }),
     )
+
+    // Map submission data to coursework
+    const enrichedCourseWork = courseWorkItems.map((courseWork) => {
+      const submissionInfo = submissionData.find(
+        (sub) => sub.status === 'fulfilled' && sub.value.courseWorkId === courseWork.id,
+      )
+      const submissions =
+        submissionInfo?.status === 'fulfilled' ? submissionInfo.value.submissions : []
+
+      const { totalSubmissions, gradedSubmissions, ungradedSubmissions } = submissions.reduce(
+        (counts, submission) => {
+          if (submission.state === 'TURNED_IN' || submission.state === 'RETURNED') {
+            counts.gradedSubmissions++
+          } else {
+            counts.ungradedSubmissions++
+          }
+          counts.totalSubmissions++
+          return counts
+        },
+        { totalSubmissions: 0, gradedSubmissions: 0, ungradedSubmissions: 0 },
+      )
+
+      return {
+        ...courseWork,
+        totalSubmissions,
+        gradedSubmissions,
+        ungradedSubmissions,
+      }
+    })
 
     return NextResponse.json(enrichedCourseWork, { status: 200 })
   } catch (error) {
