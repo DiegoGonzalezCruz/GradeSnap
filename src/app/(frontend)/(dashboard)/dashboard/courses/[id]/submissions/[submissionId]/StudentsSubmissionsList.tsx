@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { FileIcon, ExternalLinkIcon } from 'lucide-react'
+import GradingButton from '@/components/Courses/CourseWork/GradingButton'
 
 type Submission = {
   courseId: string
@@ -169,21 +170,13 @@ const StudentsSubmissionsList = ({ id, submissionId }: { id: string; submissionI
                     {submission?.updateTime ? formatDate(submission.updateTime) : 'N/A'}
                   </td>
                   <td className="px-4 py-3">
-                    {hasAttachments ? (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() =>
-                          setExpandedSubmission(
-                            expandedSubmission === submission.id ? null : submission.id,
-                          )
-                        }
-                      >
-                        <FileIcon className="mr-2 h-4 w-4" />
-                        View attachments
-                      </Button>
+                    {submission.assignmentSubmission?.attachments ? (
+                      <GradingButton
+                        attachments={submission.assignmentSubmission.attachments}
+                        courseWorkId={submission.courseWorkId}
+                      />
                     ) : (
-                      <span className="text-muted-foreground">No attachments</span>
+                      <span>No attachments</span>
                     )}
                   </td>
                   <td className="px-4 py-3">{getStatusBadge(latestState)}</td>
@@ -193,53 +186,6 @@ const StudentsSubmissionsList = ({ id, submissionId }: { id: string; submissionI
           </tbody>
         </table>
       </div>
-
-      {/* Expanded attachment view */}
-      {expandedSubmission &&
-        submissions.map((submission: Submission) => {
-          if (submission.id !== expandedSubmission) return null
-
-          return (
-            <div key={`expanded-${submission.id}`} className="p-4 bg-muted/20 border-t">
-              <h3 className="font-medium mb-2">Attachments</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {submission.assignmentSubmission?.attachments?.map((attachment, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center gap-2 p-3 border rounded-md bg-card"
-                  >
-                    {attachment.driveFile?.thumbnailUrl ? (
-                      <img
-                        src={attachment.driveFile.thumbnailUrl || '/placeholder.svg'}
-                        alt={attachment.driveFile.title}
-                        className="h-10 w-10 object-cover rounded"
-                      />
-                    ) : (
-                      <FileIcon className="h-10 w-10 text-muted-foreground" />
-                    )}
-                    <div className="flex-1 min-w-0">
-                      <p className="font-medium truncate">
-                        {attachment.driveFile?.title || 'Untitled'}
-                      </p>
-                      <p className="text-xs text-muted-foreground">Google Drive File</p>
-                    </div>
-                    {attachment.driveFile?.alternateLink && (
-                      <Button size="sm" variant="ghost" asChild>
-                        <a
-                          href={attachment.driveFile.alternateLink}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          <ExternalLinkIcon className="h-4 w-4" />
-                        </a>
-                      </Button>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          )
-        })}
     </Card>
   )
 }

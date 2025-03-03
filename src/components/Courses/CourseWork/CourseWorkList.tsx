@@ -11,19 +11,6 @@ import { DatePicker } from '@/components/ui/date-picker'
 import { useCourseWork } from '@/hooks/classroom/useCourseWork'
 import Link from 'next/link'
 
-// Define the types based on the provided data structure
-interface Material {
-  driveFile?: {
-    driveFile: {
-      id: string
-      title: string
-      alternateLink: string
-      thumbnailUrl: string
-    }
-    shareMode: string
-  }
-}
-
 interface DueDate {
   year: number
   month: number
@@ -35,50 +22,11 @@ interface DueTime {
   minutes: number
 }
 
-interface Assignment {
-  studentWorkFolder: {
-    id: string
-    title: string
-    alternateLink: string
-  }
-}
-
-interface CourseWork {
-  courseId: string
-  id: string
-  title: string
-  description: string
-  materials: Material[]
-  state: string
-  alternateLink: string
-  creationTime: string
-  updateTime: string
-  dueDate?: DueDate
-  dueTime?: DueTime
-  maxPoints: number
-  workType: string
-  submissionModificationMode: string
-  assignment: Assignment
-  assigneeMode: string
-  creatorUserId: string
-  topicId: string
-}
-
-// Mock data for submissions count - in a real app, this would come from an API
-interface SubmissionStats {
-  [key: string]: {
-    total: number
-    graded: number
-    ungraded: number
-  }
-}
-
 // Sample data for demonstration
 
 export default function CourseWorkList({ id }: { id: string }) {
   const [searchQuery, setSearchQuery] = useState('')
   const [dateFilter, setDateFilter] = useState<Date | undefined>(undefined)
-  const [statusFilter, setStatusFilter] = useState('all')
 
   const { data, isLoading, isError } = useCourseWork(id)
   // console.log(data, 'course work list')

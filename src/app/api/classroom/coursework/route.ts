@@ -60,7 +60,10 @@ export async function GET(req: NextRequest) {
 
       const { totalSubmissions, gradedSubmissions, ungradedSubmissions } = submissions.reduce(
         (counts, submission) => {
-          if (submission.state === 'TURNED_IN' || submission.state === 'RETURNED') {
+          if (
+            submission.state === 'TURNED_IN' || // TODO: Fix this later, confirm with Megan
+            submission.state === 'RETURNED'
+          ) {
             counts.gradedSubmissions++
           } else {
             counts.ungradedSubmissions++
