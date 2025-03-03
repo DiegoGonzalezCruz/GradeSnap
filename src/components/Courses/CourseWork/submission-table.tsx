@@ -143,8 +143,7 @@ export default function SubmissionsTable({
                         </Button>
                         <GradingButton
                           attachments={attachments}
-                          courseWorks={submission.courseWorkId}
-                          rubrics={rubrics}
+                          courseWorkId={submission.courseWorkId}
                         />
                       </div>
                     </TableCell>

@@ -17,17 +17,7 @@ export default function DashboardPage() {
       <DashboardHeader heading="Grading" text="Here is where the magic happens.">
         <Button>Refresh Data</Button>
       </DashboardHeader>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        <ClassroomData />
-      </div>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-        <div className="col-span-4">
-          <AIGradedAssessments />
-        </div>
-        <div className="col-span-3">
-          <SendAnnouncement />
-        </div>
-      </div>
+      {/* <GradingData /> */}
     </DashboardShell>
   )
 }
