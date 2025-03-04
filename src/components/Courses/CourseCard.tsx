@@ -43,7 +43,7 @@ export const getDaysRemaining = (dueDate?: DueDate) => {
   return diffDays
 }
 
-const CourseCard = ({ courseWork }) => {
+const CourseCard = ({ courseWork }: { courseWork: any }) => {
   const { id } = useParams()
   //   console.log(id, 'id')
   // Format due date and time
