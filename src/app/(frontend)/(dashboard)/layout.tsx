@@ -15,7 +15,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
   return (
     <div className="flex flex-row h-screen">
       {/* Sidebar */}
-      <aside className="w-64 bg-gray-100 p-4 overflow-y-auto ">
+      <aside className="w-64 bg-secondary text-secondary-foreground  overflow-y-auto ">
         <Sidebar />
       </aside>
       <div className="flex flex-col flex-1 overflow-hidden h-full">

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
+
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -16,6 +16,7 @@ import { Label } from '@/components/ui/label'
 import RubricTableView from './RubricTableView'
 import { getClientSideURL } from '@/utilities/getURL'
 import { toast } from 'sonner'
+import { useGetRubrics } from '@/hooks/classroom/useRubrics'
 
 type GradingButtonProps = {
   attachments: any[]
@@ -31,20 +32,7 @@ const GradingButton = ({ attachments, courseWorkId }: GradingButtonProps) => {
     data: rubric,
     isLoading: rubricLoading,
     error: rubricError,
-  } = useQuery({
-    queryKey: ['rubric', courseId, courseWorkId],
-    queryFn: async () => {
-      const res = await fetch(
-        `/api/classroom/rubrics?courseId=${courseId}&courseWorkId=${courseWorkId}`,
-      )
-      const data = await res.json()
-      if (!res.ok) {
-        throw new Error(data.error || 'Failed to fetch rubric.')
-      }
-      return data.rubrics && data.rubrics.length > 0 ? data.rubrics[0] : {}
-    },
-    enabled: !!courseId && !!courseWorkId,
-  })
+  } = useGetRubrics(courseId, courseWorkId)
 
   const [selectedFile, setSelectedFile] = useState<string | null>(null)
   const [gradingLoading, setGradingLoading] = useState(false)

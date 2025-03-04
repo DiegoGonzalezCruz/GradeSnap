@@ -41,44 +41,42 @@
 
   :root {
     /* Background & Foreground (unchanged or adjust as needed) */
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --background: #f9fafb;
+    --foreground: #000000;
+    --card: #FFFFFF%;
+    --card-foreground: #000000;
+    --popover: #FFFFFF%;
+    --popover-foreground: #000000;
 
-    /* Card & Popover remain the same unless you want to change them */
-    --card: 240 5% 96%;
-    --card-foreground: 222.2 84% 4.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --primary: #34c759;
+    --primary-foreground: #fafafa;
 
-    /* New color values */
-    --primary: 157 100% 36%; /* #00B75D */
-    --primary-foreground: 0 0% 100%;
+    --secondary: #020633;
+    --secondary-foreground: #fafafa;
 
-    --secondary: 219 100% 45%; /* #0073E6 */
-    --secondary-foreground: 0 0% 100%;
+    --accent: #7429c6;
+    --accent-foreground: #fafafa;
 
-    --accent: 261 78% 65%; /* #8B5CF6 */
-    --accent-foreground: 0 0% 100%;
-
-    --neutral: 200 18% 26%; /* #37474F */
+    --neutral: #f4f4f5;
     --neutral-foreground: 0 0% 100%;
 
-    /* The remaining tokens (adjust as needed) */
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: #f4f4f5;
+    --muted-foreground: #71717A%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: #dc2626;
+    --destructive-foreground: #fafafa%;
 
-    --border: 240 6% 80%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: #e4e4e7;
+    --input: #fafafa;
+    --ring: #71717a;
 
     --radius: 0.2rem;
 
-    --success: 196 52% 74%;
-    --warning: 34 89% 85%;
-    --error: 10 100% 86%;
+    --success: #8638e5;
+    --warning: #ff9900;
+    --error: #dc2626;
+    --graded: #4285f4;
+    --reviewed: #34a853;
   }
 
   [data-theme='dark'] {
@@ -115,8 +113,8 @@
     --input: 217.2 32.6% 17.5%;
     --ring: 212.7 26.8% 83.9%;
 
-    --success: 196 100% 14%;
-    --warning: 34 51% 25%;
+    --turned-in: 196 100% 14%;
+    --pending: 34 51% 25%;
     --error: 10 39% 43%;
   }
 }

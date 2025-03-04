@@ -41,3 +41,23 @@ export function useRubrics(courseId: string) {
     enabled: !!courseWork,
   })
 }
+
+export function useGetRubrics(
+  courseId: string,
+  courseWorkId: string,
+): { data: any; isLoading: any; error: any } {
+  return useQuery({
+    queryKey: ['rubric', courseId, courseWorkId],
+    queryFn: async () => {
+      const res = await fetch(
+        `/api/classroom/rubrics?courseId=${courseId}&courseWorkId=${courseWorkId}`,
+      )
+      const data = await res.json()
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to fetch rubric.')
+      }
+      return data.rubrics && data.rubrics.length > 0 ? data.rubrics[0] : {}
+    },
+    enabled: !!courseId && !!courseWorkId,
+  })
+}
