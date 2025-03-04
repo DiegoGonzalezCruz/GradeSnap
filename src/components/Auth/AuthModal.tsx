@@ -15,7 +15,7 @@ const AuthModal = () => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button type="button" variant="primary" className="mx-auto">
+        <Button type="button" className="mx-auto">
           Reservar
         </Button>
       </DialogTrigger>

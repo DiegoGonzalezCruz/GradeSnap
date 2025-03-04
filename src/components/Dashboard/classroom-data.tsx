@@ -1,35 +1,16 @@
 'use client'
 
 import { useClassroomSummary } from '@/hooks/classroom/useClassroomSummary'
-import { Skeleton } from '../ui/skeleton'
-import CourseCards from '../Courses/CourseCard'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+
+import CourseCardsList from '../Courses/CourseCardsList'
+import { Card } from '@/components/ui/card'
+import CourseCardLoading from '../Courses/CourseCardLoading'
 
 export function ClassroomData() {
   const { data, error, isLoading, isSuccess } = useClassroomSummary()
 
   if (isLoading) {
-    return (
-      <div className="flex flex-row items-center justify-between gap-20 w-full h-full ">
-        {[1, 2, 3].map((item) => (
-          <Card key={item} className="flex flex-col w-1/3">
-            <CardHeader className="pb-2">
-              <Skeleton className="h-6 w-28" />
-            </CardHeader>
-            <CardContent>
-              <Skeleton className="h-8 w-full" />
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-    )
+    return <CourseCardLoading />
   }
 
   if (error) return <div>{error.message}</div>
@@ -40,7 +21,7 @@ export function ClassroomData() {
 
     return (
       <Card className="flex flex-row items-center justify-between gap-20 w-full h-full bg-card">
-        <CourseCards courses={courses} />
+        <CourseCardsList courses={courses} />
       </Card>
     )
   }
