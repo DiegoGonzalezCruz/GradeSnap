@@ -1,61 +1,99 @@
-import { Course, Deadline } from '@/types/courses'
-
-import Image from 'next/image'
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import Link from 'next/link'
-import React from 'react'
+import { format } from 'date-fns'
+import { FileText, Calendar } from 'lucide-react'
 import { Button } from '../ui/button'
+import { useParams } from 'next/navigation'
 
-function formatDate(deadline: Deadline | string): string {
-  if (typeof deadline === 'string') {
-    return deadline
-  }
-  return new Date(deadline.year, deadline.month - 1, deadline.day).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  })
+export interface DueDate {
+  year: number
+  month: number
+  day: number
 }
 
-const CourseCard = ({ course }: { course: Course }) => {
+export interface DueTime {
+  hours: number
+  minutes: number
+}
+
+export const formatDueDateTime = (dueDate?: DueDate, dueTime?: DueTime) => {
+  if (!dueDate) return 'No due date'
+
+  const date = new Date(
+    dueDate.year,
+    dueDate.month - 1,
+    dueDate.day,
+    dueTime?.hours || 0,
+    dueTime?.minutes || 0,
+  )
+
+  return format(date, 'MMM d, yyyy, h:mm a')
+}
+
+// Calculate days remaining until due date
+export const getDaysRemaining = (dueDate?: DueDate) => {
+  if (!dueDate) return null
+
+  const today = new Date()
+  const due = new Date(dueDate.year, dueDate.month - 1, dueDate.day)
+
+  const diffTime = due.getTime() - today.getTime()
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+
+  return diffDays
+}
+
+const CourseCard = ({ courseWork }) => {
+  const { id } = useParams()
+  //   console.log(id, 'id')
+  // Format due date and time
+  const daysRemaining = getDaysRemaining(courseWork.dueDate)
+
   return (
-    <div className=" ">
-      <div className="flex items-center justify-between gap-6  ">
-        <div className="">
-          <Image
-            src="/icons/graduation-icon.svg"
-            alt=""
-            width={48}
-            height={48}
-            className="rounded bg-muted p-2"
-          />
-        </div>
-        <div className="flex-1 min-w-0 ">
-          <div className="flex flex-row  items-center gap-5 ">
-            <div className="w-1/4">
-              <h3 className="font-bold text-lg">{course.courseName}</h3>
-              <p className="text-sm text-muted-foreground">ID: {course.courseId}</p>
-            </div>
-            <div className="flex items-center gap-6 text-sm  flex-1 ">
-              <div className="space-y-1">
-                <p className="text-muted-foreground">Students</p>
-                <p className="font-bold text-2xl">{course.studentCount}</p>
-              </div>
-              <div className="space-y-1">
-                <p className="text-muted-foreground">Submissions</p>
-                <p className="font-bold text-2xl">{course.numSubmissions}</p>
-              </div>
-              <div className="space-y-1">
-                <p className="text-muted-foreground">Next Deadline</p>
-                <p className="font-bold text-2xl">{formatDate(course.nextDeadline)}</p>
-              </div>
-            </div>
-            <Link href={`/dashboard/courses/${course.courseId}`}>
-              <Button className="ml-auto shrink-0">View Course Details</Button>
-            </Link>
+    <Card key={courseWork.id} className="overflow-hidden">
+      <CardHeader className="pb-2">
+        <CardTitle className="text-xl">{courseWork.title}</CardTitle>
+      </CardHeader>
+      <CardContent className="pb-2">
+        <div className="space-y-3">
+          <div className="flex items-center gap-2">
+            <FileText className="h-4 w-4 text-muted-foreground" />
+            <span className="text-sm">Assigned to {courseWork.totalSubmissions} Students</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <FileText className="h-4 w-4 text-muted-foreground" />
+            <span className="text-sm">{courseWork.assignment.studentWorkFolder.title}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Calendar className="h-4 w-4 text-muted-foreground" />
+            <span className="text-sm">
+              {daysRemaining !== null
+                ? `Due in ${daysRemaining} days (${formatDueDateTime(courseWork.dueDate, courseWork.dueTime)})`
+                : 'No due date'}
+            </span>
           </div>
         </div>
+      </CardContent>
+
+      <div className="grid grid-cols-2 gap-px bg-muted">
+        <div className="bg-green-500 p-4 text-center text-white">
+          <div className="text-2xl font-bold">{courseWork.gradedSubmissions}</div>
+          <div className="text-xs">Graded</div>
+        </div>
+        <div className="bg-amber-500 p-4 text-center text-white">
+          <div className="text-2xl font-bold">{courseWork.ungradedSubmissions}</div>
+          <div className="text-xs">Ungraded</div>
+        </div>
       </div>
-    </div>
+
+      <CardFooter className="p-0 ">
+        <Button variant="ghost" className="w-full rounded-none py-6 text-sm font-medium" asChild>
+          <Link href={`/dashboard/courses/${id}/submissions/${courseWork.id}`}>
+            View student submissions
+          </Link>
+        </Button>
+      </CardFooter>
+    </Card>
   )
 }
 

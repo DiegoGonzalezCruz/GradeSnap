@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { Course } from '@/types/courses'
 import { Separator } from '../ui/separator'
-import CourseCard from './CourseCard'
+import CourseTab from './CourseTab'
 
 export default function CourseCardsList({
   courses,
@@ -29,7 +29,7 @@ export default function CourseCardsList({
       <div className="w-full flex flex-col gap-5">
         {displayedCourses.map((course, idx) => (
           <div key={course.courseId} className="flex flex-col w-full gap-5">
-            <CourseCard course={course} />
+            <CourseTab course={course} />
             {/* Only show Separator if it's not the last item displayed */}
             {idx < displayedCourses.length - 1 && <Separator />}
           </div>
