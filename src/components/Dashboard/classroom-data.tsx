@@ -21,7 +21,7 @@ export function ClassroomData() {
 
     return (
       <Card className="flex flex-row items-center justify-between gap-20 w-full h-full bg-card">
-        <CourseCardsList courses={courses} />
+        <CourseCardsList courses={courses} preview={true} />
       </Card>
     )
   }
