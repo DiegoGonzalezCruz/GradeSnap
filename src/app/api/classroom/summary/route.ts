@@ -147,12 +147,14 @@ export async function GET(req: NextRequest) {
     const token = await getUserAccessToken(req)
     if (!token) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
 
-    const coursesResponse = await fetchGoogleClassroomAPI<{ courses: GoogleCourse[] }>(
+    const coursesResponse = await fetchGoogleClassroomAPI<{ courses?: GoogleCourse[] }>(
       `${API_BASE}/courses`,
       token,
     )
-    if (!coursesResponse || !coursesResponse.courses) {
-      return NextResponse.json({ error: 'Failed to fetch courses' }, { status: 500 })
+
+    // If no courses exist, return an empty array instead of failing
+    if (!coursesResponse || !coursesResponse.courses || coursesResponse.courses.length === 0) {
+      return NextResponse.json({ courses: [] }, { status: 200 }) // Return empty list, not a 500 error
     }
 
     const courses = coursesResponse.courses

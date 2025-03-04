@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { Course } from '@/types/courses'
 import { Separator } from '../ui/separator'
 import CourseTab from './CourseTab'
+import { Card } from '../ui/card'
 
 export default function CourseCardsList({
   courses,
@@ -14,6 +15,11 @@ export default function CourseCardsList({
 }) {
   // Decide how many courses to display
   const displayedCourses = preview ? courses.slice(0, 3) : courses
+  console.log(displayedCourses, 'displayedCourses')
+
+  if (displayedCourses.length === 0) {
+    return <div className="p-5">No courses found in your account.</div>
+  }
 
   return (
     <div className="w-full mx-auto p-5 gap-5 flex flex-col">
