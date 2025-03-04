@@ -17,6 +17,13 @@ const nextConfig = {
           protocol: url.protocol.replace(':', ''),
         }
       }),
+      {
+        protocol: 'https',
+        hostname: '*.googleusercontent.com',
+        // (Optional) If you need wildcards or path restrictions:
+        // port: '',
+        // pathname: '/**',
+      },
     ],
   },
   reactStrictMode: true,
