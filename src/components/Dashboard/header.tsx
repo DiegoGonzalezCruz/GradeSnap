@@ -11,7 +11,7 @@ const HeaderDashboard = () => {
         Welcome back,{' '}
         {isLoading ? <span className="animate-pulse">...</span> : user?.name || 'Teacher!'}
       </h1>
-      <p>Here's what's happening in your classes</p>
+      <p>{"Here's what's happening in your classes"}</p>
     </header>
   )
 }

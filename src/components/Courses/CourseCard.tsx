@@ -1,8 +1,11 @@
 import Link from 'next/link'
+import { FaGraduationCap } from 'react-icons/fa'
+
 import { Card, CardContent } from '../ui/card'
 // import Image from 'next/image'
 import { Button } from '../ui/button'
 import { Course, Deadline } from '@/types/courses'
+import Image from 'next/image'
 
 function formatDate(deadline: Deadline | string): string {
   if (typeof deadline === 'string') {
@@ -20,24 +23,24 @@ export default function CourseCards({ courses }: { courses: Course[] }) {
     <div className="w-full mx-auto p-6">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-xl font-semibold">Your Courses</h2>
-        <Link href="/courses" className="text-sm text-primary hover:underline">
+        {/* <Link href="/courses" className="text-sm text-primary hover:underline">
           View all
-        </Link>
+        </Link> */}
       </div>
       <div className="space-y-4  w-full">
-        {courses.map((course) => (
-          <Card key={course.courseId} className="overflow-hidden">
+        {courses.map((course, idx) => (
+          <div key={course.courseId} className="overflow-hidden">
             <CardContent className="p-0">
               <div className="flex items-center gap-6 p-4">
-                {/* <div className="shrink-0">
+                <div className="">
                   <Image
-                    src="/placeholder.svg?height=48&width=48"
+                    src="/icons/graduation-icon.svg"
                     alt=""
                     width={48}
                     height={48}
-                    className="rounded bg-muted"
+                    className="rounded bg-muted p-2"
                   />
-                </div> */}
+                </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-6 flex-wrap">
                     <div className="min-w-[140px]">
@@ -67,7 +70,7 @@ export default function CourseCards({ courses }: { courses: Course[] }) {
                 </div>
               </div>
             </CardContent>
-          </Card>
+          </div>
         ))}
       </div>
     </div>

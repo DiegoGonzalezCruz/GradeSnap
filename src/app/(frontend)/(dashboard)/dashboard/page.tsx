@@ -20,10 +20,14 @@ export default function DashboardPage() {
       <div className="flex flex-row items-center justify-center gap-20 w-full h-full ">
         <ClassroomData />
       </div>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-        <div className="col-span-4 ">{/* <AIGradedAssessments /> */}</div>
-        <div className="col-span-3">{/* <SendAnnouncement /> */}</div>
-      </div>
+      {/* <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+        <div className="col-span-4 ">
+          <AIGradedAssessments />
+          </div>
+        <div className="col-span-3">
+          <SendAnnouncement />
+          </div>
+      </div> */}
     </DashboardShell>
   )
 }

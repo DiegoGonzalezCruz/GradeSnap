@@ -1,8 +1,16 @@
 'use client'
-import { Card, CardContent, CardHeader } from '@/components/ui/card'
+
 import { useClassroomSummary } from '@/hooks/classroom/useClassroomSummary'
 import { Skeleton } from '../ui/skeleton'
 import CourseCards from '../Courses/CourseCard'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 
 export function ClassroomData() {
   const { data, error, isLoading, isSuccess } = useClassroomSummary()
@@ -31,9 +39,9 @@ export function ClassroomData() {
     // console.log(courses, 'courses')
 
     return (
-      <div className="flex flex-row items-center justify-between gap-20 w-full h-full ">
+      <Card className="flex flex-row items-center justify-between gap-20 w-full h-full bg-card">
         <CourseCards courses={courses} />
-      </div>
+      </Card>
     )
   }
 }
