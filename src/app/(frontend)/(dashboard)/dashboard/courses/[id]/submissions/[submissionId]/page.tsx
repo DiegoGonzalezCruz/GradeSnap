@@ -15,24 +15,24 @@ const StudentsSubmissions = async ({
   const breadcrumbArray = [
     {
       title: 'Home',
-      href: '/',
+      href: '/dashboard',
     },
     {
       title: 'Courses',
-      href: '/courses',
+      href: '/dashboard/courses',
     },
     {
       title: 'Course Details',
-      href: `/courses/${id}`,
+      href: `/dashboard/courses/${id}`,
     },
     {
       title: 'Students Submissions',
-      href: `/courses/${id}/students-submissions`,
+      href: `/dashboard/courses/${id}/submissions/${submissionId}`,
     },
   ]
 
   return (
-    <div className="flex flex-col gap-10">
+    <div className="flex flex-col gap-10 ">
       <Breadcrubms breadcrumbArray={breadcrumbArray} />
       <StudentsSubmissionsList id={id} submissionId={submissionId} />
     </div>

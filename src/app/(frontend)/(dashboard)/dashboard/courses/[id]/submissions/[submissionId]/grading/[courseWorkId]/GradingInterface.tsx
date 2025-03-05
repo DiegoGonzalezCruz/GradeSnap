@@ -9,11 +9,19 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Textarea } from '@/components/ui/textarea'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import { Document, Page, pdfjs } from 'react-pdf'
+import { GradingArgs } from './page'
 
 // Initialize PDF.js worker
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`
 
-export default function GradingInterface() {
+export default function GradingInterface({
+  id,
+  submissionId,
+}: {
+  id: string
+  submissionId: string
+}) {
+  console.log(id, submissionId, 'From Grading Interface')
   const [numPages, setNumPages] = useState<number | null>(null)
   const [pageNumber, setPageNumber] = useState(1)
   const [pdfFile, setPdfFile] = useState<string | null>(null)

@@ -8,6 +8,7 @@ import { Card } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { FileIcon, ExternalLinkIcon } from 'lucide-react'
 import GradingButton from '@/components/Courses/CourseWork/GradingButton'
+import Link from 'next/link'
 
 type Submission = {
   courseId: string
@@ -119,7 +120,7 @@ const StudentsSubmissionsList = ({ id, submissionId }: { id: string; submissionI
   }
 
   const submissions = Array.isArray(data) ? data : [data].filter(Boolean)
-  console.log(submissions, 'submissions')
+  // console.log(submissions, 'submissions')
 
   if (!submissions || submissions.length === 0) {
     return (
@@ -156,7 +157,7 @@ const StudentsSubmissionsList = ({ id, submissionId }: { id: string; submissionI
                 submission.assignmentSubmission.attachments.length > 0
 
               return (
-                <tr key={submission.id} className="border-b hover:bg-muted/50">
+                <tr key={submission.id} className="border-b hover:bg-muted/50 ">
                   <td className="px-4 py-3">
                     {submission?.user?.name?.fullName || 'Unknown Student'}
                   </td>
@@ -171,10 +172,15 @@ const StudentsSubmissionsList = ({ id, submissionId }: { id: string; submissionI
                   </td>
                   <td className="px-4 py-3">
                     {submission.assignmentSubmission?.attachments ? (
-                      <GradingButton
-                        attachments={submission.assignmentSubmission.attachments}
-                        courseWorkId={submission.courseWorkId}
-                      />
+                      // <GradingButton
+                      //   attachments={submission.assignmentSubmission.attachments}
+                      //   courseWorkId={submission.courseWorkId}
+                      // />
+                      <Link
+                        href={`/dashboard/courses/${id}/submissions/${submissionId}/grading/${submission.courseWorkId}`}
+                      >
+                        Grade
+                      </Link>
                     ) : (
                       <span>No attachments</span>
                     )}
