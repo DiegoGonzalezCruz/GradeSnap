@@ -55,7 +55,7 @@ export function Sidebar({ className }: React.HTMLAttributes<HTMLDivElement>) {
 
   const handleLogout = async () => {
     console.log('logging out')
-    const res = await fetch('http://localhost:3000/api/users/logout', {
+    const res = await fetch('/api/users/logout', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
