@@ -55,9 +55,9 @@ export default function FeedbackPanel({
                 </li>
               ))}
             </ul>
-            <Button variant="outline" size="sm" onClick={onToggleEdit} className="w-full mt-2">
+            {/* <Button variant="outline" size="sm" onClick={onToggleEdit} className="w-full mt-2">
               Edit Feedback
-            </Button>
+            </Button> */}
           </>
         ) : (
           <>

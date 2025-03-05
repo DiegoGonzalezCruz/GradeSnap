@@ -1,5 +1,5 @@
 import React from 'react'
-import { Loader2, Star } from 'lucide-react'
+import { Loader2 } from 'lucide-react'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Label } from '@/components/ui/label'
@@ -43,22 +43,25 @@ export default function RubricPanel({
     <div className="space-y-2 mb-4">
       <h3 className="text-sm font-medium mb-2">Grading Rubric</h3>
       {rubric.criteria.map((criterion: RubricCriterion) => {
-        // Check if the grade result contains data for this criterion
+        // If this criterion was graded by the LLM, find that result
         const gradedCriterion = gradeResult?.criteria.find((c) => c.criterionId === criterion.id)
+
+        // If there's an LLM-graded score, select that level in the radio group.
+        // Otherwise, fall back to the user-selected level (manual).
+        const selectedValue = gradedCriterion
+          ? criterion.levels.find((l) => l.points === gradedCriterion.score)?.id
+          : selectedLevels[criterion.id] || ''
+
         return (
-          <Collapsible key={criterion.id} className="border rounded-md ">
-            <CollapsibleTrigger className="flex w-full justify-between items-center p-4 ">
+          <Collapsible key={criterion.id} className="border rounded-md">
+            <CollapsibleTrigger className="flex w-full justify-between items-center p-4">
               <div className="flex items-center gap-2">
                 <span className="font-medium">{criterion.title}</span>
-                {gradedCriterion && (
+
+                {/* Display a badge for whichever level is currently "selectedValue" */}
+                {selectedValue && (
                   <span className="text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded-full">
-                    {criterion.levels.find((l) => l.points === gradedCriterion.score)?.title ||
-                      gradedCriterion.score}
-                  </span>
-                )}
-                {!gradedCriterion && selectedLevels[criterion.id] && (
-                  <span className="text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded-full">
-                    {criterion.levels.find((l) => l.id === selectedLevels[criterion.id])?.title}
+                    {criterion.levels.find((level) => level.id === selectedValue)?.title}
                   </span>
                 )}
               </div>
@@ -66,31 +69,27 @@ export default function RubricPanel({
             <CollapsibleContent className="p-4 pt-0 border-t flex flex-col gap-5">
               <p className="text-sm text-muted-foreground mb-3">{criterion.description}</p>
               <RadioGroup
-                value={selectedLevels[criterion.id] || ''}
+                value={selectedValue}
                 onValueChange={(value) => onLevelSelect(criterion.id, value)}
                 className="space-y-2"
               >
-                {criterion.levels.map((level) => {
-                  const isObtained = gradedCriterion && level.points === gradedCriterion.score
-                  return (
-                    <div
-                      key={level.id}
-                      className={`flex items-start space-x-2 p-2 rounded-md hover:bg-gray-50 ${
-                        isObtained ? 'bg-blue-100' : ''
-                      }`}
-                    >
-                      <RadioGroupItem value={level.id} id={level.id} className="mt-1" />
-                      <div className="grid gap-1">
-                        <Label htmlFor={level.id} className="font-medium">
-                          {level.title} ({level.points} {level.points === 1 ? 'point' : 'points'})
-                        </Label>
-                        <p className="text-sm text-muted-foreground">{level.description}</p>
-                        {isObtained && <p className="text-xs text-blue-700">Obtained!</p>}
-                      </div>
+                {criterion.levels.map((level) => (
+                  <div
+                    key={level.id}
+                    className="flex items-start space-x-2 p-2 rounded-md hover:bg-gray-50"
+                  >
+                    <RadioGroupItem value={level.id} id={level.id} className="mt-1" />
+                    <div className="grid gap-1">
+                      <Label htmlFor={level.id} className="font-medium">
+                        {level.title} ({level.points} {level.points === 1 ? 'point' : 'points'})
+                      </Label>
+                      <p className="text-sm text-muted-foreground">{level.description}</p>
                     </div>
-                  )
-                })}
+                  </div>
+                ))}
               </RadioGroup>
+
+              {/* If there is LLM feedback, display it below the levels */}
               {gradedCriterion && (
                 <div className="mt-2 p-2 border-t">
                   <p className="text-sm font-medium">LLM Feedback:</p>
