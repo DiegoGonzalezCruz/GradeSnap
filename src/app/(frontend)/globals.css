@@ -83,40 +83,49 @@
   [data-theme='dark'] {
     /* In dark mode you might want to adjust some of these values.
        For now, we’re reusing the same new values. */
-    --background: 0 0% 0%;
-    --foreground: 210 40% 98%;
+    --background: #18181b; /* Dark background replacing #f9fafb */
+    --foreground: #f9fafb; /* Light text replacing #000000 */
 
-    --card: 0 0% 4%;
-    --card-foreground: 210 40% 98%;
+    /* Cards & Popovers */
+    --card: #27272a; /* Darker “card” background */
+    --card-foreground: #f9fafb; /* Light text for cards */
+    --popover: #27272a;
+    --popover-foreground: #f9fafb;
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    /* Primary (Accent Green remains, but ensure text contrast) */
+    --primary: #34c759;
+    --primary-foreground: #ffffff; /* White text provides good contrast on dark */
 
-    --primary: 157 100% 36%;
-    --primary-foreground: 0 0% 100%;
+    /* Secondary (Since the original #020633 is very dark, a lighter variant is used) */
+    --secondary: #4e5d78;
+    --secondary-foreground: #ffffff;
 
-    --secondary: 219 100% 45%;
-    --secondary-foreground: 0 0% 100%;
+    /* Accent (A slightly lightened purple for better visibility on dark backgrounds) */
+    --accent: #8b6bff;
+    --accent-foreground: #ffffff;
 
-    --accent: 261 78% 65%;
-    --accent-foreground: 0 0% 100%;
+    /* Neutral & Muted (Dark neutral backgrounds with light text) */
+    --neutral: #27272a;
+    --neutral-foreground: #f9fafb;
+    --muted: #27272a;
+    --muted-foreground: #f9fafb;
 
-    --neutral: 200 18% 26%;
-    --neutral-foreground: 0 0% 100%;
+    /* Destructive (A lighter red variant for better contrast) */
+    --destructive: #f87171;
+    --destructive-foreground: #ffffff;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215 20.2% 65.1%;
+    /* Borders, Inputs, & Rings */
+    --border: #3f3f46;
+    --input: #27272a;
+    --ring: #f9fafb;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 0, 0%, 15%, 0.8;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-
-    --turned-in: 196 100% 14%;
-    --pending: 34 51% 25%;
-    --error: 10 39% 43%;
+    /* Other tokens (adjusted to be visible on dark backgrounds) */
+    --radius: 0.2rem;
+    --success: #a78bfa; /* Lighter purple */
+    --warning: #fbbf24; /* Warm amber */
+    --error: #f87171; /* Consistent with destructive */
+    --graded: #60a5fa; /* Lighter blue */
+    --reviewed: #4ade80; /* Brighter green */
   }
 }
 

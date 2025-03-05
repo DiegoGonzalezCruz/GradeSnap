@@ -18,7 +18,8 @@ export const ThemeSelector: React.FC = () => {
   const { setTheme } = useTheme()
   const [value, setValue] = useState('')
 
-  const onThemeChange = (themeToSet: Theme & 'auto') => {
+  const onThemeChange = (themeToSet: Theme | 'auto') => {
+    console.log('change')
     if (themeToSet === 'auto') {
       setTheme(null)
       setValue('auto')
@@ -41,7 +42,7 @@ export const ThemeSelector: React.FC = () => {
       >
         <SelectValue placeholder="Theme" />
       </SelectTrigger>
-      <SelectContent>
+      <SelectContent className="z-50">
         <SelectItem value="auto">Auto</SelectItem>
         <SelectItem value="light">Light</SelectItem>
         <SelectItem value="dark">Dark</SelectItem>

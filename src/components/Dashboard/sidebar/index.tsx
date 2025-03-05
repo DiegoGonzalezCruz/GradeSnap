@@ -92,7 +92,7 @@ export function Sidebar({ className }: React.HTMLAttributes<HTMLDivElement>) {
                     // Default state:
                     'text-white opacity-60 hover:opacity-100',
                     // Active state overrides:
-                    isActive && 'bg-[#141A3F] text-primary opacity-100 rounded',
+                    isActive && 'bg-primary text-primary opacity-100 rounded debug1',
                   )}
                 >
                   <Icon className="w-6 h-6" />
