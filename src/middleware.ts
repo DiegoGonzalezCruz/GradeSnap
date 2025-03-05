@@ -1,20 +1,36 @@
 import { NextResponse } from 'next/server'
 import { NextRequest } from 'next/server'
-import { getUserAccessToken } from './app/api/auth/google/getUserAccessToken'
 
 export async function middleware(req: NextRequest) {
-  const accessToken = await getUserAccessToken(req)
-  console.log(req, 'req')
-  // console.log('MIDDLEWARE Access Token:', accessToken, 'MIDDLEWARE ')
+  // Adjust the endpoint if your Payload collection slug differs from "users"
+  const meEndpoint = `${req.nextUrl.origin}/api/users/me`
 
-  if (!accessToken) {
-    return NextResponse.redirect(new URL('/', req.url))
+  try {
+    const response = await fetch(meEndpoint, {
+      method: 'GET',
+      headers: { cookie: req.headers.get('cookie') || '' },
+    })
+
+    if (!response.ok) {
+      console.error(`Error from Payload me endpoint: ${response.status}`)
+      return NextResponse.redirect(new URL('/login', req.url))
+    }
+
+    const data = await response.json()
+
+    // Redirect to /login if the user is not authenticated
+    if (!data.user) {
+      return NextResponse.redirect(new URL('/login', req.url))
+    }
+
+    return NextResponse.next()
+  } catch (error) {
+    console.error('Error checking authentication with Payload:', error)
+    return NextResponse.redirect(new URL('/login', req.url))
   }
-
-  return NextResponse.next()
 }
 
-// Apply this middleware to all API routes under the /api/classroom path
+// Apply this middleware to all routes under /dashboard
 export const config = {
   matcher: '/dashboard/:path*',
 }

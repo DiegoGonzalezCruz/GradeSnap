@@ -28,7 +28,9 @@ const AvatarSidebar = () => {
       <h2 className="text-base font-medium"> Teacher </h2>
       <div className="flex flex-row items-center justify-between  gap-0">
         <Avatar className="">
-          <Image src={user?.pictureURL} alt={'Teacher Image '} width={40} height={40} />
+          {user?.pictureURL && (
+            <Image src={user?.pictureURL} alt={'Teacher Image '} width={40} height={40} />
+          )}
           <AvatarFallback>CN</AvatarFallback>
         </Avatar>
         <div>{user?.name}</div>

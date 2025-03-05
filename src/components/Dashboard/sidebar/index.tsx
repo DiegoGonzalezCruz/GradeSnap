@@ -8,6 +8,10 @@ import { CrumpledPaperIcon, HomeIcon } from '@radix-ui/react-icons'
 import { Rocket, Cog } from 'lucide-react'
 import Image from 'next/image'
 import AvatarSidebar from './AvatarSidebar'
+import { Button } from '@/components/ui/button'
+import { CiLogout } from 'react-icons/ci'
+import { useRouter } from 'next/navigation'
+import useMeUser from '@/hooks/useMeUser'
 
 interface Menu {
   name: string
@@ -17,6 +21,11 @@ interface Menu {
 
 export function Sidebar({ className }: React.HTMLAttributes<HTMLDivElement>) {
   const pathname = usePathname()
+  const router = useRouter()
+  const user = useMeUser()
+
+  console.log(user, 'user')
+  if (!user) router.push('/')
 
   const menu: Menu[] = [
     {
@@ -40,6 +49,19 @@ export function Sidebar({ className }: React.HTMLAttributes<HTMLDivElement>) {
       href: '/dashboard/settings',
     },
   ]
+
+  const handleLogout = async () => {
+    console.log('logging out')
+    const res = await fetch('http://localhost:3000/api/users/logout', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+    if (res.ok) {
+      router.push('/')
+    }
+  }
 
   return (
     <div className={cn('h-screen min-h-fit bg-[#0B0F2D]', className)}>
@@ -81,6 +103,15 @@ export function Sidebar({ className }: React.HTMLAttributes<HTMLDivElement>) {
         {/* Bottom: user avatar */}
         <div className="w-full mt-8">
           <AvatarSidebar />
+        </div>
+        <div>
+          <Button
+            variant={'ghost'}
+            onClick={handleLogout}
+            className="flex flex-row items-center justify-center gap-2"
+          >
+            <CiLogout className="w-5 h-5" /> Log Out
+          </Button>
         </div>
       </div>
     </div>

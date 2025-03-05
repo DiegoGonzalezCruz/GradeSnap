@@ -1,17 +1,24 @@
 'use client'
 import Image from 'next/image'
-// import Link from 'next/link'
 import { useEffect, useState } from 'react'
-// import { Button } from '../ui/button'
 
-const LoginWithGoogle = () => {
+type LoginWithGoogleProps = {
+  className?: string
+  redirectTo?: string
+}
+
+const LoginWithGoogle = ({ className, redirectTo }: LoginWithGoogleProps) => {
   const btnSource = '/logos/btn_google_light_normal_ios.svg'
   const [redirectUrl, setRedirectUrl] = useState('/')
 
   useEffect(() => {
-    // Capture the current path to return after login
-    setRedirectUrl(window.location.pathname)
-  }, [])
+    // If a redirectTo prop is provided, use it; otherwise, use the current path.
+    if (redirectTo) {
+      setRedirectUrl(redirectTo)
+    } else {
+      setRedirectUrl(window.location.pathname)
+    }
+  }, [redirectTo])
 
   const redirectHandler = () => {
     window.location.href = `/api/auth/google?redirect=${encodeURIComponent(redirectUrl)}`
@@ -19,9 +26,9 @@ const LoginWithGoogle = () => {
 
   return (
     <>
-      <div className="login-container">
+      <div className={`login-container ${className}`}>
         <div onClick={redirectHandler}>
-          <div className="login-button ">
+          <div className="login-button">
             <Image
               src={btnSource}
               height={40}
@@ -38,7 +45,6 @@ const LoginWithGoogle = () => {
         .login-container {
           width: 100%;
           height: 100%;
-          background-color: white;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -46,7 +52,6 @@ const LoginWithGoogle = () => {
 
         .login-button {
           display: flex;
-          border: 1px solid red;
           gap: 10px;
           align-items: center;
           justify-content: center;

@@ -9,9 +9,9 @@ export async function getUserAccessToken(req: NextRequest): Promise<string | nul
   console.log(expiration, 'Expiration Time') // TODO: Fix this
 
   // If token or expiration is missing, consider it unauthenticated.
-  // if (!token || !expiration) {
-  //   return null
-  // }
+  if (!token || !expiration) {
+    return null
+  }
 
   const expirationTime = parseInt(expiration, 10)
   const now = Date.now()
