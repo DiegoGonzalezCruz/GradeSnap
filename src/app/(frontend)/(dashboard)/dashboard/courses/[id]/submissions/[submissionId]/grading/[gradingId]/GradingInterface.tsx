@@ -19,6 +19,7 @@ import RubricPanel from '@/components/Courses/Grading/RubricPanel'
 import FeedbackPanel from '@/components/Courses/Grading/FeedbackPanel'
 import HistoryPanel from '@/components/Courses/Grading/HistoryPanel'
 import PDFViewer from '@/components/Courses/Grading/PDFViewer'
+import GradingButton from '@/components/Courses/CourseWork/GradingButton'
 
 // Initialize PDF.js worker
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`
@@ -163,6 +164,10 @@ export default function GradingInterface({
                 </p>
               </div>
             </div>
+            <GradingButton
+              attachments={submissionAttachments}
+              courseWorkId={courseWorkId as string}
+            />
             <Button
               variant="outline"
               size="sm"
