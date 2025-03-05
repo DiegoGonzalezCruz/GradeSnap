@@ -42,10 +42,7 @@ export function useRubrics(courseId: string) {
   })
 }
 
-export function useGetRubrics(
-  courseId: string,
-  courseWorkId: string,
-): { data: any; isLoading: any; error: any } {
+export function useGetRubrics(courseId: string, courseWorkId: string) {
   return useQuery({
     queryKey: ['rubric', courseId, courseWorkId],
     queryFn: async () => {

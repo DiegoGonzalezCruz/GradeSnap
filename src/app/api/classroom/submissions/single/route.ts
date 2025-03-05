@@ -52,7 +52,8 @@ export async function GET(req: NextRequest) {
     })
     console.log(submissionResponse, '***** DATA *****')
     // Cast the result to our extended type
-    let submission: ExtendedStudentSubmission = submissionResponse.data as ExtendedStudentSubmission
+    const submission: ExtendedStudentSubmission =
+      submissionResponse.data as ExtendedStudentSubmission
 
     // 6. Optionally fetch user details
     if (submission.userId) {
