@@ -1,8 +1,10 @@
-import React from 'react'
-import { Document, Page } from 'react-pdf'
+import React, { useEffect } from 'react'
+import { Document, Page, pdfjs } from 'react-pdf'
 import { Button } from '@/components/ui/button'
 import { ExternalLink } from 'lucide-react'
 import { Loader2 } from 'lucide-react'
+
+pdfjs.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js'
 
 interface PDFViewerProps {
   selectedFile: any
@@ -27,15 +29,45 @@ export default function PDFViewer({
   pageNumber,
   setPageNumber,
 }: PDFViewerProps) {
-  // Functions for file icon and type can be defined here or imported if shared
+  // When a new file is selected, fetch its PDF version from the backend
+  useEffect(() => {
+    async function fetchPdf() {
+      if (selectedFile) {
+        try {
+          // Call the export endpoint with the file's alternateLink
+          const res = await fetch(
+            `/api/classroom/export-pdf?url=${encodeURIComponent(
+              selectedFile.driveFile.alternateLink,
+            )}`,
+          )
+          if (!res.ok) {
+            throw new Error('Failed to fetch PDF preview.')
+          }
+          const blob = await res.blob()
+          // Create an object URL from the Blob and set it as pdfUrl
+          const url = URL.createObjectURL(blob)
+          setPdfUrl(url)
+          // Optionally, create a File object if needed (here we set pdfFile to null)
+          setPdfFile(null)
+        } catch (error) {
+          console.error(error)
+        }
+      }
+    }
+    fetchPdf()
+    // Cleanup the URL when the component unmounts or when selectedFile changes
+    return () => {
+      if (pdfUrl) URL.revokeObjectURL(pdfUrl)
+    }
+  }, [selectedFile])
+
+  // Helper functions can remain the same
   const getFileIcon = (attachment: any) => {
     const url = attachment.driveFile.alternateLink.toLowerCase()
-    // ... return appropriate icon component
     return null
   }
   const getFileTypeName = (attachment: any) => {
     const url = attachment.driveFile.alternateLink.toLowerCase()
-    // ... return appropriate file type string
     return 'Document'
   }
 
@@ -64,7 +96,7 @@ export default function PDFViewer({
       </div>
       <div className="flex-1 border rounded-md bg-white overflow-auto flex items-center justify-center">
         {selectedFile ? (
-          pdfUrl && pdfFile ? (
+          pdfUrl ? (
             <Document
               file={pdfUrl}
               onLoadSuccess={onDocumentLoadSuccess}
@@ -92,47 +124,7 @@ export default function PDFViewer({
             </Document>
           ) : (
             <div className="flex flex-col items-center justify-center w-full h-full">
-              {selectedFile.driveFile.thumbnailUrl ? (
-                <div className="text-center">
-                  <img
-                    src={selectedFile.driveFile.thumbnailUrl || '/placeholder.svg'}
-                    alt={selectedFile.driveFile.title}
-                    className="max-w-md max-h-md object-contain mb-4"
-                  />
-                  <p className="text-muted-foreground mb-4">
-                    This is a {getFileTypeName(selectedFile)} document and cannot be previewed
-                    directly.
-                  </p>
-                  <Button asChild>
-                    <a
-                      href={selectedFile.driveFile.alternateLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      Open in Google {getFileTypeName(selectedFile).replace('Google ', '')}
-                    </a>
-                  </Button>
-                </div>
-              ) : (
-                <div className="text-center">
-                  <div className="w-20 h-20 flex items-center justify-center bg-gray-100 rounded-full mb-4 mx-auto">
-                    {getFileIcon(selectedFile)}
-                  </div>
-                  <h3 className="text-lg font-medium mb-2">{selectedFile.driveFile.title}</h3>
-                  <p className="text-muted-foreground mb-4">
-                    This {getFileTypeName(selectedFile)} document cannot be previewed directly.
-                  </p>
-                  <Button asChild>
-                    <a
-                      href={selectedFile.driveFile.alternateLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      Open in Google {getFileTypeName(selectedFile).replace('Google ', '')}
-                    </a>
-                  </Button>
-                </div>
-              )}
+              <p className="text-muted-foreground mb-4">Loading PDF preview...</p>
             </div>
           )
         ) : (
@@ -142,7 +134,7 @@ export default function PDFViewer({
           </div>
         )}
       </div>
-      {pdfUrl && pdfFile && numPages && (
+      {pdfUrl && numPages && (
         <div className="mt-4 flex justify-center items-center gap-4">
           <Button
             variant="outline"

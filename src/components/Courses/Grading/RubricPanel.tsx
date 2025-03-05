@@ -46,16 +46,15 @@ export default function RubricPanel({
         // Check if the grade result contains data for this criterion
         const gradedCriterion = gradeResult?.criteria.find((c) => c.criterionId === criterion.id)
         return (
-          <Collapsible key={criterion.id} className="border rounded-md">
-            <CollapsibleTrigger className="flex w-full justify-between items-center p-4">
+          <Collapsible key={criterion.id} className="border rounded-md ">
+            <CollapsibleTrigger className="flex w-full justify-between items-center p-4 ">
               <div className="flex items-center gap-2">
                 <span className="font-medium">{criterion.title}</span>
                 {gradedCriterion && (
-                  <div className="flex gap-1" title={`Score: ${gradedCriterion.score}`}>
-                    {Array.from({ length: gradedCriterion.score }).map((_, index) => (
-                      <Star key={index} className="h-4 w-4 text-yellow-500" />
-                    ))}
-                  </div>
+                  <span className="text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded-full">
+                    {criterion.levels.find((l) => l.points === gradedCriterion.score)?.title ||
+                      gradedCriterion.score}
+                  </span>
                 )}
                 {!gradedCriterion && selectedLevels[criterion.id] && (
                   <span className="text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded-full">
@@ -64,7 +63,7 @@ export default function RubricPanel({
                 )}
               </div>
             </CollapsibleTrigger>
-            <CollapsibleContent className="p-4 pt-0 border-t">
+            <CollapsibleContent className="p-4 pt-0 border-t flex flex-col gap-5">
               <p className="text-sm text-muted-foreground mb-3">{criterion.description}</p>
               <RadioGroup
                 value={selectedLevels[criterion.id] || ''}

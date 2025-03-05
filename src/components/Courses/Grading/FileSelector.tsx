@@ -14,7 +14,7 @@ export default function FileSelector({
   onSelectFile,
 }: FileSelectorProps) {
   return (
-    <div className="flex flex-col gap-2 p-4">
+    <div className="flex flex-col gap-5">
       <Label>Select a file to evaluate:</Label>
       <select
         className="p-2 border rounded-md"

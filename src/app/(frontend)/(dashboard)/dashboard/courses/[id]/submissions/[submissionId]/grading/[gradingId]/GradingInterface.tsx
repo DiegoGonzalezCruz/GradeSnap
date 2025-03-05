@@ -23,7 +23,7 @@ import PDFViewer from '@/components/Courses/Grading/PDFViewer'
 // import GradingButton from '@/components/Courses/CourseWork/GradingButton'
 
 // Initialize PDF.js worker
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`
+pdfjs.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js'
 
 // Define a type for the grade result returned by the LLM
 type GradeResult = {
@@ -42,8 +42,6 @@ export default function GradingInterface({
   courseWorkId,
   submissionId,
   attachments = [],
-  initialRubric,
-  submission,
 }: GradingInterfaceProps) {
   // Local state
   const [numPages, setNumPages] = useState<number | null>(null)
@@ -172,11 +170,6 @@ export default function GradingInterface({
       {/* Left Panel: Grading Controls */}
       <div className="w-full md:w-1/3 border-r overflow-y-auto">
         <StudentInfoCard submissionData={submissionData} />
-        <FileSelector
-          attachments={submissionAttachments}
-          selectedFile={selectedFile}
-          onSelectFile={setSelectedFile}
-        />
         <div className="p-4 border-b">
           <div className="flex justify-between items-center mb-4">
             <div>
@@ -273,36 +266,15 @@ export default function GradingInterface({
             )}
           </Button>
         </div>
-
-        {/* Display the grading result from the LLM */}
-        {gradeResult && (
-          <div className="m-4 p-4 border rounded-md bg-gray-50">
-            <Label className="font-medium mb-2 block">Grading Result:</Label>
-            <div className="text-sm">
-              <p>
-                <strong>Overall Grade:</strong> {gradeResult.overallGrade}
-              </p>
-              <p>
-                <strong>Overall Feedback:</strong> {gradeResult.overallFeedback}
-              </p>
-              <div className="mt-2">
-                <p className="font-medium">Detailed Criteria:</p>
-                {gradeResult.criteria.map((c) => (
-                  <div key={c.criterionId} className="mb-1">
-                    <p>
-                      <strong>{c.criterionTitle}</strong> – Score: {c.score}
-                    </p>
-                    <p className="text-xs text-muted-foreground">{c.justification}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
       </div>
 
       {/* Right Panel: Document Viewer */}
-      <div className="w-full md:w-2/3 p-4 bg-gray-50 flex flex-col">
+      <div className="w-full md:w-2/3 p-4 bg-gray-50 flex flex-col gap-5 h-[85vh]">
+        <FileSelector
+          attachments={submissionAttachments}
+          selectedFile={selectedFile}
+          onSelectFile={setSelectedFile}
+        />
         <PDFViewer
           selectedFile={selectedFile}
           pdfUrl={pdfUrl}
