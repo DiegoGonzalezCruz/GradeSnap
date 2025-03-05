@@ -6,7 +6,7 @@ import React from 'react'
 import { Button } from '../ui/button'
 
 function formatDate(deadline: any | string): string {
-  console.log('HELLO')
+  // console.log('HELLO')
   if (typeof deadline === 'string') {
     return deadline
   }
@@ -20,7 +20,7 @@ function formatDate(deadline: any | string): string {
 const CourseTab = ({ course }: { course: any }) => {
   console.log(course, 'COURSE')
   return (
-    <div className=" debug1">
+    <div className=" ">
       <div className="flex items-center justify-between gap-6  ">
         <div className="">
           <Image

@@ -57,7 +57,7 @@ export default function CourseWorkList({ id }: { id: string }) {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col space-y-4 md:flex-row md:items-center md:justify-between md:space-y-0">
+      <div className="flex flex-col space-y-4 md:flex-row md:items-center md:justify-between md:space-y-0 ">
         <div className="flex flex-col space-y-2 md:flex-row items-center justify-end md:space-x-2 md:space-y-0  w-full">
           <div className="relative ">
             <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -74,7 +74,7 @@ export default function CourseWorkList({ id }: { id: string }) {
               variant="ghost"
               size="icon"
               onClick={() => setDateFilter(undefined)}
-              className="h-10 w-10 debug1"
+              className="h-10 w-10 "
             >
               <Filter className="h-4 w-4" />
             </Button>

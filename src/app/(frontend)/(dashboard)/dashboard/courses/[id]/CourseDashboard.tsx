@@ -22,8 +22,8 @@ const CourseDashboard = ({ id }: { id: string }) => {
         <Breadcrubms
           breadcrumbArray={[
             { title: 'Home', href: '/' },
-            { title: 'Courses', href: '/courses' },
-            { title: data?.name, href: `/courses/${id}` },
+            { title: 'Courses', href: '/dashboard/courses' },
+            { title: data?.name, href: `/dashboard/courses/${id}` },
           ]}
         />
 

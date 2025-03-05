@@ -10,7 +10,7 @@ export default function CourseCardsList({
   courses,
   preview = false,
 }: {
-  courses: GCourse[]
+  courses: any // TODO: Fix later
   preview?: boolean
 }) {
   // Decide how many courses to display
@@ -33,13 +33,16 @@ export default function CourseCardsList({
       </div>
 
       <div className="w-full flex flex-col gap-5">
-        {displayedCourses.map((course, idx) => (
-          <div key={course.id} className="flex flex-col w-full gap-5">
-            <CourseTab course={course} />
-            {/* Only show Separator if it's not the last item displayed */}
-            {idx < displayedCourses.length - 1 && <Separator />}
-          </div>
-        ))}
+        {displayedCourses.map((course: any, idx: number) => {
+          console.log(course, 'COURSE ****')
+          return (
+            <div key={course.courseId + idx} className="flex flex-col w-full gap-5">
+              <CourseTab course={course} />
+              {/* Only show Separator if it's not the last item displayed */}
+              {idx < displayedCourses.length - 1 && <Separator />}
+            </div>
+          )
+        })}
       </div>
     </div>
   )

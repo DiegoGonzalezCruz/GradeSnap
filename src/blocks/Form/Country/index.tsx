@@ -42,7 +42,7 @@ export const Country: React.FC<
 
           return (
             <Select onValueChange={(val) => onChange(val)} value={controlledValue?.value}>
-              <SelectTrigger className="w-full" id={name}>
+              <SelectTrigger className="w-full border border-primary" id={name}>
                 <SelectValue placeholder={label} />
               </SelectTrigger>
               <SelectContent>

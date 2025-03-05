@@ -81,11 +81,11 @@ const CourseCard = ({ courseWork }: { courseWork: any }) => {
             <div className="text-primary-foreground text-2xl font-bold">
               {courseWork.gradedSubmissions}
             </div>
-            <div className="text-primary-foreground text-xs">Graded</div>
+            <div className="text-primary-foreground text-xs">To Grade</div>
           </div>
           <div className="bg-amber-500 p-4 text-center text-white w-1/2 rounded-lg">
             <div className="text-2xl font-bold">{courseWork.ungradedSubmissions}</div>
-            <div className="text-xs">Ungraded</div>
+            <div className="text-xs">Not turned in</div>
           </div>
         </div>
       </CardContent>

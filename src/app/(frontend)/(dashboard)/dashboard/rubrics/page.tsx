@@ -14,10 +14,10 @@ export const metadata: Metadata = {
 export default function SummariesDashboardPage() {
   return (
     <DashboardShell>
-      <DashboardHeader heading="Summaries" text="Summaries of the classroom data.">
+      <DashboardHeader heading="Rubrics" text="Summaries of the classroom data.">
         <Button>Refresh Data</Button>
       </DashboardHeader>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">SUMMARIES</div>
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">Rubrics</div>
     </DashboardShell>
   )
 }
