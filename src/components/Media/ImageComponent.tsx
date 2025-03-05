@@ -34,8 +34,8 @@ const ImageComponent = ({
   image,
   alt = 'Product Image',
   size = 'original',
-  defaultWidth = 500,
-  defaultHeight = 500,
+  defaultWidth = 1500,
+  defaultHeight = 1500,
   className,
   objectFit = 'object-cover',
 }: ProductImageProps) => {
@@ -80,7 +80,6 @@ const ImageComponent = ({
     />
   )
 }
-
 
 // Error Display Component (Still Server-Compatible)
 const ErrorDisplay = ({ message }: { message: string }) => {

@@ -5,10 +5,8 @@ import { usePathname } from 'next/navigation'
 import type React from 'react'
 import { cn } from '@/utilities/ui'
 import { HomeIcon } from '@radix-ui/react-icons'
-import { FaGraduationCap } from 'react-icons/fa'
-import { LuBookOpenCheck } from 'react-icons/lu'
 
-import { Rocket, Cog } from 'lucide-react'
+import { GraduationCap, BookOpenCheck, Settings } from 'lucide-react'
 import Image from 'next/image'
 import AvatarSidebar from './AvatarSidebar'
 import { Button } from '@/components/ui/button'
@@ -38,17 +36,17 @@ export function Sidebar({ className }: React.HTMLAttributes<HTMLDivElement>) {
     },
     {
       name: 'Courses',
-      icon: FaGraduationCap,
+      icon: GraduationCap,
       href: '/dashboard/courses', // highlight if user is on /dashboard/courses
     },
     {
       name: 'Rubric',
-      icon: LuBookOpenCheck,
+      icon: BookOpenCheck,
       href: '/dashboard/rubrics',
     },
     {
       name: 'Settings',
-      icon: Cog,
+      icon: Settings,
       href: '/dashboard/settings',
     },
   ]

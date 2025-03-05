@@ -9,29 +9,34 @@ const LoginComponent = () => {
       <Card className="w-full max-w-6xl overflow-hidden shadow-lg h-full">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-0  h-full">
           {/* Image Section - Hidden on mobile, visible on tablet and up */}
-          <div className="hidden md:block bg-white relative h-full min-h-[300px]  ">
+          <div className="hidden md:block bg-white relative h-full min-h-[300px]   ">
             <ImageComponent
-              image={'/teacher.png'}
+              image={'/teacher1.jpeg'}
               alt="Teacher helping students"
-              className="  rounded-l-xl w-full object-top"
+              className="   w-full h-full object-top"
             />
             <div className="absolute bottom-4 left-4 bg-background/80 p-2 rounded-md text-sm text-muted-foreground backdrop-blur-sm">
               Simplify your classroom grading experience with AI
             </div>
+            <div className="absolute top-4 left-4 bg-primary text-primary-foreground p-2  overflow-clip -rotate-12 text-sm  rounded-xl backdrop-blur-sm">
+              Comming soon!
+            </div>
           </div>
 
           {/* Login Section */}
-          <CardContent className="flex flex-col items-center justify-center p-6 md:p-10 space-y-6">
+          <CardContent className="flex flex-col items-center justify-center p-6 md:p-10 space-y-6 ">
             <div className="text-center space-y-2">
               <div className="flex flex-col sm:flex-row items-center justify-center gap-2 mb-6">
-                <h1 className="text-3xl md:text-4xl font-bold text-primary">Welcome to</h1>
-                <div className="h-12 md:h-36 translate-y-0.5 overflow-hidden">
+                <h1 className="text-3xl md:text-4xl font-bold text-primary">
+                  Welcome to GradeSnap
+                </h1>
+                {/* <div className="h-12 md:h-36 translate-y-0.5 overflow-hidden">
                   <ImageComponent
                     image={'/logos/logo.png'}
                     alt="Application logo"
                     className="h-full w-auto object-contain"
                   />
-                </div>
+                </div> */}
               </div>
 
               <p className="text-muted-foreground max-w-md mx-auto mb-8">
