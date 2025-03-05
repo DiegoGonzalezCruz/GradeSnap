@@ -1,6 +1,7 @@
 import LoginWithGoogle from '@/components/Auth/LoginWithGoogle'
 import ImageComponent from '@/components/Media/ImageComponent'
 import { Card, CardContent } from '@/components/ui/card'
+import Link from 'next/link'
 
 const LoginComponent = () => {
   return (
@@ -45,13 +46,13 @@ const LoginComponent = () => {
               <div className="mt-6 text-center text-sm text-muted-foreground">
                 <p>By signing in, you agree to our</p>
                 <div className="flex justify-center space-x-2 mt-1">
-                  <a href="/terms" className="text-primary hover:underline">
+                  <Link href="/terms" className="text-primary hover:underline">
                     Terms of Service
-                  </a>
+                  </Link>
                   <span>•</span>
-                  <a href="/privacy" className="text-primary hover:underline">
+                  <Link href="/privacy" className="text-primary hover:underline">
                     Privacy Policy
-                  </a>
+                  </Link>
                 </div>
               </div>
             </div>
