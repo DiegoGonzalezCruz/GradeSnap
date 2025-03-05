@@ -36,7 +36,7 @@ async function fetchRubrics(courseId: string, courseWorkId: string, token: strin
     }
 
     const data = await response.json()
-    console.log('Rubrics Data:', data) // Inspect the data
+    // console.log('Rubrics Data:', data) // Inspect the data
     return data
   } catch (error: any) {
     console.error('Error fetching rubrics:', error)
@@ -53,8 +53,8 @@ export async function GET(req: NextRequest) {
   const courseId = getQueryParam(req, 'courseId')
   const courseWorkId = getQueryParam(req, 'courseWorkId')
 
-  console.log(courseId, 'course ID from ENDPOINT ****')
-  console.log(courseWorkId, ' courseId ID from ENDPOINT ****')
+  // console.log(courseId, 'course ID from ENDPOINT ****')
+  // console.log(courseWorkId, ' courseId ID from ENDPOINT ****')
 
   if (!courseId || !courseWorkId) {
     return NextResponse.json(
@@ -118,7 +118,7 @@ export async function POST(req: NextRequest) {
         },
       },
     )
-    console.log('Check capability response:', checkCapabilityResponse)
+    // console.log('Check capability response:', checkCapabilityResponse)
     if (!checkCapabilityResponse.ok) {
       console.error(
         'Error checking user capability:',

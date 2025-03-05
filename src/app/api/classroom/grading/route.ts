@@ -113,10 +113,10 @@ const gradingSchema = {
 }
 
 export async function POST(req: NextRequest) {
-  console.log('POST request received')
+  // console.log('POST request received')
   try {
     const body = await req.json()
-    console.log(body, 'BODY')
+    // console.log(body, 'BODY')
     const token = await getUserAccessToken(req)
     if (!token) {
       return NextResponse.json(

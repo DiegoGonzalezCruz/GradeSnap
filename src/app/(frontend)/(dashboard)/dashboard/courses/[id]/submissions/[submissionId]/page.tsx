@@ -9,8 +9,8 @@ const StudentsSubmissions = async ({
   const id = (await params).id
   const submissionId = (await params).submissionId
 
-  console.log(id, 'id')
-  console.log(submissionId, 'submissionId')
+  // console.log(id, 'id')
+  // console.log(submissionId, 'submissionId')
 
   const breadcrumbArray = [
     {

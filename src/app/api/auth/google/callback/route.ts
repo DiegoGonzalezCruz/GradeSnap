@@ -70,9 +70,9 @@ const handler = async (request: Request) => {
       { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } },
     )
     const { access_token, expires_in, refresh_token } = tokenResponse.data
-    console.log(expires_in, 'expires_in')
-    console.log(access_token, 'access_token')
-    console.log(refresh_token, 'refresh_token')
+    // console.log(expires_in, 'expires_in')
+    // console.log(access_token, 'access_token')
+    // console.log(refresh_token, 'refresh_token')
 
     // 2. Retrieve user info
     const userInfoResponse = await axios.get<GoogleUserInfo>(

@@ -120,7 +120,7 @@ const StudentsSubmissionsList = ({ id, submissionId }: { id: string; submissionI
   }
 
   const submissions = Array.isArray(data) ? data : [data].filter(Boolean)
-  console.log(submissions, 'submissions')
+  // console.log(submissions, 'submissions')
 
   if (!submissions || submissions.length === 0) {
     return (

@@ -15,7 +15,7 @@ const GradingSubmissionPage = async ({ params }: GradingArgs) => {
   const { id, submissionId, gradingId } = await params
 
   console.log(id, submissionId, gradingId)
-  console.log('****** FROM GRADING SUBMISSION PAGE ******')
+  console.log('****** FROM GRADING SUBMISSION PAGE 🇨🇱🇨🇱🇨🇱🇨🇱 ******')
 
   const breadcrumbArray = [
     {
@@ -43,7 +43,7 @@ const GradingSubmissionPage = async ({ params }: GradingArgs) => {
   return (
     <div className="flex flex-col gap-10">
       <Breadcrubms breadcrumbArray={breadcrumbArray} />
-      <GradingInterface id={id!} submissionId={submissionId!} />
+      <GradingInterface courseId={id!} courseWorkId={submissionId!} submissionId={gradingId} />
     </div>
   )
 }

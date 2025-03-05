@@ -17,6 +17,7 @@ export default function DashboardPage() {
       <DashboardHeader heading="Dashboard" text="Welcome to your Classroom AI Dashboard.">
         {/* <Button>Refresh Data</Button> */}
       </DashboardHeader>
+
       <div className="flex flex-row items-center justify-center gap-20 w-full h-full ">
         <ClassroomData />
       </div>

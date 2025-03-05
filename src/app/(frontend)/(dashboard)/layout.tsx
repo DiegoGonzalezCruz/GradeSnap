@@ -1,7 +1,7 @@
 import { Sidebar } from '@/components/Dashboard/sidebar'
 import type React from 'react'
 // import { draftMode } from 'next/headers'
-import HeaderDashboard from '@/components/Dashboard/header'
+
 import MainDashboard from '@/components/Dashboard/main'
 
 export const metadata = {
@@ -20,7 +20,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
       </aside>
       <div className="flex flex-col flex-1 overflow-hidden h-full">
         {/* Header */}
-        <HeaderDashboard />
+
         {/* Main */}
         <MainDashboard>{children}</MainDashboard>
       </div>
