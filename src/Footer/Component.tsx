@@ -7,6 +7,7 @@ import type { Footer } from '@/payload-types'
 import { ThemeSelector } from '@/providers/Theme/ThemeSelector'
 import { CMSLink } from '@/components/Link'
 import { Logo } from '@/components/Logo/Logo'
+import ImageComponent from '@/components/Media/ImageComponent'
 
 export async function Footer() {
   const footerData: Footer = await getCachedGlobal('footer', 1)()
@@ -14,11 +15,17 @@ export async function Footer() {
   const navItems = footerData?.navItems || []
 
   return (
-    <footer className="mt-auto border-t border-border bg-black dark:bg-card text-white debug1">
-      <div className="container py-8 gap-8 flex flex-col md:flex-row md:justify-between">
-        <Link className="flex items-center" href="/">
-          <Logo />
-        </Link>
+    <footer className="w-full border-border bg-black dark:bg-card text-white ">
+      <div className="w-3/4 mx-auto py-10 gap-5 flex flex-col md:flex-row md:justify-between ">
+        <div className="w-fit flex flex-col items-center justify-center">
+          <Link className="flex items-center w-fit" href="/">
+            <ImageComponent
+              className="w-full "
+              alt="logo"
+              image={'/logos/logo-darkbackground.svg'}
+            />
+          </Link>
+        </div>
 
         <div className="flex flex-col-reverse items-start md:flex-row gap-4 md:items-center">
           <ThemeSelector />
