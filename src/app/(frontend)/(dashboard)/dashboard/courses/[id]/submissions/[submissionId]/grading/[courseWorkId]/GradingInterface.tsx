@@ -195,7 +195,7 @@ export default function GradingInterface({
             </Document>
           ) : (
             <div className="text-center text-muted-foreground">
-              Student's work would appear here...
+              Student&apos;s work would appear here...
               <p className="text-sm mt-2">Upload a PDF using the button above</p>
             </div>
           )}
