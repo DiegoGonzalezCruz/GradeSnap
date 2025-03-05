@@ -11,23 +11,14 @@ export const metadata: Metadata = {
   description: 'Example dashboard app built using the components.',
 }
 
-export default function DashboardPage() {
+export default function SettingsDashboardPage() {
   return (
     <DashboardShell>
       <DashboardHeader heading="Settings" text="Manage your classroom settings.">
         <Button>Refresh Data</Button>
       </DashboardHeader>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        <ClassroomData />
-      </div>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-        <div className="col-span-4">
-          <AIGradedAssessments />
-        </div>
-        <div className="col-span-3">
-          <SendAnnouncement />
-        </div>
-      </div>
+
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">SYSTEM SETTINGS</div>
     </DashboardShell>
   )
 }

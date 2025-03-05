@@ -1,11 +1,12 @@
-import { Course, Deadline } from '@/types/courses'
+import { GAssignmentWithDeadline, GCourse } from '@/types/courses'
 
 import Image from 'next/image'
 import Link from 'next/link'
 import React from 'react'
 import { Button } from '../ui/button'
 
-function formatDate(deadline: Deadline | string): string {
+function formatDate(deadline: any | string): string {
+  console.log('HELLO')
   if (typeof deadline === 'string') {
     return deadline
   }
@@ -16,9 +17,10 @@ function formatDate(deadline: Deadline | string): string {
   })
 }
 
-const CourseTab = ({ course }: { course: Course }) => {
+const CourseTab = ({ course }: { course: any }) => {
+  console.log(course, 'COURSE')
   return (
-    <div className=" ">
+    <div className=" debug1">
       <div className="flex items-center justify-between gap-6  ">
         <div className="">
           <Image

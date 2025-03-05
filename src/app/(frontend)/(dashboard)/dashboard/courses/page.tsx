@@ -7,7 +7,7 @@ interface Course {
   section?: string
 }
 
-export default function Courses() {
+export default function CoursesDashboardPage() {
   return (
     <div>
       <h1 className="text-3xl font-bold mb-6">My Courses</h1>

@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   description: 'Example dashboard app built using the components.',
 }
 
-export default function DashboardPage() {
+export default function GradingDashboardPage() {
   return (
     <DashboardShell>
       <DashboardHeader heading="Grading" text="Here is where the magic happens.">

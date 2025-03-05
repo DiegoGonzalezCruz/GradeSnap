@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { Course } from '@/types/courses'
+import { GCourse } from '@/types/courses'
 import { Separator } from '../ui/separator'
 import CourseTab from './CourseTab'
 import { Card } from '../ui/card'
@@ -10,7 +10,7 @@ export default function CourseCardsList({
   courses,
   preview = false,
 }: {
-  courses: Course[]
+  courses: GCourse[]
   preview?: boolean
 }) {
   // Decide how many courses to display
@@ -34,7 +34,7 @@ export default function CourseCardsList({
 
       <div className="w-full flex flex-col gap-5">
         {displayedCourses.map((course, idx) => (
-          <div key={course.courseId} className="flex flex-col w-full gap-5">
+          <div key={course.id} className="flex flex-col w-full gap-5">
             <CourseTab course={course} />
             {/* Only show Separator if it's not the last item displayed */}
             {idx < displayedCourses.length - 1 && <Separator />}

@@ -82,6 +82,8 @@ async function getCourseSummary(course: GCourse, token: string) {
       studentCount,
       numSubmissions: submissions.length,
       nextDeadline: getNextDeadline(submissions),
+      studentData: studentsData,
+      courseWorkData: courseWorkData,
     }
   } catch (error) {
     console.error(`Error fetching data for course ${course.id}:`, error)
