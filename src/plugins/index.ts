@@ -10,6 +10,7 @@ import { GenerateTitle, GenerateURL } from '@payloadcms/plugin-seo/types'
 import { FixedToolbarFeature, HeadingFeature, lexicalEditor } from '@payloadcms/richtext-lexical'
 import { searchFields } from '@/search/fieldOverrides'
 import { beforeSyncWithSearch } from '@/search/beforeSync'
+import { s3Storage } from '@payloadcms/storage-s3'
 
 import { Page, Post } from '@/payload-types'
 import { getServerSideURL } from '@/utilities/getURL'
@@ -91,4 +92,20 @@ export const plugins: Plugin[] = [
     },
   }),
   payloadCloudPlugin(),
+  s3Storage({
+    collections: {
+      media: {
+        prefix: 'gradeSnapMedia/',
+      },
+    },
+    bucket: process.env.S3_BUCKET as string,
+    config: {
+      credentials: {
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID as string,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY as string,
+      },
+      region: process.env.S3_REGION,
+      // ... Other S3 configuration
+    },
+  }),
 ]

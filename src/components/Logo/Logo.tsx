@@ -22,7 +22,7 @@ export const Logo = (props: Props) => {
       loading={loading}
       fetchPriority={priority}
       decoding="async"
-      className={clsx('w-full h-fit debug2', className)}
+      className={clsx('w-full h-fit ', className)}
       src="/logos/logo.png"
     />
   )
