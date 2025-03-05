@@ -26,11 +26,7 @@ const CourseDashboard = ({ id }: { id: string }) => {
             { title: data?.name, href: `/courses/${id}` },
           ]}
         />
-        {/* <h1 className="text-2xl">Course: {data?.name}</h1>
-        {data?.description && <p>{data?.description}</p>}
-        {data?.room && <p>Room: {data?.room}</p>}
-        {data?.section && <p>Section: {data?.section}</p>}
-        {data?.updateTime && <p>Last Updated: {data?.updateTime}</p>} */}
+
         <CourseWorkList id={id} />
       </div>
     )

@@ -43,9 +43,10 @@
     /* Background & Foreground (unchanged or adjust as needed) */
     --background: #f9fafb;
     --foreground: #000000;
-    --card: #FFFFFF%;
+
+    --card: #ffffff;
     --card-foreground: #000000;
-    --popover: #FFFFFF%;
+    --popover: #ffffff;
     --popover-foreground: #000000;
 
     --primary: #34c759;
@@ -58,13 +59,13 @@
     --accent-foreground: #fafafa;
 
     --neutral: #f4f4f5;
-    --neutral-foreground: 0 0% 100%;
+    --neutral-foreground: 71717A;
 
     --muted: #f4f4f5;
-    --muted-foreground: #71717A%;
+    --muted-foreground: #71717a;
 
     --destructive: #dc2626;
-    --destructive-foreground: #fafafa%;
+    --destructive-foreground: #fafafa;
 
     --border: #e4e4e7;
     --input: #fafafa;

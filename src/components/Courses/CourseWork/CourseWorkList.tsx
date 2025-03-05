@@ -68,26 +68,19 @@ export default function CourseWorkList({ id }: { id: string }) {
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
-          <DatePicker date={dateFilter} onSelect={setDateFilter} className="w-full md:w-auto" />
+          <DatePicker date={dateFilter} onSelect={setDateFilter} className="w-full md:w-auto " />
           {dateFilter && (
             <Button
               variant="ghost"
               size="icon"
               onClick={() => setDateFilter(undefined)}
-              className="h-10 w-10"
+              className="h-10 w-10 debug1"
             >
               <Filter className="h-4 w-4" />
             </Button>
           )}
         </div>
       </div>
-
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-        {filteredCourseWorks.map((courseWork) => {
-          return <CourseCard key={courseWork.id} courseWork={courseWork} />
-        })}
-      </div>
-
       {filteredCourseWorks.length === 0 && (
         <div className="rounded-md border border-dashed p-8 text-center">
           <h3 className="text-lg font-medium">No assignments found</h3>
@@ -96,6 +89,11 @@ export default function CourseWorkList({ id }: { id: string }) {
           </p>
         </div>
       )}
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+        {filteredCourseWorks.map((courseWork) => {
+          return <CourseCard key={courseWork.id} courseWork={courseWork} />
+        })}
+      </div>
     </div>
   )
 }
