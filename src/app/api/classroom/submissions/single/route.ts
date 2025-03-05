@@ -9,7 +9,7 @@ type ExtendedStudentSubmission = classroom_v1.Schema$StudentSubmission & {
 }
 
 export async function GET(req: NextRequest) {
-  console.log('GET SINGLE SUBMISSION')
+  // console.log('GET SINGLE SUBMISSION')
 
   // 1. Parse the URL
   const { searchParams } = new URL(req.url)
@@ -17,15 +17,15 @@ export async function GET(req: NextRequest) {
   const courseWorkId = searchParams.get('courseWorkId')
   const submissionId = searchParams.get('submissionId')
 
-  console.log('*********')
-  console.log(courseId, 'course ID from ENDPOINT ****')
-  console.log(courseWorkId, ' courseId ID from ENDPOINT ****')
-  console.log(submissionId, 'submission ID from ENDPOINT ****')
-  console.log('*********')
+  // console.log('*********')
+  // console.log(courseId, 'course ID from ENDPOINT ****')
+  // console.log(courseWorkId, ' courseId ID from ENDPOINT ****')
+  // console.log(submissionId, 'submission ID from ENDPOINT ****')
+  // console.log('*********')
 
   // 2. Validate required query params
   if (!courseId || !courseWorkId || !submissionId) {
-    console.log('OUT OF HERE !')
+    // console.log('OUT OF HERE !')
     return NextResponse.json(
       { error: 'Missing courseId, courseWorkId, or submissionId in query params' },
       { status: 400 },
@@ -50,7 +50,7 @@ export async function GET(req: NextRequest) {
       courseWorkId,
       id: submissionId,
     })
-    console.log(submissionResponse, '***** DATA *****')
+    // console.log(submissionResponse, '***** DATA *****')
     // Cast the result to our extended type
     const submission: ExtendedStudentSubmission =
       submissionResponse.data as ExtendedStudentSubmission

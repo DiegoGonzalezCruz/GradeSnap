@@ -12,17 +12,30 @@ import { pdfjs } from 'react-pdf'
 import { useGetRubrics } from '@/hooks/classroom/useRubrics'
 import { useGetSubmissionById } from '@/hooks/classroom/useSubmissionById'
 import { GradingInterfaceProps, RubricCriterion, Attachment } from '@/types/courses'
-
 import { getClientSideURL } from '@/utilities/getURL'
+
 import FileSelector from '@/components/Courses/Grading/FileSelector'
 import RubricPanel from '@/components/Courses/Grading/RubricPanel'
 import FeedbackPanel from '@/components/Courses/Grading/FeedbackPanel'
 import HistoryPanel from '@/components/Courses/Grading/HistoryPanel'
 import PDFViewer from '@/components/Courses/Grading/PDFViewer'
-import GradingButton from '@/components/Courses/CourseWork/GradingButton'
+// Optionally, you could import your custom GradingButton here if you want to use it instead
+// import GradingButton from '@/components/Courses/CourseWork/GradingButton'
 
 // Initialize PDF.js worker
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`
+
+// Define a type for the grade result returned by the LLM
+type GradeResult = {
+  criteria: {
+    criterionId: string
+    criterionTitle: string
+    justification: string
+    score: number
+  }[]
+  overallFeedback: string
+  overallGrade: number
+}
 
 export default function GradingInterface({
   courseId,
@@ -42,7 +55,7 @@ export default function GradingInterface({
   )
   const [editingFeedback, setEditingFeedback] = useState(false)
   const [gradingLoading, setGradingLoading] = useState(false)
-  const [gradeResult, setGradeResult] = useState<string | null>(null)
+  const [gradeResult, setGradeResult] = useState<GradeResult | null>(null)
   const [selectedLevels, setSelectedLevels] = useState<Record<string, string>>({})
   const [totalPoints, setTotalPoints] = useState(0)
   const [maxPoints, setMaxPoints] = useState(0)
@@ -64,6 +77,12 @@ export default function GradingInterface({
   // Use attachments from submission if available
   const submissionAttachments = submissionData?.assignmentSubmission.attachments || attachments
 
+  useEffect(() => {
+    if (rubric) {
+      calculateMaxPoints(rubric)
+    }
+  }, [rubric])
+
   // Set default file if none selected
   useEffect(() => {
     if (submissionAttachments.length > 0 && !selectedFile) {
@@ -71,7 +90,7 @@ export default function GradingInterface({
     }
   }, [submissionAttachments, selectedFile])
 
-  // Calculate max points from the rubric
+  // Calculate maximum possible points from the rubric
   const calculateMaxPoints = (rubricData: any) => {
     const max = rubricData.criteria.reduce((total: number, criterion: RubricCriterion) => {
       const maxLevelPoints = Math.max(...criterion.levels.map((level) => level.points))
@@ -80,7 +99,7 @@ export default function GradingInterface({
     setMaxPoints(max)
   }
 
-  // Calculate total points based on selected levels
+  // Calculate total points based on selected levels (if using manual grading)
   useEffect(() => {
     if (!rubric) return
     const total = rubric.criteria.reduce((sum: number, criterion: RubricCriterion) => {
@@ -97,7 +116,7 @@ export default function GradingInterface({
     setNumPages(numPages)
   }
 
-  // API-based grading submission
+  // API-based grading submission using the LLM
   const handleGradeClick = async (rubric: any, fileUrl: string) => {
     setGradingLoading(true)
     setGradeResult(null)
@@ -110,7 +129,15 @@ export default function GradingInterface({
       if (!res.ok) {
         throw new Error(data.error || 'Failed to grade submission.')
       }
-      setGradeResult(data.grade)
+      // Parse the stringified JSON from the API response
+      const gradeParsed = JSON.parse(data.grade)
+      console.log('Parsed Grade:', gradeParsed)
+
+      setGradeResult(gradeParsed)
+      // Update overall feedback with the LLM response
+      if (gradeParsed.overallFeedback) {
+        setFeedback(gradeParsed.overallFeedback)
+      }
       toast('Grading completed successfully.')
     } catch (error: any) {
       console.error(error)
@@ -129,7 +156,7 @@ export default function GradingInterface({
     }
   }
 
-  // Level selection handler (passed to RubricPanel)
+  // Level selection handler (for manual selection, if needed)
   const handleLevelSelect = (criterionId: string, levelId: string) => {
     setSelectedLevels((prev) => ({
       ...prev,
@@ -138,7 +165,6 @@ export default function GradingInterface({
   }
 
   const isSuccess = isSuccessRubric && isSuccessSubmissionData
-
   if (!isSuccess) return <p>Loading...</p>
 
   return (
@@ -157,29 +183,23 @@ export default function GradingInterface({
               <h1 className="text-xl font-bold">Final Grade</h1>
               <div className="text-center">
                 <span className="text-2xl font-bold">
-                  {totalPoints}/{maxPoints}
+                  {gradeResult ? gradeResult.overallGrade : totalPoints}/{maxPoints}
                 </span>
                 <p className="text-sm text-muted-foreground">
-                  {maxPoints > 0 ? `${Math.round((totalPoints / maxPoints) * 100)}%` : '0%'}
+                  {maxPoints > 0
+                    ? `${gradeResult ? Math.round((gradeResult.overallGrade / maxPoints) * 100) : Math.round((totalPoints / maxPoints) * 100)}%`
+                    : '0%'}
                 </p>
               </div>
             </div>
-            <GradingButton
-              attachments={submissionAttachments}
-              courseWorkId={courseWorkId as string}
-            />
+
+            {/* Grading Button – note: we removed the manual rubric selection check */}
             <Button
-              variant="outline"
               size="sm"
               onClick={() =>
                 selectedFile && handleGradeClick(rubric, selectedFile.driveFile.alternateLink)
               }
-              disabled={
-                gradingLoading ||
-                !rubric ||
-                !selectedFile ||
-                Object.keys(selectedLevels).length < (rubric?.criteria.length || 0)
-              }
+              disabled={gradingLoading || !rubric || !selectedFile}
             >
               {gradingLoading ? (
                 <>
@@ -208,6 +228,7 @@ export default function GradingInterface({
                   rubricLoading={rubricLoading}
                   selectedLevels={selectedLevels}
                   onLevelSelect={handleLevelSelect}
+                  gradeResult={gradeResult || undefined} // Pass the grading result to show stars & LLM justification
                 />
               </TabsContent>
 
@@ -217,6 +238,7 @@ export default function GradingInterface({
                   editingFeedback={editingFeedback}
                   onFeedbackChange={setFeedback}
                   onToggleEdit={() => setEditingFeedback((prev) => !prev)}
+                  gradeResult={gradeResult || undefined}
                 />
               </TabsContent>
 
@@ -237,12 +259,7 @@ export default function GradingInterface({
             onClick={() =>
               selectedFile && handleGradeClick(rubric, selectedFile.driveFile.alternateLink)
             }
-            disabled={
-              gradingLoading ||
-              !rubric ||
-              !selectedFile ||
-              Object.keys(selectedLevels).length < (rubric?.criteria.length || 0)
-            }
+            disabled={gradingLoading || !rubric || !selectedFile}
           >
             {gradingLoading ? (
               <>
@@ -257,12 +274,29 @@ export default function GradingInterface({
           </Button>
         </div>
 
+        {/* Display the grading result from the LLM */}
         {gradeResult && (
           <div className="m-4 p-4 border rounded-md bg-gray-50">
             <Label className="font-medium mb-2 block">Grading Result:</Label>
-            <pre className="text-xs whitespace-pre-wrap bg-white p-2 rounded border overflow-auto max-h-40">
-              {gradeResult}
-            </pre>
+            <div className="text-sm">
+              <p>
+                <strong>Overall Grade:</strong> {gradeResult.overallGrade}
+              </p>
+              <p>
+                <strong>Overall Feedback:</strong> {gradeResult.overallFeedback}
+              </p>
+              <div className="mt-2">
+                <p className="font-medium">Detailed Criteria:</p>
+                {gradeResult.criteria.map((c) => (
+                  <div key={c.criterionId} className="mb-1">
+                    <p>
+                      <strong>{c.criterionTitle}</strong> – Score: {c.score}
+                    </p>
+                    <p className="text-xs text-muted-foreground">{c.justification}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         )}
       </div>

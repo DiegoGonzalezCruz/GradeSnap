@@ -14,8 +14,8 @@ export type GradingArgs = {
 const GradingSubmissionPage = async ({ params }: GradingArgs) => {
   const { id, submissionId, gradingId } = await params
 
-  console.log(id, submissionId, gradingId)
-  console.log('****** FROM GRADING SUBMISSION PAGE 🇨🇱🇨🇱🇨🇱🇨🇱 ******')
+  // console.log(id, submissionId, gradingId)
+  // console.log('****** FROM GRADING SUBMISSION PAGE 🇨🇱🇨🇱🇨🇱🇨🇱 ******')
 
   const breadcrumbArray = [
     {

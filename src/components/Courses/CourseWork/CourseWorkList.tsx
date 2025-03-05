@@ -53,7 +53,7 @@ export default function CourseWorkList({ id }: { id: string }) {
   if (isError) {
     return <div>Error loading course work</div>
   }
-  console.log(data, 'Data ***')
+  // console.log(data, 'Data ***')
 
   return (
     <div className="space-y-6">

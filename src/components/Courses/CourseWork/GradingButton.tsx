@@ -25,8 +25,8 @@ type GradingButtonProps = {
 }
 
 const GradingButton = ({ attachments, courseWorkId }: GradingButtonProps) => {
-  console.log(attachments, '**** attachments ****')
-  console.log(courseWorkId, '**** courseWorkId ****')
+  // console.log(attachments, '**** attachments ****')
+  // console.log(courseWorkId, '**** courseWorkId ****')
   const params = useParams<{ id: string }>()
   const { id: courseId } = params
 

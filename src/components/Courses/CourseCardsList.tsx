@@ -15,7 +15,7 @@ export default function CourseCardsList({
 }) {
   // Decide how many courses to display
   const displayedCourses = preview ? courses.slice(0, 3) : courses
-  console.log(displayedCourses, 'displayedCourses')
+  // console.log(displayedCourses, 'displayedCourses')
 
   if (displayedCourses.length === 0) {
     return <div className="p-5">No courses found in your account.</div>
@@ -34,7 +34,7 @@ export default function CourseCardsList({
 
       <div className="w-full flex flex-col gap-5">
         {displayedCourses.map((course: any, idx: number) => {
-          console.log(course, 'COURSE ****')
+          // console.log(course, 'COURSE ****')
           return (
             <div key={course.courseId + idx} className="flex flex-col w-full gap-5">
               <CourseTab course={course} />

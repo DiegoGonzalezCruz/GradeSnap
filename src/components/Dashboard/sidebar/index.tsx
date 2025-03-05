@@ -27,7 +27,7 @@ export function Sidebar({ className }: React.HTMLAttributes<HTMLDivElement>) {
   const router = useRouter()
   const user = useMeUser()
 
-  console.log(user, 'user')
+  // console.log(user, 'user')
   if (!user) router.push('/')
 
   const menu: Menu[] = [
@@ -54,7 +54,7 @@ export function Sidebar({ className }: React.HTMLAttributes<HTMLDivElement>) {
   ]
 
   const handleLogout = async () => {
-    console.log('logging out')
+    // console.log('logging out')
     const res = await fetch('/api/users/logout', {
       method: 'POST',
       headers: {

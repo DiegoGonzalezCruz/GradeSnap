@@ -8,7 +8,7 @@ import React from 'react'
 
 const AvatarSidebar = () => {
   const { user, isLoading, error } = useMeUser()
-  console.log(user, 'user')
+  // console.log(user, 'user')
   if (isLoading) {
     return (
       <div className="flex items-center gap-3">

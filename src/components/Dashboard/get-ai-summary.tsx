@@ -4,7 +4,7 @@ import { Skeleton } from '../ui/skeleton'
 
 const GetAISummary = () => {
   const { data, isSuccess, isLoading, error } = useClassroomSummary()
-  console.log(data, 'data')
+  // console.log(data, 'data')
   if (isLoading)
     return (
       <div className="flex items-center space-x-4 w-full">

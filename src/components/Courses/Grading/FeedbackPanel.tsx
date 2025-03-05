@@ -8,6 +8,15 @@ interface FeedbackPanelProps {
   editingFeedback: boolean
   onFeedbackChange: (newFeedback: string) => void
   onToggleEdit: () => void
+  gradeResult?: {
+    overallFeedback: string
+    criteria: {
+      criterionId: string
+      criterionTitle: string
+      justification: string
+      score: number
+    }[]
+  }
 }
 
 export default function FeedbackPanel({
@@ -15,6 +24,7 @@ export default function FeedbackPanel({
   editingFeedback,
   onFeedbackChange,
   onToggleEdit,
+  gradeResult,
 }: FeedbackPanelProps) {
   return (
     <Card className="border shadow-sm">
@@ -33,6 +43,22 @@ export default function FeedbackPanel({
               Save Feedback
             </Button>
           </div>
+        ) : gradeResult ? (
+          <>
+            <p className="text-sm mb-2">
+              <strong>Overall Feedback:</strong> {gradeResult.overallFeedback}
+            </p>
+            <ul className="list-disc pl-4">
+              {gradeResult.criteria.map((criterion) => (
+                <li key={criterion.criterionId} className="text-sm mb-1">
+                  <strong>{criterion.criterionTitle}:</strong> {criterion.justification}
+                </li>
+              ))}
+            </ul>
+            <Button variant="outline" size="sm" onClick={onToggleEdit} className="w-full mt-2">
+              Edit Feedback
+            </Button>
+          </>
         ) : (
           <>
             <p className="text-sm mb-2">{feedback}</p>
