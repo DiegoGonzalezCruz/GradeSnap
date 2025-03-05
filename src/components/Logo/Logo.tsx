@@ -17,12 +17,12 @@ export const Logo = (props: Props) => {
     /* eslint-disable @next/next/no-img-element */
     <img
       alt="GradeSnap Logo"
-      width={193}
+      width={300}
       height={34}
       loading={loading}
       fetchPriority={priority}
       decoding="async"
-      className={clsx('max-w-[9.375rem] w-full h-[34px]', className)}
+      className={clsx('w-full h-fit debug2', className)}
       src="/logos/logo.png"
     />
   )

@@ -4,7 +4,10 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import type React from 'react'
 import { cn } from '@/utilities/ui'
-import { CrumpledPaperIcon, HomeIcon } from '@radix-ui/react-icons'
+import { HomeIcon } from '@radix-ui/react-icons'
+import { FaGraduationCap } from 'react-icons/fa'
+import { LuBookOpenCheck } from 'react-icons/lu'
+
 import { Rocket, Cog } from 'lucide-react'
 import Image from 'next/image'
 import AvatarSidebar from './AvatarSidebar'
@@ -35,12 +38,12 @@ export function Sidebar({ className }: React.HTMLAttributes<HTMLDivElement>) {
     },
     {
       name: 'Courses',
-      icon: CrumpledPaperIcon,
+      icon: FaGraduationCap,
       href: '/dashboard/courses', // highlight if user is on /dashboard/courses
     },
     {
       name: 'Rubric',
-      icon: Rocket,
+      icon: LuBookOpenCheck,
       href: '/dashboard/rubrics',
     },
     {
@@ -101,17 +104,19 @@ export function Sidebar({ className }: React.HTMLAttributes<HTMLDivElement>) {
         </div>
 
         {/* Bottom: user avatar */}
-        <div className="w-full mt-8">
-          <AvatarSidebar />
-        </div>
-        <div>
-          <Button
-            variant={'ghost'}
-            onClick={handleLogout}
-            className="flex flex-row items-center justify-center gap-2"
-          >
-            <CiLogout className="w-5 h-5" /> Log Out
-          </Button>
+        <div className="flex flex-col gap-5  items-center justify-center">
+          <div className="w-full mt-8">
+            <AvatarSidebar />
+          </div>
+          <div>
+            <Button
+              variant={'ghost'}
+              onClick={handleLogout}
+              className="flex flex-row items-center justify-center gap-2"
+            >
+              <CiLogout className="w-5 h-5" /> Log Out
+            </Button>
+          </div>
         </div>
       </div>
     </div>

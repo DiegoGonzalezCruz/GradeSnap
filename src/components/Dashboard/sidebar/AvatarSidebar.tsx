@@ -26,14 +26,17 @@ const AvatarSidebar = () => {
   return (
     <div className="w-full  text-secondary-foreground gap-5 flex flex-col">
       <h2 className="text-base font-medium"> Teacher </h2>
-      <div className="flex flex-row items-center justify-between  gap-0">
+      <div className="flex flex-col items-center justify-between  gap-5">
         <Avatar className="">
           {user?.pictureURL && (
             <Image src={user?.pictureURL} alt={'Teacher Image '} width={40} height={40} />
           )}
           <AvatarFallback>CN</AvatarFallback>
         </Avatar>
-        <div>{user?.name}</div>
+        <div className="w-full flex flex-col ">
+          <div>{user?.name}</div>
+          <div className="text-[10px]">{user?.email}</div>
+        </div>
       </div>
     </div>
   )

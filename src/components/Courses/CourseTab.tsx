@@ -18,7 +18,7 @@ function formatDate(deadline: any | string): string {
 }
 
 const CourseTab = ({ course }: { course: any }) => {
-  console.log(course, 'COURSE')
+  // console.log(course, 'COURSE')
   return (
     <div className=" ">
       <div className="flex items-center justify-between gap-6  ">
