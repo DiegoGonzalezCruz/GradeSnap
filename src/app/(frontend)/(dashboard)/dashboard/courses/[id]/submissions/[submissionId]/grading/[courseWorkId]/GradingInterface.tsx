@@ -10,6 +10,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import { Document, Page, pdfjs } from 'react-pdf'
 import { GradingArgs } from './page'
+import { useGetRubrics } from '@/hooks/classroom/useRubrics'
 
 // Initialize PDF.js worker
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`
@@ -22,6 +23,16 @@ export default function GradingInterface({
   submissionId: string
 }) {
   console.log(id, submissionId, 'From Grading Interface')
+
+  // Fetch rubric using React Query
+  const {
+    data: rubric,
+    isLoading: rubricLoading,
+    error: rubricError,
+  } = useGetRubrics(id, submissionId)
+
+  console.log(rubric, '**** rubric****')
+
   const [numPages, setNumPages] = useState<number | null>(null)
   const [pageNumber, setPageNumber] = useState(1)
   const [pdfFile, setPdfFile] = useState<string | null>(null)
@@ -146,7 +157,7 @@ export default function GradingInterface({
       {/* Right Panel - PDF Viewer */}
       <div className="w-full md:w-2/3 p-4 bg-gray-50 flex flex-col">
         <div className="mb-4 flex justify-between items-center">
-          <h2 className="text-lg font-medium">Student's Work</h2>
+          <h2 className="text-lg font-medium">Student&lsquo;s Work</h2>
           <div>
             <input
               type="file"

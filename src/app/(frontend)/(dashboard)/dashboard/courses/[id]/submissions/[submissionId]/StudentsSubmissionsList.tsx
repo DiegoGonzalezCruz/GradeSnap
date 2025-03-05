@@ -3,11 +3,11 @@
 import { useState } from 'react'
 import { useGetSubmissionsFromCourseWork } from '@/hooks/classroom/useSubmissions'
 import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
+// import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
-import { FileIcon, ExternalLinkIcon } from 'lucide-react'
-import GradingButton from '@/components/Courses/CourseWork/GradingButton'
+// import { FileIcon, ExternalLinkIcon } from 'lucide-react'
+// import GradingButton from '@/components/Courses/CourseWork/GradingButton'
 import Link from 'next/link'
 
 type Submission = {
@@ -120,7 +120,7 @@ const StudentsSubmissionsList = ({ id, submissionId }: { id: string; submissionI
   }
 
   const submissions = Array.isArray(data) ? data : [data].filter(Boolean)
-  // console.log(submissions, 'submissions')
+  console.log(submissions, 'submissions')
 
   if (!submissions || submissions.length === 0) {
     return (
@@ -177,7 +177,7 @@ const StudentsSubmissionsList = ({ id, submissionId }: { id: string; submissionI
                       //   courseWorkId={submission.courseWorkId}
                       // />
                       <Link
-                        href={`/dashboard/courses/${id}/submissions/${submissionId}/grading/${submission.courseWorkId}`}
+                        href={`/dashboard/courses/${id}/submissions/${submissionId}/grading/${submission.id}`}
                       >
                         Grade
                       </Link>
