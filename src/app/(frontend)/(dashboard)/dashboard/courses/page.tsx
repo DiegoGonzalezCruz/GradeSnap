@@ -1,12 +1,5 @@
 import CoursesList from './CoursesList'
 
-interface Course {
-  id: string
-  name: string
-  description?: string
-  section?: string
-}
-
 export default function CoursesDashboardPage() {
   return (
     <div>

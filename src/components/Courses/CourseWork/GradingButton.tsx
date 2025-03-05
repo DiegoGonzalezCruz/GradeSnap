@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { AiOutlineLoading, AiOutlineLoading3Quarters } from 'react-icons/ai'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -24,6 +25,8 @@ type GradingButtonProps = {
 }
 
 const GradingButton = ({ attachments, courseWorkId }: GradingButtonProps) => {
+  console.log(attachments, '**** attachments ****')
+  console.log(courseWorkId, '**** courseWorkId ****')
   const params = useParams<{ id: string }>()
   const { id: courseId } = params
 
@@ -64,29 +67,7 @@ const GradingButton = ({ attachments, courseWorkId }: GradingButtonProps) => {
     <Dialog>
       <DialogTrigger asChild>
         <Button variant="outline" size="icon" type="button" disabled={rubricLoading}>
-          {rubricLoading ? (
-            <>
-              <svg className="mr-2 h-5 w-5 animate-spin" viewBox="0 0 24 24">
-                <circle
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                  className="opacity-25"
-                  fill="none"
-                />
-                <path
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                  className="opacity-75"
-                />
-              </svg>
-              Loading Rubric...
-            </>
-          ) : (
-            'Grade Submission'
-          )}
+          {rubricLoading ? <AiOutlineLoading className="animate-spin w-4 h-4 " /> : 'Grade '}
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-2xl overflow-y-scroll">

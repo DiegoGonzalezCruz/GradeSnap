@@ -32,7 +32,7 @@ const StudentsSubmissions = async ({
   ]
 
   return (
-    <div>
+    <div className="flex flex-col gap-10">
       <Breadcrubms breadcrumbArray={breadcrumbArray} />
       <StudentsSubmissionsList id={id} submissionId={submissionId} />
     </div>
