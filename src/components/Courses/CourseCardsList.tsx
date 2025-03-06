@@ -22,7 +22,7 @@ export default function CourseCardsList({
   }
 
   return (
-    <div className="w-full mx-auto p-5 gap-5 flex flex-col">
+    <div className="w-full mx-auto md:p-5 gap-5 flex flex-col ">
       <div className="flex justify-between items-center w-full">
         <h2 className="text-xl font-semibold">Your Courses</h2>
         {preview && (

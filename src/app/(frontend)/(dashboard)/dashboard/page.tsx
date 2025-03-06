@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 
 export default function DashboardPage() {
   return (
-    <DashboardShell>
+    <DashboardShell className="">
       <DashboardHeader heading="Dashboard" text="Welcome to your Classroom AI Dashboard.">
         {/* <Button>Refresh Data</Button> */}
       </DashboardHeader>

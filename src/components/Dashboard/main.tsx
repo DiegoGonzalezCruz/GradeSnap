@@ -5,7 +5,7 @@ interface MainDashboardProps {
 }
 
 const MainDashboard: React.FC<MainDashboardProps> = ({ children }) => {
-  return <main className="flex-1 p-10 overflow-y-auto bg-white">{children}</main>
+  return <main className="flex-1 p-5 md:p-10 overflow-y-auto bg-white">{children}</main>
 }
 
 export default MainDashboard

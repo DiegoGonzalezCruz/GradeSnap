@@ -21,8 +21,8 @@ const CourseTab = ({ course }: { course: any }) => {
   // console.log(course, 'COURSE')
   return (
     <div className=" ">
-      <div className="flex items-center justify-between gap-6  ">
-        <div className="">
+      <div className="flex flex-col  md:flex-row items-center justify-between gap-6  ">
+        <div className="flex flex-row md:w-1/4  h-full ">
           <Image
             src="/icons/graduation-icon.svg"
             alt=""
@@ -30,25 +30,25 @@ const CourseTab = ({ course }: { course: any }) => {
             height={48}
             className="rounded bg-muted p-2"
           />
+          <div className="w-full">
+            <h3 className="font-bold text-lg">{course.courseName}</h3>
+            <p className="text-sm text-muted-foreground">ID: {course.courseId}</p>
+          </div>
         </div>
-        <div className="flex-1 min-w-0 ">
-          <div className="flex flex-row  items-center gap-5 ">
-            <div className="w-1/4">
-              <h3 className="font-bold text-lg">{course.courseName}</h3>
-              <p className="text-sm text-muted-foreground">ID: {course.courseId}</p>
-            </div>
-            <div className="flex items-center gap-6 text-sm  flex-1 ">
+        <div className="flex flex-col md:flex-row h-full w-3/4">
+          <div className="flex flex-col md:flex-row items-center gap-5  ">
+            <div className="flex md:items-center gap-6 text-sm  flex-1 ">
               <div className="space-y-1">
                 <p className="text-muted-foreground">Students</p>
-                <p className="font-bold text-2xl">{course.studentCount}</p>
+                <p className="font-bold text-base md:text-2xl">{course.studentCount}</p>
               </div>
               <div className="space-y-1">
                 <p className="text-muted-foreground">Submissions</p>
-                <p className="font-bold text-2xl">{course.numSubmissions}</p>
+                <p className="font-bold text-base md:text-2xl">{course.numSubmissions}</p>
               </div>
               <div className="space-y-1">
                 <p className="text-muted-foreground">Next Deadline</p>
-                <p className="font-bold text-2xl">{formatDate(course.nextDeadline)}</p>
+                <p className="font-bold text-base md:text-2xl">{formatDate(course.nextDeadline)}</p>
               </div>
             </div>
             <Link href={`/dashboard/courses/${course.courseId}`}>

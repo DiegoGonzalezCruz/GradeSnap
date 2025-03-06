@@ -53,7 +53,11 @@ const CoursesList = () => {
   if (isSuccess) {
     const { courses } = data
 
-    return <CourseCardsList courses={courses} />
+    return (
+      <div className="">
+        <CourseCardsList courses={courses} />
+      </div>
+    )
   }
 }
 
