@@ -1,13 +1,11 @@
 'use client'
 import type { FormFieldBlock, Form as FormType } from '@payloadcms/plugin-form-builder/types'
-
 import { useRouter } from 'next/navigation'
 import React, { useCallback, useState } from 'react'
 import { useForm, FormProvider } from 'react-hook-form'
 import RichText from '@/components/RichText'
 import { Button } from '@/components/ui/button'
 import type { SerializedEditorState } from '@payloadcms/richtext-lexical/lexical'
-
 import { fields } from './fields'
 import { getClientSideURL } from '@/utilities/getURL'
 
@@ -94,10 +92,7 @@ export const FormBlock: React.FC<
 
           if (confirmationType === 'redirect' && redirect) {
             const { url } = redirect
-
-            const redirectUrl = url
-
-            if (redirectUrl) router.push(redirectUrl)
+            if (url) router.push(url)
           }
         } catch (err) {
           console.warn(err)
@@ -114,44 +109,54 @@ export const FormBlock: React.FC<
   )
 
   return (
-    <div className="bg-white rounded-2xl shadow-xl p-10 container lg:max-w-[48rem] prose-h2:text-primary prose-h2:text-4xl prose-h2:font-bold prose-p:text-muted-foreground ">
+    <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl p-10 container lg:max-w-[48rem] prose-h2:text-primary dark:prose-h2:text-white prose-h2:text-4xl prose-h2:font-bold prose-p:text-muted-foreground dark:prose-p:text-gray-400">
       {enableIntro && introContent && !hasSubmitted && (
-        <RichText className="text-center py-10" data={introContent} enableGutter={false} />
+        <div className="prose-invert">
+          <RichText className="text-center py-10 " data={introContent} enableGutter={false} />
+        </div>
       )}
-      <div className="p-4 lg:p-6 border border-border rounded-[0.8rem]">
+      <div className="p-4 lg:p-6 border border-border dark:border-gray-700 rounded-[0.8rem]">
         <FormProvider {...formMethods}>
           {!isLoading && hasSubmitted && confirmationType === 'message' && (
             <RichText data={confirmationMessage} />
           )}
-          {isLoading && !hasSubmitted && <p>Loading, please wait...</p>}
-          {error && <div>{`${error.status || '500'}: ${error.message || ''}`}</div>}
+          {isLoading && !hasSubmitted && (
+            <p className="text-gray-500 dark:text-gray-300">Loading, please wait...</p>
+          )}
+          {error && (
+            <div className="text-red-600 dark:text-red-400">
+              {`${error.status || '500'}: ${error.message || ''}`}
+            </div>
+          )}
           {!hasSubmitted && (
             <form id={formID} onSubmit={handleSubmit(onSubmit)}>
               <div className="mb-4 last:mb-0">
-                {formFromProps &&
-                  formFromProps.fields &&
-                  formFromProps.fields?.map((field, index) => {
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    const Field: React.FC<any> = fields?.[field.blockType as keyof typeof fields]
-                    if (Field) {
-                      return (
-                        <div className="mb-6 last:mb-0" key={index}>
-                          <Field
-                            form={formFromProps}
-                            {...field}
-                            {...formMethods}
-                            control={control}
-                            errors={errors}
-                            register={register}
-                          />
-                        </div>
-                      )
-                    }
-                    return null
-                  })}
+                {formFromProps?.fields?.map((field, index) => {
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  const Field: React.FC<any> = fields?.[field.blockType as keyof typeof fields]
+                  if (Field) {
+                    return (
+                      <div className="mb-6 last:mb-0 prose" key={index}>
+                        <Field
+                          form={formFromProps}
+                          {...field}
+                          {...formMethods}
+                          control={control}
+                          errors={errors}
+                          register={register}
+                        />
+                      </div>
+                    )
+                  }
+                  return null
+                })}
               </div>
 
-              <Button form={formID} type="submit">
+              <Button
+                form={formID}
+                type="submit"
+                className="bg-primary dark:bg-blue-500 hover:bg-primary/90 dark:hover:bg-blue-400 text-white dark:text-gray-100"
+              >
                 {submitButtonLabel}
               </Button>
             </form>

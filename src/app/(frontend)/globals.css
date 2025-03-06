@@ -171,3 +171,28 @@ html[data-theme='light'] {
     @apply bg-background text-foreground;
   }
 }
+
+[data-theme='dark'] .prose {
+  color: var(--foreground); /* Ensures dark mode text is readable */
+}
+
+[data-theme='dark'] .prose a {
+  color: var(--primary);
+}
+
+[data-theme='dark'] .prose strong {
+  color: var(--foreground);
+}
+
+[data-theme='dark'] .prose h1,
+[data-theme='dark'] .prose h2,
+[data-theme='dark'] .prose h3 {
+  color: var(--primary);
+}
+
+[data-theme='dark'] .prose p {
+  color: var(--secondary);
+}
+[data-theme='dark'] .prose label {
+  color: var(--primary);
+}

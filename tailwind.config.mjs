@@ -91,7 +91,7 @@ const config = {
 
         ring: 'var(--ring)',
 
-        success: 'var(--turned-in)',
+        success: 'var(--success)',
         error: 'var(--error)',
         warning: 'var(--warning)',
         graded: 'var(--graded)',

@@ -9,6 +9,8 @@ import { Skeleton } from '@/components/ui/skeleton'
 // import { FileIcon, ExternalLinkIcon } from 'lucide-react'
 // import GradingButton from '@/components/Courses/CourseWork/GradingButton'
 import Link from 'next/link'
+import { Rocket } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 
 type Submission = {
   courseId: string
@@ -64,15 +66,23 @@ const formatDate = (dateString: string) => {
 const getStatusBadge = (state: string) => {
   switch (state) {
     case 'TURNED_IN':
-      return <Badge className="bg-purple-600 hover:bg-purple-700">Turned in</Badge>
+      return <Badge className="bg-success rounded-xl">Turned in</Badge>
     case 'CREATED':
-      return <Badge variant="outline">Created</Badge>
+      return (
+        <Badge variant="outline" className="bg-ghost rounded-xl">
+          Created
+        </Badge>
+      )
     case 'RECLAIMED_BY_STUDENT':
-      return <Badge variant="secondary">Reclaimed</Badge>
+      return (
+        <Badge variant="secondary" className="bg-warning hover:bg-green-700 rounded-xl">
+          Reclaimed
+        </Badge>
+      )
     case 'RETURNED':
-      return <Badge className="bg-green-600 hover:bg-green-700">Reviewed</Badge>
+      return <Badge className="bg-green-600 hover:bg-green-700 rounded-xl">Reviewed</Badge>
     case 'GRADED':
-      return <Badge className="bg-blue-600 hover:bg-blue-700">Graded</Badge>
+      return <Badge className="bg-blue-600 hover:bg-blue-700 rounded-xl">Graded</Badge>
     default:
       return <Badge variant="outline">Pending Review</Badge>
   }
@@ -140,13 +150,13 @@ const StudentsSubmissionsList = ({ id, submissionId }: { id: string; submissionI
                 Student Name
               </th>
               <th className="px-4 py-3 text-left font-medium text-muted-foreground">Deadline</th>
-              <th className="px-4 py-3 text-left font-medium text-muted-foreground">Status</th>
+              {/* <th className="px-4 py-3 text-left font-medium text-muted-foreground">Status</th> */}
               <th className="px-4 py-3 text-left font-medium text-muted-foreground">Grade</th>
               <th className="px-4 py-3 text-left font-medium text-muted-foreground">
                 Last Updated
               </th>
-              <th className="px-4 py-3 text-left font-medium text-muted-foreground">Attachments</th>
-              <th className="px-4 py-3 text-left font-medium text-muted-foreground">Actions</th>
+              <th className="px-4 py-3 text-left font-medium text-muted-foreground">State</th>
+              <th className="px-4 py-3 text-left font-medium text-muted-foreground">Action</th>
             </tr>
           </thead>
           <tbody>
@@ -165,27 +175,26 @@ const StudentsSubmissionsList = ({ id, submissionId }: { id: string; submissionI
                     {/* Placeholder deadline - would come from courseWork data */}
                     March 01, 2025, 11:59PM
                   </td>
-                  <td className="px-4 py-3">{submission?.state || latestState || 'CREATED'}</td>
+                  {/* <td className="px-4 py-3">{submission?.state || latestState || 'CREATED'}</td> */}
                   <td className="px-4 py-3">Not graded</td>
                   <td className="px-4 py-3 whitespace-nowrap">
                     {submission?.updateTime ? formatDate(submission.updateTime) : 'N/A'}
                   </td>
+                  <td className="px-4 py-3">{getStatusBadge(latestState)}</td>
                   <td className="px-4 py-3">
                     {submission.assignmentSubmission?.attachments ? (
-                      // <GradingButton
-                      //   attachments={submission.assignmentSubmission.attachments}
-                      //   courseWorkId={submission.courseWorkId}
-                      // />
                       <Link
                         href={`/dashboard/courses/${id}/submissions/${submissionId}/grading/${submission.id}`}
+                        className="flex flex-row gap-1 items-center justify-center"
                       >
-                        Grade
+                        <Button className="flex flex-row gap-1 items-center justify-center">
+                          <Rocket className="h-4 w-4 mr-1" /> Grade
+                        </Button>
                       </Link>
                     ) : (
                       <span>No attachments</span>
                     )}
                   </td>
-                  <td className="px-4 py-3">{getStatusBadge(latestState)}</td>
                 </tr>
               )
             })}

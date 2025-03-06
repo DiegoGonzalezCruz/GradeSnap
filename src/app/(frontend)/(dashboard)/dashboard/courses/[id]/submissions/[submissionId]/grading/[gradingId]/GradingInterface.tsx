@@ -19,6 +19,7 @@ import RubricPanel from '@/components/Courses/Grading/RubricPanel'
 import FeedbackPanel from '@/components/Courses/Grading/FeedbackPanel'
 import HistoryPanel from '@/components/Courses/Grading/HistoryPanel'
 import PDFViewer from '@/components/Courses/Grading/PDFViewer'
+import GradingSkeleton from './GradingSkeleton'
 // Optionally, you could import your custom GradingButton here if you want to use it instead
 // import GradingButton from '@/components/Courses/CourseWork/GradingButton'
 
@@ -163,7 +164,7 @@ export default function GradingInterface({
   }
 
   const isSuccess = isSuccessRubric && isSuccessSubmissionData
-  if (!isSuccess) return <p>Loading...</p>
+  if (!isSuccess) return <GradingSkeleton />
 
   return (
     <div className="flex flex-col md:flex-row h-screen">

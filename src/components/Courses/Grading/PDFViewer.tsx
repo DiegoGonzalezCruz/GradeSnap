@@ -3,6 +3,7 @@ import { Document, Page, pdfjs } from 'react-pdf'
 import { Button } from '@/components/ui/button'
 import { ExternalLink } from 'lucide-react'
 import { Loader2 } from 'lucide-react'
+import { AiOutlineLoading } from 'react-icons/ai'
 
 pdfjs.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js'
 
@@ -124,7 +125,9 @@ export default function PDFViewer({
             </Document>
           ) : (
             <div className="flex flex-col items-center justify-center w-full h-full">
-              <p className="text-muted-foreground mb-4">Loading PDF preview...</p>
+              <p className="text-muted-foreground mb-4 flex flex-row items-center justify-center gap-5">
+                <AiOutlineLoading className="animate-spin" /> Loading PDF preview...
+              </p>
             </div>
           )
         ) : (

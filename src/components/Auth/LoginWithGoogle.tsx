@@ -28,7 +28,7 @@ const LoginWithGoogle = ({ className, redirectTo }: LoginWithGoogleProps) => {
     <>
       <div className={`login-container ${className}`}>
         <div onClick={redirectHandler}>
-          <div className="login-button">
+          <div className="login-button bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700">
             <Image
               src={btnSource}
               height={40}
@@ -55,7 +55,6 @@ const LoginWithGoogle = ({ className, redirectTo }: LoginWithGoogleProps) => {
           gap: 10px;
           align-items: center;
           justify-content: center;
-          background-color: #f8f8fc;
           border: none;
           cursor: pointer;
           padding: 10px;
