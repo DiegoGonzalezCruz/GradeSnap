@@ -22,7 +22,7 @@ const CourseTab = ({ course }: { course: any }) => {
   return (
     <div className=" ">
       <div className="flex flex-col  md:flex-row items-center justify-between gap-6  ">
-        <div className="flex flex-row md:w-1/4  h-full ">
+        <div className="flex flex-row md:w-1/4 md:gap-5 h-full ">
           <Image
             src="/icons/graduation-icon.svg"
             alt=""

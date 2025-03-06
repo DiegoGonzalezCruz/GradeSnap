@@ -1,6 +1,7 @@
 'use client'
 import Breadcrubms from '@/components/Breadcrumbs'
 import CourseWorkList from '@/components/Courses/CourseWork/CourseWorkList'
+import CourseWorkListSkeleton from '@/components/Courses/CourseWork/CourseWorkListSkeleton'
 import { useCourseInfo } from '@/hooks/classroom/useCourseInfo'
 import React from 'react'
 
@@ -12,7 +13,7 @@ const CourseDashboard = ({ id }: { id: string }) => {
   // console.log(rubrics, ' rubrics ***** ')
   if (isError) return <div>Error!</div>
   if (isLoading) {
-    return <div>Loading course details...</div>
+    return <CourseWorkListSkeleton />
   }
 
   if (isSuccess) {

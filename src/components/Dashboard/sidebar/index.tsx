@@ -65,7 +65,7 @@ export function Sidebar({ className }: React.HTMLAttributes<HTMLDivElement>) {
   }
 
   return (
-    <div className={cn('h-screen min-h-fit bg-[#0B0F2D]', className)}>
+    <div className={cn('h-screen min-h-fit fixed bg-[#0B0F2D]', className)}>
       <div className="h-full w-full flex flex-col justify-around items-center px-12 py-6">
         {/* Logo */}
         <div className="w-full mb-8">

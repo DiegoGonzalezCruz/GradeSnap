@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input'
 import { DatePicker } from '@/components/ui/date-picker'
 import { useCourseWork } from '@/hooks/classroom/useCourseWork'
 import CourseCard from '../CourseCard'
+import CourseWorkListSkeleton from './CourseWorkListSkeleton'
 
 // Sample data for demonstration
 
@@ -47,7 +48,7 @@ export default function CourseWorkList({ id }: { id: string }) {
   }, [data, searchQuery, dateFilter])
 
   if (isLoading) {
-    return <div>Loading course work...</div>
+    return <CourseWorkListSkeleton />
   }
 
   if (isError) {
