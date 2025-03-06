@@ -18,8 +18,8 @@ const LoginComponent = () => {
             <div className="absolute bottom-4 left-4 bg-background/80 p-2 rounded-md text-sm text-muted-foreground backdrop-blur-sm">
               Simplify your classroom grading experience with AI
             </div>
-            <div className="absolute top-4 left-4 bg-primary text-primary-foreground p-2  overflow-clip -rotate-12 text-sm  rounded-xl backdrop-blur-sm">
-              Comming soon!
+            <div className="absolute top-4 left-0 bg-primary text-primary-foreground p-2  overflow-clip -rotate-12 text-sm  rounded-xl backdrop-blur-sm">
+              Coming soon!
             </div>
           </div>
 
