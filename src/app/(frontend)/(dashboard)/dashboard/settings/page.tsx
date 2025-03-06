@@ -1,3 +1,4 @@
+import { ComingSoon } from '@/components/ComingSoon/ComingSoon'
 import { AIGradedAssessments } from '@/components/Dashboard/ai-graded-assements'
 import { ClassroomData } from '@/components/Dashboard/classroom-data'
 import { DashboardHeader } from '@/components/Dashboard/dashboard-header'
@@ -14,11 +15,14 @@ export const metadata: Metadata = {
 export default function SettingsDashboardPage() {
   return (
     <DashboardShell>
-      <DashboardHeader heading="Settings" text="Manage your classroom settings.">
-        <Button>Refresh Data</Button>
-      </DashboardHeader>
+      <DashboardHeader heading="Settings" text="Manage your classroom settings."></DashboardHeader>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">SYSTEM SETTINGS</div>
+      <ComingSoon
+        title="Settings"
+        description="You can customize various aspects of your classroom, such as grading policies and student data."
+        estimatedRelease="Q2"
+        image="/logos/logo-darkbackground.svg"
+      />
     </DashboardShell>
   )
 }
