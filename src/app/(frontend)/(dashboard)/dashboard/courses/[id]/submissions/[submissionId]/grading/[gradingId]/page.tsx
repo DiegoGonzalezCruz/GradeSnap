@@ -1,7 +1,12 @@
 import React from 'react'
 import GradingInterface from './GradingInterface'
-import { Metadata } from 'next'
+
 import Breadcrubms from '@/components/Breadcrumbs'
+
+export const metadata = {
+  title: 'GradeSnap - Grading Submission Page',
+  description: 'This is the grading submission page.',
+}
 
 export type GradingArgs = {
   params: Promise<{

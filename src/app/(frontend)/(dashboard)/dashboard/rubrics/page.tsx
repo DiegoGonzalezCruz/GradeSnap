@@ -8,8 +8,8 @@ import { Button } from '@/components/ui/button'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Dashboard',
-  description: 'Example dashboard app built using the components.',
+  title: 'GradeSnap - Rubrics',
+  description: 'Rubrics.',
 }
 
 export default function SummariesDashboardPage() {

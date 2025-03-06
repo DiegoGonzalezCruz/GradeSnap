@@ -62,9 +62,9 @@ export default function FeedbackPanel({
         ) : (
           <>
             <p className="text-sm mb-2">{feedback}</p>
-            <Button variant="outline" size="sm" onClick={onToggleEdit} className="w-full">
+            {/* <Button variant="outline" size="sm" onClick={onToggleEdit} className="w-full">
               Edit Feedback
-            </Button>
+            </Button> */}
           </>
         )}
       </CardContent>

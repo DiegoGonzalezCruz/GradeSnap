@@ -1,5 +1,9 @@
 import CoursesList from './CoursesList'
 
+export const metadata = {
+  title: 'GradeSnap - Courses Page',
+  description: 'This is the courses page.',
+}
 export default function CoursesDashboardPage() {
   return (
     <div>

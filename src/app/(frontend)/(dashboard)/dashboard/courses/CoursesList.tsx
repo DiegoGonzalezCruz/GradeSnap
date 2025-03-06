@@ -12,7 +12,7 @@ const CoursesList = () => {
 
   if (isLoading) {
     return (
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 ">
         {[...Array(6)].map((_, index) => (
           <Card key={index}>
             <CardHeader>

@@ -20,8 +20,8 @@ import FeedbackPanel from '@/components/Courses/Grading/FeedbackPanel'
 import HistoryPanel from '@/components/Courses/Grading/HistoryPanel'
 import PDFViewer from '@/components/Courses/Grading/PDFViewer'
 import GradingSkeleton from './GradingSkeleton'
-// Optionally, you could import your custom GradingButton here if you want to use it instead
-// import GradingButton from '@/components/Courses/CourseWork/GradingButton'
+import RubricMissingDialog from '@/components/Courses/Grading/RubricMissingDialog'
+import { useCourseInfo } from '@/hooks/classroom/useCourseInfo'
 
 // Initialize PDF.js worker
 pdfjs.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js'
@@ -49,9 +49,7 @@ export default function GradingInterface({
   const [pageNumber, setPageNumber] = useState(1)
   const [pdfFile, setPdfFile] = useState<File | null>(null)
   const [pdfUrl, setPdfUrl] = useState<string | null>(null)
-  const [feedback, setFeedback] = useState(
-    '¡Buen trabajo! Your use of past tense verbs is excellent. Consider expanding your vocabulary with more descriptive adjectives in future essays.',
-  )
+  const [feedback, setFeedback] = useState('')
   const [editingFeedback, setEditingFeedback] = useState(false)
   const [gradingLoading, setGradingLoading] = useState(false)
   const [gradeResult, setGradeResult] = useState<GradeResult | null>(null)
@@ -60,6 +58,7 @@ export default function GradingInterface({
   const [maxPoints, setMaxPoints] = useState(0)
   const [activeTab, setActiveTab] = useState('rubric')
   const [selectedFile, setSelectedFile] = useState<Attachment | null>(null)
+  const [showRubricMissingDialog, setShowRubricMissingDialog] = useState(false)
 
   // Fetch rubric and submission data
   const {
@@ -67,6 +66,7 @@ export default function GradingInterface({
     isLoading: rubricLoading,
     isSuccess: isSuccessRubric,
   } = useGetRubrics(courseId!, courseWorkId!)
+  // console.log(rubric, 'rubric ***')
   const { data: submissionData, isSuccess: isSuccessSubmissionData } = useGetSubmissionById(
     courseId!,
     courseWorkId!,
@@ -77,10 +77,13 @@ export default function GradingInterface({
   const submissionAttachments = submissionData?.assignmentSubmission.attachments || attachments
 
   useEffect(() => {
-    if (rubric) {
+    // Check if rubric is empty or missing criteria
+    if (isSuccessRubric && (!rubric || !rubric.criteria || Object.keys(rubric).length === 0)) {
+      setShowRubricMissingDialog(true)
+    } else if (rubric && rubric.criteria) {
       calculateMaxPoints(rubric)
     }
-  }, [rubric])
+  }, [rubric, isSuccessRubric])
 
   // Set default file if none selected
   useEffect(() => {
@@ -91,6 +94,12 @@ export default function GradingInterface({
 
   // Calculate maximum possible points from the rubric
   const calculateMaxPoints = (rubricData: any) => {
+    // Check if rubricData and criteria exist before using reduce
+    if (!rubricData || !rubricData.criteria || !Array.isArray(rubricData.criteria)) {
+      setMaxPoints(0)
+      return
+    }
+
     const max = rubricData.criteria.reduce((total: number, criterion: RubricCriterion) => {
       const maxLevelPoints = Math.max(...criterion.levels.map((level) => level.points))
       return total + maxLevelPoints
@@ -100,7 +109,8 @@ export default function GradingInterface({
 
   // Calculate total points based on selected levels (if using manual grading)
   useEffect(() => {
-    if (!rubric) return
+    if (!rubric || !rubric.criteria || !Array.isArray(rubric.criteria)) return
+
     const total = rubric.criteria.reduce((sum: number, criterion: RubricCriterion) => {
       const selectedLevelId = selectedLevels[criterion.id]
       if (!selectedLevelId) return sum
@@ -117,6 +127,11 @@ export default function GradingInterface({
 
   // API-based grading submission using the LLM
   const handleGradeClick = async (rubric: any, fileUrl: string) => {
+    if (!rubric || !rubric.criteria || Object.keys(rubric).length === 0) {
+      setShowRubricMissingDialog(true)
+      return
+    }
+
     setGradingLoading(true)
     setGradeResult(null)
     try {
@@ -170,8 +185,19 @@ export default function GradingInterface({
   const isSuccess = isSuccessRubric && isSuccessSubmissionData
   if (!isSuccess) return <GradingSkeleton />
 
+  // Check if rubric is empty or missing criteria
+  const isRubricMissing = !rubric || !rubric.criteria || Object.keys(rubric).length === 0
+
   return (
     <div className="flex flex-col md:flex-row h-screen">
+      {/* Rubric Missing Dialog */}
+      <RubricMissingDialog
+        open={showRubricMissingDialog}
+        onOpenChange={setShowRubricMissingDialog}
+        courseId={courseId!}
+        courseWorkId={courseWorkId!}
+      />
+
       {/* Left Panel: Grading Controls */}
       <div className="w-full md:w-1/3 border-r overflow-y-auto">
         <StudentInfoCard submissionData={submissionData} />
@@ -191,13 +217,17 @@ export default function GradingInterface({
               </div>
             </div>
 
-            {/* Grading Button – note: we removed the manual rubric selection check */}
+            {/* Grading Button */}
             <Button
               size="sm"
-              onClick={() =>
-                selectedFile && handleGradeClick(rubric, selectedFile.driveFile.alternateLink)
-              }
-              disabled={gradingLoading || !rubric || !selectedFile}
+              onClick={() => {
+                if (isRubricMissing) {
+                  setShowRubricMissingDialog(true)
+                } else if (selectedFile) {
+                  handleGradeClick(rubric, selectedFile.driveFile.alternateLink)
+                }
+              }}
+              disabled={gradingLoading || !selectedFile}
             >
               {gradingLoading ? (
                 <>
@@ -221,13 +251,32 @@ export default function GradingInterface({
 
             <div className="p-4">
               <TabsContent value="rubric" className="mt-0">
-                <RubricPanel
-                  rubric={rubric}
-                  rubricLoading={rubricLoading}
-                  selectedLevels={selectedLevels}
-                  onLevelSelect={handleLevelSelect}
-                  gradeResult={gradeResult || undefined} // Pass the grading result to show stars & LLM justification
-                />
+                {isRubricMissing ? (
+                  <div className="p-4 border rounded-md bg-amber-50 text-amber-800">
+                    <h3 className="font-medium mb-2">Rubric Required</h3>
+                    <p className="text-sm mb-4">
+                      A rubric is required to grade this submission. Please open this assignment in
+                      Google Classroom to create or attach a rubric.
+                    </p>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setShowRubricMissingDialog(true)}
+                      className=""
+                    >
+                      <ExternalLink className="mr-2 h-4 w-4" />
+                      Open in Google Classroom
+                    </Button>
+                  </div>
+                ) : (
+                  <RubricPanel
+                    rubric={rubric}
+                    rubricLoading={rubricLoading}
+                    selectedLevels={selectedLevels}
+                    onLevelSelect={handleLevelSelect}
+                    gradeResult={gradeResult || undefined}
+                  />
+                )}
               </TabsContent>
 
               <TabsContent value="feedback" className="mt-0">
@@ -254,10 +303,14 @@ export default function GradingInterface({
         <div className="p-4 mt-4">
           <Button
             className="w-full bg-green-500 hover:bg-green-600"
-            onClick={() =>
-              selectedFile && handleGradeClick(rubric, selectedFile.driveFile.alternateLink)
-            }
-            disabled={gradingLoading || !rubric || !selectedFile}
+            onClick={() => {
+              if (isRubricMissing) {
+                setShowRubricMissingDialog(true)
+              } else if (selectedFile) {
+                handleGradeClick(rubric, selectedFile.driveFile.alternateLink)
+              }
+            }}
+            disabled={gradingLoading || !selectedFile}
           >
             {gradingLoading ? (
               <>

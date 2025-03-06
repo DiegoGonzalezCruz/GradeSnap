@@ -1,6 +1,11 @@
 import Breadcrubms from '@/components/Breadcrumbs'
 import StudentsSubmissionsList from './StudentsSubmissionsList'
 
+export const metadata = {
+  title: "GradeSnap - Students' Submission Page",
+  description: 'This is the grading submission page.',
+}
+
 const StudentsSubmissions = async ({
   params,
 }: {

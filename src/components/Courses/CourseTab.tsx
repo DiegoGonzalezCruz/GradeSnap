@@ -20,9 +20,9 @@ function formatDate(deadline: any | string): string {
 const CourseTab = ({ course }: { course: any }) => {
   // console.log(course, 'COURSE')
   return (
-    <div className=" ">
+    <div className="  ">
       <div className="flex flex-col  md:flex-row items-center justify-between gap-6  ">
-        <div className="flex flex-row md:w-1/4 md:gap-5 h-full ">
+        <div className="flex flex-row md:w-1/4 gap-5 h-full ">
           <Image
             src="/icons/graduation-icon.svg"
             alt=""
@@ -35,8 +35,8 @@ const CourseTab = ({ course }: { course: any }) => {
             <p className="text-sm text-muted-foreground">ID: {course.courseId}</p>
           </div>
         </div>
-        <div className="flex flex-col md:flex-row h-full w-3/4">
-          <div className="flex flex-col md:flex-row items-center gap-5  ">
+        <div className="flex flex-col md:flex-row h-full w-3/4  justify-between ">
+          <div className="flex flex-col md:flex-row items-center gap-5  w-full  ">
             <div className="flex md:items-center gap-6 text-sm  flex-1 ">
               <div className="space-y-1">
                 <p className="text-muted-foreground">Students</p>
