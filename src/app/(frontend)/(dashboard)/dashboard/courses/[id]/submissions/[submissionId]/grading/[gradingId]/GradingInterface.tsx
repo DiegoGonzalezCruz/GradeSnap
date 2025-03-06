@@ -163,6 +163,10 @@ export default function GradingInterface({
     }))
   }
 
+  const handleSave = async () => {
+    console.log('handleSave called')
+  }
+
   const isSuccess = isSuccessRubric && isSuccessSubmissionData
   if (!isSuccess) return <GradingSkeleton />
 
@@ -262,7 +266,7 @@ export default function GradingInterface({
               </>
             ) : (
               <>
-                <Check className="mr-2 h-4 w-4" /> Confirm and Submit Grade
+                <Check onClick={handleSave} className="mr-2 h-4 w-4" /> Save into GradeSnap
               </>
             )}
           </Button>

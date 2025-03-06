@@ -25,48 +25,26 @@ export function Sidebar({ className }: React.HTMLAttributes<HTMLDivElement>) {
   const router = useRouter()
   const user = useMeUser()
 
-  // console.log(user, 'user')
   if (!user) router.push('/')
 
   const menu: Menu[] = [
-    {
-      name: 'Home',
-      icon: HomeIcon,
-      href: '/dashboard', // matches pathname if user is at /dashboard
-    },
-    {
-      name: 'Courses',
-      icon: GraduationCap,
-      href: '/dashboard/courses', // highlight if user is on /dashboard/courses
-    },
-    {
-      name: 'Rubric',
-      icon: BookOpenCheck,
-      href: '/dashboard/rubrics',
-    },
-    {
-      name: 'Settings',
-      icon: Settings,
-      href: '/dashboard/settings',
-    },
+    { name: 'Home', icon: HomeIcon, href: '/dashboard' },
+    { name: 'Courses', icon: GraduationCap, href: '/dashboard/courses' },
+    { name: 'Rubric', icon: BookOpenCheck, href: '/dashboard/rubrics' },
+    { name: 'Settings', icon: Settings, href: '/dashboard/settings' },
   ]
 
   const handleLogout = async () => {
-    // console.log('logging out')
     const res = await fetch('/api/users/logout', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
     })
-    if (res.ok) {
-      router.push('/')
-    }
+    if (res.ok) router.push('/')
   }
 
   return (
-    <div className={cn('h-screen min-h-fit fixed bg-[#0B0F2D]', className)}>
-      <div className="h-full w-full flex flex-col justify-around items-center px-12 py-6">
+    <div className={cn('h-screen w-64 bg-[#0B0F2D] fixed top-0 left-0 z-40', className)}>
+      <div className="h-full flex flex-col justify-between items-center px-12 py-6">
         {/* Logo */}
         <div className="w-full mb-8">
           <Image
@@ -85,11 +63,7 @@ export function Sidebar({ className }: React.HTMLAttributes<HTMLDivElement>) {
               <Link href={href} key={name}>
                 <div
                   className={cn(
-                    // Base button styles:
-                    'h-fit px-6 py-3 flex flex-col items-center gap-1 rounded-md transition-colors',
-                    // Default state:
-                    'text-white opacity-60 hover:opacity-100',
-                    // Active state overrides:
+                    'px-6 py-3 flex flex-col items-center gap-1 rounded-md transition-colors text-white opacity-60 hover:opacity-100',
                     isActive && 'bg-[#141A3F] text-primary opacity-100 rounded',
                   )}
                 >
@@ -102,19 +76,15 @@ export function Sidebar({ className }: React.HTMLAttributes<HTMLDivElement>) {
         </div>
 
         {/* Bottom: user avatar */}
-        <div className="flex flex-col gap-5  items-center justify-center">
-          <div className="w-full mt-8">
-            <AvatarSidebar />
-          </div>
-          <div>
-            <Button
-              variant={'ghost'}
-              onClick={handleLogout}
-              className="flex flex-row items-center justify-center gap-2"
-            >
-              <CiLogout className="w-5 h-5" /> Log Out
-            </Button>
-          </div>
+        <div className="flex flex-col gap-5 items-center justify-center">
+          <AvatarSidebar />
+          <Button
+            variant="ghost"
+            onClick={handleLogout}
+            className="flex flex-row items-center justify-center gap-2"
+          >
+            <CiLogout className="w-5 h-5" /> Log Out
+          </Button>
         </div>
       </div>
     </div>
